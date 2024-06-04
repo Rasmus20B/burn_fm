@@ -8,6 +8,8 @@ use crate::decompile::sector;
 use crate::decompile::chunk;
 use crate::decompile::encoding_util::{self, get_int, get_path_int};
 
+use super::chunk::{Chunk, ChunkType};
+
 const SECTOR_SIZE : usize = 4096;
 
 pub fn decompile_fmp12_file(path: &Path) {
@@ -15,8 +17,6 @@ pub fn decompile_fmp12_file(path: &Path) {
     let mut file = File::open(path).expect("unable to open file.");
     let mut buffer = Vec::<u8>::new();
     file.read_to_end(&mut buffer).expect("Unable to read file.");
-
-    println!("Found file. Size: {}", buffer.len());
 
     let mut offset = SECTOR_SIZE;
     let mut next_id = 0;
@@ -28,41 +28,53 @@ pub fn decompile_fmp12_file(path: &Path) {
         sectors.push(sector);
     }
 
-    println!("Sectors found: {}", sectors.len());
-    let mut data = Vec::<component::VecWrapper>::new();
-    data.push(component::VecWrapper::Tables(Vec::<component::FMComponentTable>::new()));
-    data.push(component::VecWrapper::Fields(Vec::<component::FMComponentField>::new()));
 
-    for sector in sectors {
+    for sector in &mut sectors {
         offset = 0;
+        let mut depth = 0;
+        let mut path = Vec::<usize>::new();
+        let mut chunks =  Vec::<chunk::Chunk>::new();
         while offset < sector.payload.len() {
-            let mut chunk_type = sector.payload[offset];
+            let mut chunk_code = sector.payload[offset];
+            let mut ctype = ChunkType::Noop;
+            let mut data: Option<&[u8]> = None;
+            let mut ref_data: Option<&[u8]> = None;
+            let mut segidx: Option<u8> = None;
+            let mut ref_simple: Option<u16> = None;
 
+            let mut delayed = false;
 
-            if (chunk_type & 0xC0) == 0xC0 {
-                println!("went from {:x}", chunk_type);
-                chunk_type &= 0x3F;
+            if (chunk_code & 0xC0) == 0xC0 {
+                chunk_code &= 0x3F;
+                delayed = true;
             }
-            println!("chunktype {:x}", chunk_type);
-            match chunk_type {
+            match chunk_code {
                 0x00 => {
                     offset += 1;
+                    ctype = ChunkType::DataSimple;
+                    data = Some(&sector.payload[offset..offset]);
                     if sector.payload[1] == 0x00 { continue; }
                     offset += 1;
                 },
                 0x01 | 0x02 | 0x03 | 0x04 | 0x05 => {
                     offset += 1;
+                    ctype = ChunkType::RefSimple;
+                    ref_simple = Some(sector.payload[offset] as u16);
                     offset += 1;
-                    offset += (chunk_type == 0x01) as usize + (2 * (chunk_type - 0x01) as usize);
+                    let len = (chunk_code == 0x01) as usize + (2 * (chunk_code - 0x01) as usize);
+                    data = Some(&sector.payload[offset..offset+len]);
+                    offset += len;
                 }
                 0x06 => {
                     offset += 1;
+                    ctype = ChunkType::RefSimple;
                     offset += 1;
                     offset += sector.payload[offset] as usize;
                     offset += 1;
                 },
                 0x07 => {
                     offset += 1;
+                    ctype = ChunkType::DataSegment;
                     offset += 1;
                     let len = encoding_util::get_int(&sector.payload[offset..offset+2]);
                     offset += 2;
@@ -70,49 +82,57 @@ pub fn decompile_fmp12_file(path: &Path) {
                 },
                 0x08 => {
                     offset += 1;
+                    ctype = ChunkType::DataSimple;
                     offset += 2;
                 },
                 0x09 | 0x0A | 0x0B | 0x0C | 0x0D => {
                     offset += 1;
+                    ctype = ChunkType::RefSimple;
                     offset += 2;
-                    offset += (chunk_type == 0x09) as usize + (2 *(chunk_type - 0x09) as usize);
+                    offset += (chunk_code == 0x09) as usize + (2 *(chunk_code - 0x09) as usize);
                 },
                 0x0E => {
                     if sector.payload[offset + 1] != 0xFF {
                         offset += 1;
+                        ctype = ChunkType::RefSimple;
                         offset += 2;
                         offset += sector.payload[offset] as usize;
                         offset += 1;
                     } else {
                         offset += 1;
+                        ctype = ChunkType::DataSimple;
                         offset += 6;
                     }
                 },
                 0x0F => {
                     if sector.payload[offset+1] == 0x80 {
+                        ctype = ChunkType::DataSegment;
                         offset += 2;
                         offset += 1;
                         offset += get_int(&sector.payload[offset..=offset+2]);
                         offset += 2;
                     }
-                    offset += 1;
                 },
                 0x10 => {
                     offset += 1;
+                    ctype = ChunkType::DataSimple;
                     offset += 3;
                 },
                 0x11 | 0x12 | 0x13 | 0x14 | 0x15 => {
                     offset += 1;
-                    offset += 3 + (chunk_type == 0x11) as usize + (2 * (chunk_type as usize - 0x11));
+                    ctype = ChunkType::DataSimple;
+                    offset += 3 + (chunk_code == 0x11) as usize + (2 * (chunk_code as usize - 0x11));
                 },
                 0x16 => {
                     offset += 1;
+                    ctype = ChunkType::RefLong;
                     offset += 3;
                     offset += sector.payload[offset] as usize;
                     offset += 1;
                 }
                 0x17 => {
                     offset += 1;
+                    ctype = ChunkType::RefLong;
                     offset += 3;
                     let len = get_path_int(&sector.payload[offset..offset+2]);
                     offset += 2;
@@ -121,23 +141,27 @@ pub fn decompile_fmp12_file(path: &Path) {
                 0x1B => {
                     if sector.payload[offset + 1] == 0x00 {
                         offset += 2;
+                        ctype = ChunkType::RefSimple;
                         offset += 1;
                         offset += 4;
                     } else {
                         offset += 1;
+                        ctype = ChunkType::DataSimple;
                         let len = sector.payload[offset] as usize;
                         offset += 1;
-                        offset += len + (chunk_type == 0x19) as usize + (2 * (chunk_type as usize - 0x19));
+                        offset += len + (chunk_code == 0x19) as usize + (2 * (chunk_code as usize - 0x19));
                     }
                 },
                 0x19 | 0x1A | 0x1C | 0x1D => {
                     offset += 1;
+                    ctype = ChunkType::DataSimple;
                     let len = sector.payload[offset] as usize;
                     offset += 1;
-                    offset += len + (chunk_type == 0x19) as usize + (2 * (chunk_type as usize - 0x19));
+                    offset += len + (chunk_code == 0x19) as usize + (2 * (chunk_code as usize - 0x19));
                 },
                 0x1E => {
                     offset += 1;
+                    ctype = ChunkType::RefLong;
                     let ref_len = sector.payload[offset] as usize;
                     offset += 1;
                     offset += ref_len;
@@ -147,6 +171,7 @@ pub fn decompile_fmp12_file(path: &Path) {
                 },
                 0x1F => {
                     offset += 1;
+                    ctype = ChunkType::RefLong;
                     let ref_len = sector.payload[offset];
                     offset += 1;
                     let len = get_path_int(&sector.payload[offset..offset+2]);
@@ -155,6 +180,7 @@ pub fn decompile_fmp12_file(path: &Path) {
                 },
                 0x20 => {
                     offset += 1;
+                    ctype = ChunkType::PathPush;
                     let mut len = 1;
                     if sector.payload[offset] == 0xFE {
                         offset += 1;
@@ -162,36 +188,75 @@ pub fn decompile_fmp12_file(path: &Path) {
                     }
                     let idx = encoding_util::get_path_int(&sector.payload[offset..offset+1]);
                     offset += len;
-                    println!("Pushing {} to path from special", idx);
+                    path.push(idx);
+                    depth+=1;
                 },
-                0x28 => {
+                0x23 => {
                     offset += 1;
-                    let idx = encoding_util::get_path_int(&sector.payload[offset..=offset+2]);
-                    offset += 2;
-                },
-                0x30 => {
-                    offset += 1;
-                    offset += 3;
-                },
-                0x38 => {
-                    offset += 1;
+                    ctype = ChunkType::DataSimple;
                     let len = sector.payload[offset] as usize;
                     offset += 1;
                     offset += len;
+
+                },
+                0x28 => {
+                    offset += 1;
+                    ctype = ChunkType::PathPush;
+                    let idx = encoding_util::get_path_int(&sector.payload[offset..=offset+2]);
+                    offset += 2;
+                    if depth == 1 && idx >= 128{
+                        println!("New table @: {}", idx);
+                    }
+                    path.push(idx);
+                    depth+=1;
+                },
+                0x30 => {
+                    offset += 1;
+                    ctype = ChunkType::PathPush;
+                    // let dir = 0x80 + ((sector.payload[offset + 1] as usize) << 8) + sector.payload[offset + 2] as usize;
+                    let dir = get_path_int(&sector.payload[offset..offset+2]);
+                    path.push(dir.into());
+                    offset += 3;
+                    depth+=1;
+                },
+                0x38 => {
+                    offset += 1;
+                    ctype = ChunkType::PathPush;
+                    let len = sector.payload[offset] as usize;
+                    offset += 1;
+                    let dir = get_path_int(&sector.payload[offset..offset+2]);
+                    path.push(dir);
+                    offset += len;
+                    depth+=1;
                 },
                 0x3D | 0x40 => {
+                    ctype = ChunkType::PathPop;
                     offset += 1;
+                    path.pop();
                 },
                 0x80 => {
                     offset += 1;
                 }
                 _ => {
-                    println!("Nah. {:x}", chunk_type);
-                    exit(0);
+                    eprintln!("Error: Invalid chunk code. {}", chunk_code);
+                    exit(-1);
                 }
             };
-        }
 
+            if delayed == true {
+                path.pop();
+            }
+            chunks.push(chunk::Chunk::new(ctype,
+                                          data,
+                                          ref_data,
+                                          path.clone(),
+                                          segidx,
+                                          ref_simple));
+        }
+        sector.chunks = chunks;
     }
 
+    let mut data = Vec::<component::VecWrapper>::new();
+    data.push(component::VecWrapper::Tables(Vec::<component::FMComponentTable>::new()));
+    data.push(component::VecWrapper::Fields(Vec::<component::FMComponentField>::new()));
 }

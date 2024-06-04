@@ -1,5 +1,7 @@
+use super::chunk;
 
-#[derive(Clone, Debug, Default)]
+
+#[derive(Clone, Default)]
 pub struct Sector<'a> {
     pub id: u32,
     pub deleted: bool,
@@ -7,6 +9,7 @@ pub struct Sector<'a> {
     pub previous: u32,
     pub next: u32,
     pub payload: &'a [u8],
+    pub chunks: Vec::<chunk::Chunk<'a>>
 }
 
 impl<'a> Sector<'a> {
@@ -15,16 +18,17 @@ impl<'a> Sector<'a> {
            level: u32,
            previous: u32,
            next: u32,
-           payload: &'a [u8]) -> Self {
+           payload: &'a [u8],
+           chunks: Vec::<chunk::Chunk<'a>>) -> Self {
         Self {
             id,
             deleted,
             level,
             previous,
             next,
-            payload
+            payload,
+            chunks
         }
-        
     }
 }
 
@@ -41,6 +45,7 @@ pub fn get_sector(sector: &[u8], id: u32) -> Sector {
                 ((sector[9] as u32) << 16) |
                 ((sector[10] as u32) << 8) |
                 (sector[11]) as u32,
-        &sector[20..]
+        &sector[20..],
+        Vec::<chunk::Chunk>::new()
         )
 }
