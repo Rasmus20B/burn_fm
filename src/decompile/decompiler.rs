@@ -68,16 +68,21 @@ pub fn decompile_fmp12_file(path: &Path) {
                 0x06 => {
                     offset += 1;
                     ctype = ChunkType::RefSimple;
+                    ref_simple = Some(sector.payload[offset] as u16);
                     offset += 1;
-                    offset += sector.payload[offset] as usize;
+                    let len = sector.payload[offset] as usize;
                     offset += 1;
+                    data = Some(&sector.payload[offset..offset+len]);
+                    offset += data.unwrap().len();
                 },
                 0x07 => {
                     offset += 1;
                     ctype = ChunkType::DataSegment;
+                    segidx = Some(sector.payload[offset]);
                     offset += 1;
                     let len = encoding_util::get_int(&sector.payload[offset..offset+2]);
                     offset += 2;
+                    data = Some(&sector.payload[offset..offset+len]);
                     offset += len;
                 },
                 0x08 => {
@@ -133,6 +138,7 @@ pub fn decompile_fmp12_file(path: &Path) {
                 0x17 => {
                     offset += 1;
                     ctype = ChunkType::RefLong;
+                    ref_data = Some(&sector.payload[offset..offset+3]);
                     offset += 3;
                     let len = get_path_int(&sector.payload[offset..offset+2]);
                     offset += 2;
@@ -181,13 +187,14 @@ pub fn decompile_fmp12_file(path: &Path) {
                 0x20 => {
                     offset += 1;
                     ctype = ChunkType::PathPush;
-                    let mut len = 1;
                     if sector.payload[offset] == 0xFE {
                         offset += 1;
-                        len = 8;
+                        data = Some(&sector.payload[offset..offset+8]);
+                    } else {
+                        data = Some(&sector.payload[offset..offset+1]);
                     }
                     let idx = encoding_util::get_path_int(&sector.payload[offset..offset+1]);
-                    offset += len;
+                    offset += data.unwrap().len();
                     path.push(idx);
                     depth+=1;
                 },
@@ -196,17 +203,14 @@ pub fn decompile_fmp12_file(path: &Path) {
                     ctype = ChunkType::DataSimple;
                     let len = sector.payload[offset] as usize;
                     offset += 1;
+                    data = Some(&sector.payload[offset..offset+len]);
                     offset += len;
-
                 },
                 0x28 => {
                     offset += 1;
                     ctype = ChunkType::PathPush;
                     let idx = encoding_util::get_path_int(&sector.payload[offset..=offset+2]);
                     offset += 2;
-                    if depth == 1 && idx >= 128{
-                        println!("New table @: {}", idx);
-                    }
                     path.push(idx);
                     depth+=1;
                 },
@@ -235,6 +239,7 @@ pub fn decompile_fmp12_file(path: &Path) {
                     path.pop();
                 },
                 0x80 => {
+                    ctype = ChunkType::Noop;
                     offset += 1;
                 }
                 _ => {
