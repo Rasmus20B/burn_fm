@@ -3,7 +3,10 @@ use std::io::{self, Read};
 use std::path::Path;
 use std::process::exit;
 
+use std::str;
+
 use crate::component;
+use crate::file::{self, FmpFile};
 use crate::decompile::sector;
 use crate::decompile::chunk;
 use crate::decompile::encoding_util::{self, get_int, get_path_int};
@@ -12,7 +15,7 @@ use super::chunk::{Chunk, ChunkType};
 
 const SECTOR_SIZE : usize = 4096;
 
-pub fn decompile_fmp12_file(path: &Path) {
+pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
     
     let mut file = File::open(path).expect("unable to open file.");
     let mut buffer = Vec::<u8>::new();
@@ -41,13 +44,14 @@ pub fn decompile_fmp12_file(path: &Path) {
             let mut ref_data: Option<&[u8]> = None;
             let mut segidx: Option<u8> = None;
             let mut ref_simple: Option<u16> = None;
-
             let mut delayed = false;
 
             if (chunk_code & 0xC0) == 0xC0 {
                 chunk_code &= 0x3F;
                 delayed = true;
             }
+
+            // println!("{:x}", chunk_code);
             match chunk_code {
                 0x00 => {
                     offset += 1;
@@ -88,24 +92,33 @@ pub fn decompile_fmp12_file(path: &Path) {
                 0x08 => {
                     offset += 1;
                     ctype = ChunkType::DataSimple;
+                    data = Some(&sector.payload[offset..offset+2]);
                     offset += 2;
                 },
                 0x09 | 0x0A | 0x0B | 0x0C | 0x0D => {
                     offset += 1;
                     ctype = ChunkType::RefSimple;
+                    ref_simple = Some(get_path_int(&sector.payload[offset..offset+2]) as u16);
                     offset += 2;
-                    offset += (chunk_code == 0x09) as usize + (2 *(chunk_code - 0x09) as usize);
+                    let len = (chunk_code == 0x09) as usize + (2 *(chunk_code - 0x09) as usize);
+                    data = Some(&sector.payload[offset..offset+len]);
+                    offset += len;
                 },
                 0x0E => {
                     if sector.payload[offset + 1] != 0xFF {
                         offset += 1;
                         ctype = ChunkType::RefSimple;
+                        ref_simple = Some(get_path_int(&sector.payload[offset..offset+2]) as u16);
+                        // ref_data = Some(&sector.payload[ref_offset..ref_offset]);
                         offset += 2;
-                        offset += sector.payload[offset] as usize;
+                        let len = sector.payload[offset] as usize;
                         offset += 1;
+                        data = Some(&sector.payload[offset..offset+len]);
+                        offset += len;
                     } else {
                         offset += 1;
                         ctype = ChunkType::DataSimple;
+                        data = Some(&sector.payload[offset..offset+6]);
                         offset += 6;
                     }
                 },
@@ -113,27 +126,35 @@ pub fn decompile_fmp12_file(path: &Path) {
                     if sector.payload[offset+1] == 0x80 {
                         ctype = ChunkType::DataSegment;
                         offset += 2;
+                        segidx = Some(sector.payload[offset]);
                         offset += 1;
-                        offset += get_int(&sector.payload[offset..=offset+2]);
+                        let len = get_int(&sector.payload[offset..offset+2]);
                         offset += 2;
+                        data = Some(&sector.payload[offset..offset+len]);
+                        offset += len;
                     }
                 },
                 0x10 => {
                     offset += 1;
                     ctype = ChunkType::DataSimple;
+                    data = Some(&sector.payload[offset..offset+3]);
                     offset += 3;
                 },
                 0x11 | 0x12 | 0x13 | 0x14 | 0x15 => {
                     offset += 1;
                     ctype = ChunkType::DataSimple;
-                    offset += 3 + (chunk_code == 0x11) as usize + (2 * (chunk_code as usize - 0x11));
+                    let len = 3 + (chunk_code == 0x11) as usize + (2 * (chunk_code as usize - 0x11));
+                    data = Some(&sector.payload[offset..offset+len]);
+                    offset += len;
                 },
                 0x16 => {
                     offset += 1;
                     ctype = ChunkType::RefLong;
+                    ref_data = Some(&sector.payload[offset..offset+3]);
                     offset += 3;
-                    offset += sector.payload[offset] as usize;
-                    offset += 1;
+                    let len = sector.payload[offset] as usize;
+                    data = Some(&sector.payload[offset..offset+len]);
+                    offset += len;
                 }
                 0x17 => {
                     offset += 1;
@@ -142,13 +163,16 @@ pub fn decompile_fmp12_file(path: &Path) {
                     offset += 3;
                     let len = get_path_int(&sector.payload[offset..offset+2]);
                     offset += 2;
+                    data = Some(&sector.payload[offset..offset+len]);
                     offset += len;
                 },
                 0x1B => {
                     if sector.payload[offset + 1] == 0x00 {
                         offset += 2;
                         ctype = ChunkType::RefSimple;
+                        ref_simple = Some(sector.payload[offset] as u16);
                         offset += 1;
+                        data = Some(&sector.payload[offset..offset+4]);
                         offset += 4;
                     } else {
                         offset += 1;
@@ -209,7 +233,8 @@ pub fn decompile_fmp12_file(path: &Path) {
                 0x28 => {
                     offset += 1;
                     ctype = ChunkType::PathPush;
-                    let idx = encoding_util::get_path_int(&sector.payload[offset..=offset+2]);
+                    data = Some(&sector.payload[offset..offset+2]);
+                    let idx = encoding_util::get_path_int(&sector.payload[offset..offset+2]);
                     offset += 2;
                     path.push(idx);
                     depth+=1;
@@ -217,8 +242,9 @@ pub fn decompile_fmp12_file(path: &Path) {
                 0x30 => {
                     offset += 1;
                     ctype = ChunkType::PathPush;
+                    data = Some(&sector.payload[offset..offset+3]);
                     // let dir = 0x80 + ((sector.payload[offset + 1] as usize) << 8) + sector.payload[offset + 2] as usize;
-                    let dir = get_path_int(&sector.payload[offset..offset+2]);
+                    let dir = get_path_int(&sector.payload[offset..offset+3]);
                     path.push(dir.into());
                     offset += 3;
                     depth+=1;
@@ -228,6 +254,7 @@ pub fn decompile_fmp12_file(path: &Path) {
                     ctype = ChunkType::PathPush;
                     let len = sector.payload[offset] as usize;
                     offset += 1;
+                    data = Some(&sector.payload[offset..offset+2]);
                     let dir = get_path_int(&sector.payload[offset..offset+2]);
                     path.push(dir);
                     offset += len;
@@ -248,6 +275,33 @@ pub fn decompile_fmp12_file(path: &Path) {
                 }
             };
 
+            match &path.iter().as_slice() {
+                [3, 16, 5, x] => {
+                    if *x >= 128 {
+                        let s = match String::from_utf8(data.unwrap_or(&[0])
+                                                     .into_iter()
+                                                     .map(|c| c ^ 0x5A)
+                                                     .collect::<Vec<u8>>()) {
+                            Ok(v) => v.to_string(),
+                            Err(e) => "value not utf-8.".to_string()
+                        };
+
+                        println!("code: {:x}", chunk_code);
+                        if ctype != ChunkType::RefLong &&
+                            ctype != ChunkType::PathPush &&
+                            ctype != ChunkType::Noop {
+                            println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                                     &path.clone(),
+                                     ref_simple,
+                                     s);
+                        }
+                    } else {
+                        println!("Path: {:?}", &path.clone());
+                    }
+                }
+                _ => { }
+            }
+
             if delayed == true {
                 path.pop();
             }
@@ -260,8 +314,6 @@ pub fn decompile_fmp12_file(path: &Path) {
         }
         sector.chunks = chunks;
     }
-
-    let mut data = Vec::<component::VecWrapper>::new();
-    data.push(component::VecWrapper::Tables(Vec::<component::FMComponentTable>::new()));
-    data.push(component::VecWrapper::Fields(Vec::<component::FMComponentField>::new()));
+    let mut file = FmpFile { name: "name".to_string(), tables: vec![] };
+    return file;
 }

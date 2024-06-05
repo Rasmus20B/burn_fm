@@ -7,10 +7,11 @@ pub enum FMComponentType {
 }
 
 #[derive(Debug, Clone)]
-pub struct FMComponentField {
+pub struct FMComponentField<'a> {
     ctype: FMComponentType,
     field_name : String,
-    field_type : String
+    field_type : String,
+    table: &'a FMComponentTable
 }
 
 #[derive(Debug, Clone)]
@@ -20,7 +21,7 @@ pub struct FMComponentTable {
     n_fields : usize
 }
 
-pub enum VecWrapper {
+pub enum VecWrapper<'a> {
     Tables(Vec<FMComponentTable>),
-    Fields(Vec<FMComponentField>)
+    Fields(Vec<FMComponentField<'a>>)
 }
