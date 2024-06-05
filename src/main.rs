@@ -7,6 +7,6 @@ mod compile;
 mod file;
 
 fn main() {
-    let file = Path::new("tests/input/blank.fmp12");
+    let file = Path::new("../fm_vc/databases/Quotes.fmp12");
     decompile_fmp12_file(&file);
 }

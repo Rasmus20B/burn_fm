@@ -9,8 +9,10 @@ pub enum FMComponentType {
 #[derive(Debug, Clone)]
 pub struct FMComponentField<'a> {
     ctype: FMComponentType,
-    field_name : String,
-    field_type : String,
+    field_name: String,
+    field_type: String,
+    created_by: String,
+    modified_by: String,
     table: &'a FMComponentTable
 }
 

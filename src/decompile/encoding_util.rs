@@ -15,3 +15,13 @@ pub fn get_int(bytes: &[u8]) -> usize {
         _ => 0
     }
 }
+
+pub fn fm_string_decrypt(bytes: &[u8]) -> String {
+    match String::from_utf8(bytes
+                                 .into_iter()
+                                 .map(|c| c ^ 0x5A)
+                                 .collect::<Vec<u8>>()) {
+        Ok(v) => v.to_string(),
+        Err(e) => "value not utf-8.".to_string()
+    }
+}
