@@ -1,0 +1,15 @@
+table Person:
+  primaryKey: Unique, Required, Text, {get(uuid)},
+  !{!isEmpty(primaryKey)},
+  "Used as a primary key for the Person Table",
+
+  firstName: Text,
+
+  lastName: Text,
+
+  sex: Text, foundIn[male_female],
+end table;
+
+value_list male_female:
+  "male", "female"
+end value_list;

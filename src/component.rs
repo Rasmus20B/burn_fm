@@ -1,25 +1,32 @@
 
-#[derive(Debug, Clone)]
+use std::collections::HashMap;
+
+use serde::{Deserialize, Serialize};
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum FMComponentType {
     Table,
     Field,
     Layout
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FMComponentField {
-    ctype: FMComponentType,
-    field_name: String,
-    field_type: String,
-    created_by: String,
-    modified_by: String,
+    pub data_type: String,
+    pub field_description: String,
+    pub field_name: String,
+    pub field_type: String,
+    pub created_by_account: String,
+    pub created_by_user: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FMComponentTable {
-    ctype: FMComponentType,
-    table_name : String,
-    fields: Vec<FMComponentField>
+    pub table_name: String,
+    pub created_by_account: String,
+    pub create_by_user: String,
+    pub fields: HashMap<u16, FMComponentField>
 }
 
 pub enum VecWrapper {
