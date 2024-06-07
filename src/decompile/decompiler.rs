@@ -143,10 +143,10 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 },
                 _ => { 
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                    // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                    //          &path.clone(),
-                    //          chunk.ref_simple,
-                    //          s);
+                    println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                             &path.clone(),
+                             chunk.ref_simple,
+                             s);
                 }
             }
         }

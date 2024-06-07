@@ -153,6 +153,7 @@ pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec
             *offset += 1;
             ctype = ChunkType::DataSimple;
             let len = 3 + (chunk_code == 0x11) as usize + (2 * (chunk_code as usize - 0x11));
+            println!("FOUND SOMETHING LIKE: {}", len);
             data = Some(&code[*offset..*offset+len]);
             *offset += len;
         },
@@ -219,7 +220,7 @@ pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec
             let ref_len = code[*offset] as usize;
             *offset += 1;
             ref_data = Some(&code[*offset..*offset+ref_len]);
-            let len = get_path_int(&code[*offset..*offset+2]);
+            let len = get_int(&code[*offset..*offset+2]);
             *offset += 2;
             data = Some(&code[*offset..*offset+len]);
             *offset += len;
@@ -282,7 +283,7 @@ pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec
             *offset += 1;
         }
         _ => {
-            eprintln!("Unknown code @ {}: {:x}", *offset, chunk_code);
+            eprintln!("Unknown code @ B:{}, O:{}: {:x}", (4096 / (*offset - local)), local, chunk_code);
             return Err("Invalid Opcode for Chunk.");
         }
     };

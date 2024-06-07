@@ -8,8 +8,8 @@ mod file;
 mod metadata_constants;
 
 fn main() {
-    let input = Path::new("tests/input/blank.fmp12");
-    // let input = Path::new("../fm_vc/databases/Quotes.fmp12");
+    // let input = Path::new("tests/input/blank.fmp12");
+    let input = Path::new("../fm_vc/databases/Quotes.fmp12");
     let file = decompile_fmp12_file(&input);
 
     for t in file.tables {
