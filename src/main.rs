@@ -7,10 +7,6 @@ mod compile;
 mod file;
 mod metadata_constants;
 
-extern crate num;
-#[macro_use]
-extern crate num_derive;
-
 fn main() {
     let input = Path::new("tests/input/blank.fmp12");
     // let input = Path::new("../fm_vc/databases/Quotes.fmp12");

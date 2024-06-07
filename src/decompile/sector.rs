@@ -3,7 +3,6 @@ use crate::decompile::encoding_util;
 
 #[derive(Clone, Default)]
 pub struct Sector<'a> {
-    pub id: usize,
     pub deleted: bool,
     pub level: u32,
     pub previous: u32,
@@ -13,7 +12,7 @@ pub struct Sector<'a> {
 }
 
 impl<'a> Sector<'a> {
-    fn new(id: usize,
+    fn new(
            deleted: bool,
            level: u32,
            previous: u32,
@@ -21,7 +20,6 @@ impl<'a> Sector<'a> {
            payload: &'a [u8],
            chunks: Vec::<chunk::Chunk<'a>>) -> Self {
         Self {
-            id,
             deleted,
             level,
             previous,
@@ -32,9 +30,8 @@ impl<'a> Sector<'a> {
     }
 }
 
-pub fn get_sector(sector: &[u8], id: usize) -> Sector {
+pub fn get_sector(sector: &[u8]) -> Sector {
     Sector::new(
-        id,
         sector[0] != 0,
         sector[1] as u32 & 0x00FFFFFF,
         get_int(&sector[4..8]) as u32,

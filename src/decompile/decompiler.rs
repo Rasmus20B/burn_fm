@@ -11,7 +11,7 @@ use crate::decompile::sector;
 use crate::decompile::chunk;
 
 use super::chunk::{get_chunk_from_code, Chunk, ChunkType};
-use super::encoding_util::fm_string_decrypt;
+use super::encoding_util::{fm_string_decrypt,get_int};
 
 const SECTOR_SIZE : usize = 4096;
 
@@ -25,25 +25,28 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
     let mut offset = SECTOR_SIZE;
     let mut next_id = 0_usize;
     let mut sectors = Vec::<sector::Sector>::new();
-    while offset > 0 {
-        let sector = sector::get_sector(&buffer[offset..offset+SECTOR_SIZE], next_id);
-        println!("last sector: {}", sector.next);
-        next_id = sector.next;
-        offset = SECTOR_SIZE * sector.next as usize;
-        sectors.push(sector);
-    }
 
-    println!("Found: {} sectors", sectors.len());
+    let first = sector::get_sector(&buffer[offset..]);
+    let n_blocks = first.next;
 
+    sectors.resize(n_blocks + 1, sector::Sector { deleted: false, level: 0, previous: 0, next: 0, payload: &[0], chunks: vec![] });
+    sectors[0] = first;
 
-    for sector in &mut sectors {
-        offset = 0;
+    let mut idx = 2;
+    let mut chunks =  Vec::<chunk::Chunk>::new();
+    while idx != 0 {
+        let start = idx * SECTOR_SIZE;
+        let bound = start + SECTOR_SIZE;
+        offset = start;
+
+        sectors[idx] = sector::get_sector(&buffer[offset..]);
         let mut path = Vec::<usize>::new();
-        let mut chunks =  Vec::<chunk::Chunk>::new();
-        while offset < sector.payload.len() {
-            let chunk = get_chunk_from_code(&sector.payload, &mut offset, &mut path)
-                .expect("Unable to decompile chunk: ");
-
+        offset += 20;
+        while offset < bound {
+            let chunk = get_chunk_from_code(&buffer, 
+                                            &mut offset, 
+                                            &mut path, 
+                                            start).expect("Unable to decode chunk.");          
             match &path.iter().as_slice() {
                 [4, 1, 7, x, ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
@@ -146,9 +149,9 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     //          s);
                 }
             }
-            chunks.push(chunk);
         }
-        sector.chunks = chunks;
+        idx = sectors[idx].next;
     }
+
     return fmp_file;
 }

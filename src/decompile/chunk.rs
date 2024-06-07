@@ -44,7 +44,7 @@ impl<'a> Chunk<'a> {
     }
 }
 
-pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec<usize>) -> Result<Chunk<'a>, &'static str> {
+pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec<usize>, local : usize) -> Result<Chunk<'a>, &'static str> {
     let mut chunk_code = code[*offset];
     let mut ctype = ChunkType::Noop;
     let mut data: Option<&[u8]> = None;
@@ -60,7 +60,7 @@ pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec
         delayed = true;
     }
 
-    println!("Code: {:x}", chunk_code);
+    // println!("offset: {}, Code: {:x}", offset, chunk_code);
 
     match chunk_code {
         0x00 => {
@@ -282,7 +282,7 @@ pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec
             *offset += 1;
         }
         _ => {
-            eprintln!("Unknown code @ {}: {:?}", *offset, chunk_code);
+            eprintln!("Unknown code @ {}: {:x}", *offset, chunk_code);
             return Err("Invalid Opcode for Chunk.");
         }
     };
