@@ -60,6 +60,8 @@ pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec
         delayed = true;
     }
 
+    println!("Code: {:x}", chunk_code);
+
     match chunk_code {
         0x00 => {
             *offset += 1;
@@ -280,6 +282,7 @@ pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec
             *offset += 1;
         }
         _ => {
+            eprintln!("Unknown code @ {}: {:?}", *offset, chunk_code);
             return Err("Invalid Opcode for Chunk.");
         }
     };

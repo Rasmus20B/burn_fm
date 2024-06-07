@@ -23,18 +23,14 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
     file.read_to_end(&mut buffer).expect("Unable to read file.");
 
     let mut offset = SECTOR_SIZE;
-    let mut next_id = 0_usize;
+    let mut next_id = 0;
     let mut sectors = Vec::<sector::Sector>::new();
     while offset > 0 {
         let sector = sector::get_sector(&buffer[offset..offset+SECTOR_SIZE], next_id);
-        println!("last sector: {}", sector.next);
         next_id = sector.next;
         offset = SECTOR_SIZE * sector.next as usize;
         sectors.push(sector);
     }
-
-    println!("Found: {} sectors", sectors.len());
-
 
     for sector in &mut sectors {
         offset = 0;
@@ -47,21 +43,21 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
             match &path.iter().as_slice() {
                 [4, 1, 7, x, ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                    // println!("data: {}", s);
+                    println!("data: {}", s);
                 },
                 [x, 3, 5, y] => {
-                    if x >= &128 {
+                    if x > &128 {
                         if chunk.ctype == ChunkType::PathPush {
                             // println!("table: {}, column: {}", x, y);
-                            if !fmp_file.tables.contains_key(&(*x - 128)) {
-                                fmp_file.tables.insert(*x - 128,
+                            if !fmp_file.tables.contains_key(&(*x - 129)) {
+                                fmp_file.tables.insert(*x - 129,
                             component::FMComponentTable { 
                             table_name: "".to_string(),
                             created_by_account: "".to_string(),
                             create_by_user: "".to_string(),
                             fields: HashMap::new() });
                             }
-                            fmp_file.tables.get_mut(&(*x - 128)).
+                            fmp_file.tables.get_mut(&(*x - 129)).
                                 unwrap().fields
                                 .insert(*y as u16, component::FMComponentField { 
                                     data_type: "".to_string(),
@@ -73,7 +69,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         } else {
                             let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                             // println!("instr: {:x}. ref: {:?}, data: {}", chunk.code, chunk.ref_simple, s);
-                            let tidx = x - 128;
+                            let tidx = x - 129;
                             match chunk.ref_simple.unwrap_or(0) {
                                 metadata_constants::FIELD_TYPE => {
                                     fmp_file.tables.get_mut(&tidx)
@@ -124,7 +120,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                              s);
                     if chunk.ctype == ChunkType::PathPush {
                         if !fmp_file.tables.contains_key(x) {
-                            fmp_file.tables.insert(*x - 128, component::FMComponentTable { 
+                            fmp_file.tables.insert(*x - 129, component::FMComponentTable { 
                                 table_name: "".to_string(),
                                 created_by_account: "".to_string(),
                                 create_by_user: "".to_string(),
@@ -133,18 +129,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     } else {
                         match chunk.ref_simple.unwrap_or(0) {
                             metadata_constants::COMPONENT_NAME => { 
-                                fmp_file.tables.get_mut(&(x - 128)).unwrap().table_name = s },
+                                fmp_file.tables.get_mut(&(x - 129)).unwrap().table_name = s },
                             _ => {}
                         }
                     }
-                },
-                _ => { 
-                    let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                    // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                    //          &path.clone(),
-                    //          chunk.ref_simple,
-                    //          s);
                 }
+                _ => { }
             }
             chunks.push(chunk);
         }

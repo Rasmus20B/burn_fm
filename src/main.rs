@@ -13,11 +13,12 @@ extern crate num_derive;
 
 fn main() {
     let input = Path::new("tests/input/blank.fmp12");
+    // let input = Path::new("../fm_vc/databases/Quotes.fmp12");
     let file = decompile_fmp12_file(&input);
 
     for t in file.tables {
-        println!("Table name: {}", t.table_name);
-        for f in t.fields {
+        println!("Table name: {}", t.1.table_name);
+        for f in t.1.fields {
             println!("\tfield: {}: {}", f.1.field_name, f.1.field_description);
         }
     }

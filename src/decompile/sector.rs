@@ -1,23 +1,23 @@
-use super::chunk;
-
+use super::{chunk, encoding_util::get_int};
+use crate::decompile::encoding_util;
 
 #[derive(Clone, Default)]
 pub struct Sector<'a> {
-    pub id: u32,
+    pub id: usize,
     pub deleted: bool,
     pub level: u32,
     pub previous: u32,
-    pub next: u32,
+    pub next: usize,
     pub payload: &'a [u8],
     pub chunks: Vec::<chunk::Chunk<'a>>
 }
 
 impl<'a> Sector<'a> {
-    fn new(id: u32,
+    fn new(id: usize,
            deleted: bool,
            level: u32,
            previous: u32,
-           next: u32,
+           next: usize,
            payload: &'a [u8],
            chunks: Vec::<chunk::Chunk<'a>>) -> Self {
         Self {
@@ -32,19 +32,13 @@ impl<'a> Sector<'a> {
     }
 }
 
-pub fn get_sector(sector: &[u8], id: u32) -> Sector {
+pub fn get_sector(sector: &[u8], id: usize) -> Sector {
     Sector::new(
         id,
         sector[0] != 0,
         sector[1] as u32 & 0x00FFFFFF,
-        ((sector[4] as u32) << 24) as u32 |
-                ((sector[5] as u32) << 16) |
-                ((sector[6] as u32) << 8) |
-                (sector[7]) as u32,
-        ((sector[8] as u32) << 24) as u32 |
-                ((sector[9] as u32) << 16) |
-                ((sector[10] as u32) << 8) |
-                (sector[11]) as u32,
+        get_int(&sector[4..8]) as u32,
+        get_int(&sector[8..12]),
         &sector[20..],
         Vec::<chunk::Chunk>::new()
         )
