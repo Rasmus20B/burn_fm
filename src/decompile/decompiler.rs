@@ -153,17 +153,28 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     }
                     
                 }
+                [x, ..] if x < &128 => {
+                    let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
+                    if chunk.ctype == ChunkType::PathPush {
+                        println!("NEW PATH FOUND");
+                    } else {
+                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                             &path.clone(),
+                             chunk.ref_simple,
+                             s);
+                    }
+                }
                 _ => { 
                     if path.len() > 0 { 
-                        let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                        if chunk.ctype == ChunkType::PathPush {
-                            println!("NEW PATH FOUND");
-                        } else {
-                            println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                                 &path.clone(),
-                                 chunk.ref_simple,
-                                 s);
-                        }
+                    let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
+                    if chunk.ctype == ChunkType::PathPush {
+                        println!("NEW PATH FOUND");
+                    } else {
+                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                             &path.clone(),
+                             chunk.ref_simple,
+                             s);
+                    }
                     }
                 }
             }
