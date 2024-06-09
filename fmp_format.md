@@ -5,4 +5,5 @@
 - Fields: [table].[3].[5]
 - Layout info: [4].[1].[7]
 - Scripts: [17].[5].[script]
+- value lists: [33].[5].[valuelist]
 
