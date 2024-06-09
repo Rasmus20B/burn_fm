@@ -153,7 +153,6 @@ pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec
             *offset += 1;
             ctype = ChunkType::DataSimple;
             let len = 3 + (chunk_code == 0x11) as usize + (2 * (chunk_code as usize - 0x11));
-            println!("FOUND SOMETHING LIKE: {}", len);
             data = Some(&code[*offset..*offset+len]);
             *offset += len;
         },

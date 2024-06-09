@@ -1,0 +1,4413 @@
+{
+  "name": "name",
+  "tables": {
+    "24": {
+      "table_name": "qtt_invalids",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "1": {
+          "data_type": "",
+          "field_description": "Unique identifier of each record in this table",
+          "field_name": "PrimaryKey",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "Date and time each record was created",
+          "field_name": "CreationTimestamp",
+          "field_type": "[_ZXZZZZZZ[[ZZzVZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "Account name of the user who created each record",
+          "field_name": "CreatedBy",
+          "field_type": "[[Z^ZZZOZZ[[ZZZVZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "7": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "quotes_tool_number",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "Date and time each record was last modified",
+          "field_name": "ModificationTimestamp",
+          "field_type": "[_Z]ZZZZZZ[[ZZzVZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "5": {
+          "data_type": "",
+          "field_description": "Account name of the user who last modified each record",
+          "field_name": "ModifiedBy",
+          "field_type": "[[ZSZZZOZZ[[ZZZVZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "6": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "toolnumber",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "8": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "seqno",
+          "field_type": "[[ZZZZZOzZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "22": {
+      "table_name": "import_fails",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "2": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "matcode",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "1": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "seqno",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "width",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "23": {
+      "table_name": "material_search",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "6": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "id",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "1": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "supplier_name",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "adhesive",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "7": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "description",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "colour",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "type",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "5": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "liner",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "11": {
+      "table_name": "Quotes_tool_table",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "38": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "global_depth",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "17": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_idtCost",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "27": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_Vendor_num",
+          "field_type": "value not utf-8.",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "58": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "order_no",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_NoAcross",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "32": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_Euro_Tool_price",
+          "field_type": "XXZZZZZOZ^ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "62": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_charge_out",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_serial",
+          "field_type": "[XZZZZZOZZZXZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "25": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Quote_ToolVendor_Quote_ref",
+          "field_type": "[[ZZZZZOZZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "12": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_description",
+          "field_type": "[[ZZZZZOzZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "11": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_tooltype",
+          "field_type": "[[ZZZZZOzZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "56": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_Euro_Tool_price Copy",
+          "field_type": "XXZZZZZZZ^ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "35": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "global_sequence",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "16": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_idtCharge",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "1": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_seqno",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "40": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "global_gapback",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "65": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_sales_rate",
+          "field_type": "[XZZZZZZZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "6": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_GapBack",
+          "field_type": "[XZZZZZZZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "15": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Global_seq_No",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "23": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_details",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "22": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "toolnumberused_flag",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "30": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Quote_Date",
+          "field_type": "[YZZZZZZZZZ[ZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "28": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "currency logo",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "51": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "toolflag",
+          "field_type": "[XZZZZZZZZZ^ZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "33": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_idtCharge_rate",
+          "field_type": "XXZZZZZZZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "5": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_GapAcross",
+          "field_type": "[XZZZZZZZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "67": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_BASE_Pric_Change",
+          "field_type": "XXZZZZZZZ\\ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "34": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "quotes_foundcount",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "66": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "creation_timestamp",
+          "field_type": "[_ZXZZZZZZZ[ZZZZZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "13": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_width",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "36": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "global_tooltype",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "45": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_quote_operation",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "49": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "duplicated flag",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "37": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "global_width",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "42": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "global_noback",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "26": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_Vendor_link",
+          "field_type": "X[ZZZZZOZSZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "24": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_teeth",
+          "field_type": "[XZZZZZZZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "10": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_toolnum",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "41": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "global_noacross",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "43": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "global_toolnum",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "21": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_vendor_quote_ref",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "54": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "operation_number_global",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "60": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_PLN_Tool_price",
+          "field_type": "XXZZZZZZZ\\ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "39": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "8": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_Seqno_Key",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "52": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_toolcode_key",
+          "field_type": "X[ZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "7": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_NoUp",
+          "field_type": "value not utf-8.",
+          "created_by_account": "",
+          "created_by_user": "admin"
+        },
+        "64": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_idtCharge_rate_customer",
+          "field_type": "XXZZZZZZZ\\ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "57": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "machine_desc",
+          "field_type": "XXZZZZZZZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "48": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "global_operatoin_select",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "53": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "global_machine",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "31": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_Purchase_rate",
+          "field_type": "[XZZZZZZZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "63": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_PLN_Tool_pric_charge",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "44": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "global_vendor",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "29": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_idtCost_rate_key",
+          "field_type": "X[ZZZZZOZ\\ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "9": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_radius",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "50": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Global_duplicate_sequence",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "18": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_machine",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "19": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_toolcode",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_NoBack",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "14": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_depth",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "9": {
+      "table_name": "Machines_codes",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "22": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "export flag",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Fullcode",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "6": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "printnoprint",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "7": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "surfacesub",
+          "field_type": "[[ZZZZZOzZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "5": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "mkey",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "20": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Orig_Charge_type",
+          "field_type": "[[ZZZZZOZZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "21": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "subsurfaceextra",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "9": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "invdesc",
+          "field_type": "[[ZZZZZOzZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "23": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "commodity code",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "8": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "material",
+          "field_type": "[[ZZZZZOzZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "11": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Printtrim",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "1": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "13": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "dietype",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ExCode",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "15": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "machinmkeypnp",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "16": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "machinmkeypnpsurf",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "19": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cost_centre",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "10": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "nocolours",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "14": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "machinemkey",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "12": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "diecode",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Subcode",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "18": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "groupcode",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "17": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Mcode_Mkey_Full",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "4": {
+      "table_name": "OPS",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "13": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Calltype",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ODescription",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "15": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "calculation desc",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "9": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "RatepHour",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "7": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "OpCode",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "1": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Deptno",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "8": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "OuUnits",
+          "field_type": "[XZZZZZZZZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "6": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Op Hour",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "14": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Materialsetup",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "10": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "SuMins",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "16": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "tool",
+          "field_type": "[[ZZZZZOZZZ^ZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Machine No",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "5": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ONotes",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "17": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "work_instruction",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Machine",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "11": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "SuUnits",
+          "field_type": "[[ZZZZZOZZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "12": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "WDes",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "5": {
+      "table_name": "Machines_quotes",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "4": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Colsrun",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "7": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "diecode",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "8": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "dietype",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "5": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "invcode",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Machine",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "9": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "pnonp",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "10": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "trim",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "6": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "invdesc",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "MachCode",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "11": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "surfacesub",
+          "field_type": "[[ZZZZZOZZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "12": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "mkey",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "1": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Deptno",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "15": {
+      "table_name": "transaction_log",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "3": {
+          "data_type": "",
+          "field_description": "THe field which the transaction event has taken place in.",
+          "field_name": "field",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "table",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "7": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "value_old",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "9": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "event_type",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "5": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "user",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "8": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "record_id",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "1": {
+          "data_type": "",
+          "field_description": "id of a given transaction event",
+          "field_name": "id",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "6": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "value",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "timestamp",
+          "field_type": "[_ZXZZZZZZZ[ZZZ^ZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "21": {
+      "table_name": "Labels",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "7": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "local_languageCurrentlyInUse",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "labelsOfLanguagesSupportedByThisSystem",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ^",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "5": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "languageCurrentlyInUse",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "labelsByLanguage",
+          "field_type": "[[ZZZZZOZZZRZZZXZZZ[ZZZZZ^",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "6": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "variableName",
+          "field_type": "[[ZZZZZOZZZRZZZTZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "currentlanguage",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "7": {
+      "table_name": "spcdata",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "5": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cd3",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZX",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "1": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "sequence",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "9": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "gsequence",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "7": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "notes",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "6": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cd4",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZX",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cd2",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZX",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "serialnum",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "8": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "date",
+          "field_type": "[YZZZZZOZZZ[ZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "11": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cd6",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZX",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "10": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cd5",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZX",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cd1",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZX",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "17": {
+      "table_name": "Process",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "11": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "speed",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "17": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "creation_timestamp",
+          "field_type": "[_ZXZZZZZZZ[ZZZZZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "5": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "description",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "8": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "noup",
+          "field_type": "[XZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "",
+          "created_by_user": "admin"
+        },
+        "14": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "order",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "12": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "units",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "18": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "calc_noup",
+          "field_type": "XXZZZZZZZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "",
+          "created_by_user": "admin"
+        },
+        "6": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cur",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "seqno",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "step",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "13": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "calc",
+          "field_type": "[XZZZZZZZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "1": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "id",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "10": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "setup",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "16": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "rep_OLD_SYSTEM_COMPAT",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "9": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "per",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "machine",
+          "field_type": "[[ZZZZZOzZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "7": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "code",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "19": {
+      "table_name": "material_join",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "21": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "material_search",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "9": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Macross",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "serial",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "1": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "seq",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "11": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "id",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "25": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "search_supplier",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "19": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "old_width",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "7": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "mat_code",
+          "field_type": "value not utf-8.",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "15": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "generic_description",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "20": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "old_code",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "23": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "old_length",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "14": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Repetition_OLD_SYSTEM",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "",
+          "created_by_user": "admin"
+        },
+        "27": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "search_attr2",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "8": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "quant",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "5": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "price",
+          "field_type": "[XZZZZZZZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "efficiency",
+          "field_type": "value not utf-8.",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "10": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Mdown",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "16": {
+          "data_type": "",
+          "field_description": "Used in the user interface from the quote mat/ops tab to determine whether we are editing or creating a record",
+          "field_name": "material_ui_state",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "18": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "old_setup",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "30": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "search_type",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "28": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "search_attr3",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "24": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "old_serial",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "13": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "family_serial",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "12": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "",
+          "field_type": "",
+          "created_by_account": "",
+          "created_by_user": ""
+        },
+        "31": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "creation_timestamp",
+          "field_type": "[_ZXZZZZZZZ[ZZZZZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "17": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "old_price",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "32": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "old_description",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "",
+          "created_by_user": "admin"
+        },
+        "6": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "overrate",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "29": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "search_attr4",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "26": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "search_attr1",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "1": {
+      "table_name": "Quotes",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "312": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "167": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "mkey",
+          "field_type": "X[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "191": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "file_createdby",
+          "field_type": "[[ZZZZZOzZZRZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "21": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "XDate",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "77": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "MSDown",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "214": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "sixmonthflag",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "277": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "medium_box_qty",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "159": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "operation8",
+          "field_type": "XXZZZZZOZRZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "203": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "magcylinderkey",
+          "field_type": "X[ZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "342": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "rate_vendor_BASE",
+          "field_type": "value not utf-8.",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "320": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "typeset_vendor",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "366": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ulkey",
+          "field_type": "X[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "73": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ORDQUANT",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "20": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "COrdNo",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "332": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "lay_limit",
+          "field_type": "XXZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "364": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "62": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "SuPer",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZP",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "333": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "live",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "334": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Mgeneric",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ\\",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "84": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "LayEff",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "169": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "actualplatecost",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "258": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "copyposition",
+          "field_type": "[\\ZZZZZOZZZZZZZZZZZ[ZZZZZ^",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "51": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "InkCov",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "292": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "address",
+          "field_type": "XXZZZZZOZZZzZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "160": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "operation9",
+          "field_type": "XXZZZZZOZRZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "161": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "operation10",
+          "field_type": "XXZZZZZOZRZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "360": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "tlay",
+          "field_type": "XXZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "27": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "CDate",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "173": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "OShsLaysrunqty",
+          "field_type": "XXZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "276": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "small_box_qty",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "42": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "PNoAcross",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "139": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "adhCost4",
+          "field_type": "XXZZZZZOZXZzZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "134": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "adhesivetype",
+          "field_type": "value not utf-8.",
+          "created_by_account": "Artroom",
+          "created_by_user": "kmatthews"
+        },
+        "153": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "operation2",
+          "field_type": "XXZZZZZOZRZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "244": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Prepcost_Rate",
+          "field_type": "XXZZZZZOZ\\ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "28": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "FDate",
+          "field_type": "[YZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "359": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "tgap",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "233": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "DDes4",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "155": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "operation4",
+          "field_type": "XXZZZZZOZRZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "284": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ShsLays5 Tnoup",
+          "field_type": "XXZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "357": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "screensplatescode",
+          "field_type": "[XZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "144": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "kanbanreviewdate",
+          "field_type": "[YZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "234": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qlink_toolkey",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "200": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cd4",
+          "field_type": "[XZZZZZOZZ^ZZZZZZZZ[ZZZZZX",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "319": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "work_notes_inside",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "157": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "operation6",
+          "field_type": "XXZZZZZOZRZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "345": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "sysqty",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZ\\",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "53": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Cols",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "222": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Mcode_sursub",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "266": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "varnish",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "343": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "typeset_cost",
+          "field_type": "XXZZZZZZZ\\ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "149": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "QIS",
+          "field_type": "[XZZZZZOZZ^ZZZZZZZZ[ZZZZZ\\",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "240": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "global_op_select",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "35": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "PCat",
+          "field_type": "[[ZZZZZOzZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "350": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "",
+          "field_type": "",
+          "created_by_account": "",
+          "created_by_user": ""
+        },
+        "339": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "const_IC_STANDARD",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "188": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ul_ink",
+          "field_type": "[[ZZZZZOzZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "281": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ShsLays2 Tnoup",
+          "field_type": "XXZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "74": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "MCode",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "179": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "rep",
+          "field_type": "[[ZZZZZOzZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "305": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "qplate_vendor",
+          "field_type": "[XZZZZZZZZZ^ZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "197": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cd1",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "255": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "corner radius",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "291": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Q4",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "58": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "OpCode",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "162": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "totaljobtime",
+          "field_type": "XXZZZZZOZRZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "192": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "error_code",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "237": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_Total_Cost_Tooling",
+          "field_type": "XXZZZZZZZTZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "205": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "plate cylinder",
+          "field_type": "X[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "31": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "PName",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "218": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Mcodes_Mkey",
+          "field_type": "[[ZZZZZOzZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "354": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "typeset",
+          "field_type": "XXZZZZZOZ\\ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "23": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "QDate",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "303": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "join_glob",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "363": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "clay",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "147": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "CNAME",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "156": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "operation5",
+          "field_type": "XXZZZZZOZRZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "75": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "MDes",
+          "field_type": "value not utf-8.",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "267": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "plate_thickness",
+          "field_type": "X[ZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "150": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Contact",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "353": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "pccode",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "373": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "PPer2 Currency",
+          "field_type": "XXZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "230": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "die_type_rotary",
+          "field_type": "[[ZZZZZOZZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "212": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Contact_part_Controller",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "309": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "sheets per bag",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "55": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ScPlates",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "368": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "dietype",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "170": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "dieorderno",
+          "field_type": "[[ZZZZZOzZZ^ZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "206": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "platecylinderkey",
+          "field_type": "X[ZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "37": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Runpc",
+          "field_type": "[XZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "344": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_Total_Cost_Tooling_BASE",
+          "field_type": "XXZZZZZZZTZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "340": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "const_IC_OUTWORK",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "164": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "subsurextra",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "68": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Q1",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "356": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "artworkcode",
+          "field_type": "[XZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "195": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "partstripped",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "307": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ratekey_vendor",
+          "field_type": "XXZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "377": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "toolingrate",
+          "field_type": "XXZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "327": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "spc",
+          "field_type": "[[ZZZZZOZZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "19": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "CRef",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "355": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "totart",
+          "field_type": "XXZZZZZOZ\\ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "287": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Grips Copy",
+          "field_type": "[XZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "129": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "miscmaterialord",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "131": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "pnonp",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "Indicates the quotes state. Live, dead, estimate etc..   Has a bearing on jobs if set to superceded as the system checks for this status when being raised and will not allow a jo  to be entered if it has been set to superceded.e",
+          "field_name": "Status",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "285": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "carriage Quote",
+          "field_type": "[[ZZZZZOzZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "143": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "pricewarning",
+          "field_type": "X[ZZZZZOZZZZZZZZZZZ[ZZZZZ\\",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "39": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "TAcrossmm",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "336": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "loss_array",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "154": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "operation3",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "216": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Machine_code",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "321": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Prepcost_vendor",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "295": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "efficiency",
+          "field_type": "XXZZZZZZZZZZZZZZZZZ[ZZZZZ\\",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "369": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ulref",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "108": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "DCost1",
+          "field_type": "XXZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "329": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "polish_flag",
+          "field_type": "[\\ZZZZZOZ[ZZZZZZZZZ[ZZZZZX",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "6": {
+          "data_type": "",
+          "field_description": "Allows user to select the estimators initials how raised the quote.",
+          "field_name": "Estim",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "286": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "highlight_job",
+          "field_type": "[[ZZZZZOZZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "282": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ShsLays3 Tnoup",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "181": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ink_key",
+          "field_type": "XXZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "210": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "contract_seqno",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "335": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "imported?",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "351": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Plate Cylinders",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "323": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "spec_container",
+          "field_type": "[\\ZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "341": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "loss_mat_array",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "352": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Toolingcost",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "308": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "exposure time",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZP",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "247": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cd6",
+          "field_type": "[XZZZZZOZZ^ZZZZZZZZ[ZZZZZX",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "196": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "spcsrialnum",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "238": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qtool_Total_Charge_Tooling",
+          "field_type": "XXZZZZZZZTZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "317": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "const_SOLID",
+          "field_type": "XYZZZZZZZRZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "107": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "NoUP",
+          "field_type": "XXZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "378": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "totartrate",
+          "field_type": "XXZZZZZOZ\\ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "176": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "LHrsrunqty",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "306": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "curcode_plate_vendor",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "24": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ODate",
+          "field_type": "[YZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "63": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "OpSpeed",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "142": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "PPSQMactual",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "226": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "die_type",
+          "field_type": "[[ZZZZZOZZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "137": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "adhCost2",
+          "field_type": "XXZZZZZOZXZzZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "274": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "quality_requirements",
+          "field_type": "[[ZZZZZOZZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "326": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "coc_required_screen",
+          "field_type": "XXZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "64": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "OuUnits",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZP",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "228": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "artwork_charge",
+          "field_type": "[[ZZZZZOZZZ^ZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "260": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "flatsheet_down",
+          "field_type": "XXZZZZZZZRZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "61": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "OpSuM",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "5": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "OrderNo",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "296": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Base_Machine_rate",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "325": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "system_country_code",
+          "field_type": "[[ZZZZZOZZZ^ZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "165": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "adhCost6",
+          "field_type": "XXZZZZZOZXZzZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "187": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ul_laminate_material",
+          "field_type": "[[ZZZZZOzZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "245": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "stockcardsraised_flag",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "10": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ACode",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "45": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "GAcrossmm",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "288": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Grips_updated",
+          "field_type": "XXZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "316": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cylinder_availability",
+          "field_type": "XXZZZZZZZTZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "315": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "program_number",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "52": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "SSSUR",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "145": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "logo",
+          "field_type": "[\\ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "76": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "MSAcross",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "56": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Pres",
+          "field_type": "[[ZZZZZOzZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "225": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Mcode_Mkey_Full",
+          "field_type": "X[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "229": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "scr_plate_charge",
+          "field_type": "[[ZZZZZOzZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "199": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cd3",
+          "field_type": "[XZZZZZOZZ^ZZZZZZZZ[ZZZZZX",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "241": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Quote_Global_Sequence",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "268": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "progran_no",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "253": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "work_notes",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "208": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "mesh size",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZR",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "311": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "coc",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "371": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "tooln",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "372": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "PPer1 Currency",
+          "field_type": "XXZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "174": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "trcost1 Copy6",
+          "field_type": "XXZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "290": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Q3",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "32": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "OorRep",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "178": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cocrequired",
+          "field_type": "[[ZZZZZOzZ^ZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "184": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "globalkey",
+          "field_type": "[XZZZZZZZZZ^ZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "41": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "TCornmm",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "177": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "firstarticle",
+          "field_type": "[[ZZZZZOzZZ^ZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "60": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "OpDep",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZP",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "313": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "trcode",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "223": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Mcode_Material",
+          "field_type": "[[ZZZZZOzZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "264": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "adhesive",
+          "field_type": "[[ZZZZZOZZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "328": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "JCF_Location",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "11": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Company",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "172": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "runqty",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "337": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "fail_flag",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "270": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "sheet_qty",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "133": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "adhesivecoverage",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "269": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "gasket_no",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "310": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "program number",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "202": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "magcylinder",
+          "field_type": "X[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "140": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "adhCost5",
+          "field_type": "XXZZZZZOZXZzZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "252": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Work_inst_machine",
+          "field_type": "[[ZZZZZOZZ^ZZZ[ZZZZ[ZZZZZ^",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "185": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "machine_ul",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "383": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "miscmaterial4",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "34": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Type",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "44": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "NUDiecut",
+          "field_type": "XXZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "207": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "not enough plates",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "217": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Mcode_Machine",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "190": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "",
+          "field_type": "",
+          "created_by_account": "",
+          "created_by_user": "admin"
+        },
+        "314": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "material_width_manufacturer",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ^",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "330": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "eoprice3",
+          "field_type": "XXZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "213": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "vision flag",
+          "field_type": "[[ZZZZZOzZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "318": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "jobcardlocation",
+          "field_type": "[[YZZZZOzZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "152": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "operation1",
+          "field_type": "XXZZZZZOZRZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "374": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "PPer3 Currency",
+          "field_type": "XXZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "220": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Mcode_pnp",
+          "field_type": "[[ZZZZZOzZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "272": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "presentation_mc_hand",
+          "field_type": "[[ZZZZZOZZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "250": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Par description",
+          "field_type": "[[ZZZZZOzZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "29": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "DLate",
+          "field_type": "XXZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "376": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "PPer5 Currency",
+          "field_type": "XXZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "331": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "",
+          "field_type": "",
+          "created_by_account": "",
+          "created_by_user": "admin"
+        },
+        "119": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "MCostOrd",
+          "field_type": "XXZZZZZOZZZZZZZZZZZ[ZZZZZ\\",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "201": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ratekey",
+          "field_type": "value not utf-8.",
+          "created_by_account": "",
+          "created_by_user": "admin"
+        },
+        "279": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "customer Approval date",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "256": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "exposuretime",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZR",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "262": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "altmaterial",
+          "field_type": "[[ZZZZZOZZZ^ZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "304": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "MCostfull Copy2",
+          "field_type": "XXZZZZZOZRZzZZZZZZZ[ZZZZZ\\",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "30": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "PartNo",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "46": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "GDownmm",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "151": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "MCOST1A",
+          "field_type": "XXZZZZZOZXZZZZZZZZZ[ZZZZZ\\",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "249": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "overprint_op_flag",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "141": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "quoteoutofdate",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "257": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ink_used",
+          "field_type": "[[ZZZZZOZZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "347": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "qref",
+          "field_type": "XXZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "231": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Machine_code_full",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "239": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Quote_toolingrate",
+          "field_type": "XXZZZZZOZ\\ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "236": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "LHrs1_Test",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "301": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "plates_available",
+          "field_type": "X[ZZZZZOZTZzZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "54": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "PCols",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "38": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Shape",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "158": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "operation7",
+          "field_type": "XXZZZZZOZRZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "289": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "commodity_code",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "293": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "address_flag",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "209": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Ribbon use",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "227": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Ex_machine_code",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "235": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Qlink_Tool_NoUP",
+          "field_type": "[XZZZZZOZZ^ZZZZZZZZ[ZZZZZP",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "367": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "die type",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "322": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "LayWidthExceedLimit",
+          "field_type": "X[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "113": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "DCostOrd",
+          "field_type": "XXZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "148": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "UNIQUEKEY",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "40": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "TDownmm",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "263": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "alternative_material",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "381": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "miscmaterial2",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "219": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Mcode_machineMkey",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "346": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "totalvalue",
+          "field_type": "XXZZZZZOZZZZZZZZZZZ[ZZZZZ\\",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "168": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "358": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "startgap",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "163": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "globaladd",
+          "field_type": "[XZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "349": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "tooltype",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "297": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Base_Machine_speed",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "375": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "PPer4 Currency",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "26": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "PDate",
+          "field_type": "[YZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "132": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "dieconvert",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "254": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "plate location",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "251": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Work_inst_one",
+          "field_type": "[[ZZZZZOZZ^ZZZ[ZZZZ[ZZZZZ^",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "1": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "SeqNo",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "275": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "copy_key",
+          "field_type": "X[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "QuoteNo",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "348": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "dcode",
+          "field_type": "[[ZZZZZOzZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "299": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "transfer_flag",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "232": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Machine_code_costcentre",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "300": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "const_Active",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "36": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Shpcol",
+          "field_type": "[XZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "338": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "live_cutoff_date",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "365": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "warning",
+          "field_type": "X[ZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "215": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "quotesixmonthkey",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "138": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "adhCost3",
+          "field_type": "XXZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "265": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "298": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "g_tabname",
+          "field_type": "[[ZZZZZOZ[ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "224": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Mcode_MachMkeyPnpSur",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "198": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cd2",
+          "field_type": "[XZZZZZOZZ^ZZZZZZZZ[ZZZZZX",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "261": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "liner_size",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "189": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ul_matching_flag",
+          "field_type": "XXZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "130": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "puntprice",
+          "field_type": "[XZZZZZOZZZRZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "25": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "RDate",
+          "field_type": "[YZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "324": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ratekey_vendor_euro",
+          "field_type": "XXZZZZZZZRZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "361": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "teeth",
+          "field_type": "XXZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "47": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Grips",
+          "field_type": "[XZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "242": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Quote_Sequence_die",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "22": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "",
+          "field_type": "",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "146": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "CPriceOrd",
+          "field_type": "XXZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "135": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "adhesivevalue",
+          "field_type": "[XZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "128": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "miscmaterial5",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "246": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "cd5",
+          "field_type": "[XZZZZZOZZ^ZZZZZZZZ[ZZZZZX",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "362": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "modlay",
+          "field_type": "XXZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "175": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "adhCostrunqty",
+          "field_type": "XXZZZZZOZXZzZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "186": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ul_base_material",
+          "field_type": "[[ZZZZZOzZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "59": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "OpDesc",
+          "field_type": "[[ZZZZZOzZ^ZZZZZZZZ[ZZZZZP",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "271": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "sheeets_per_bag",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "204": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "warning mag",
+          "field_type": "X[ZZZZZOZ\\ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "302": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "metresreq",
+          "field_type": "XXZZZZZOZZZzZZZZZZZ[ZZZZZ\\",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "194": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ul_serial_key",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "382": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "miscmaterial3",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "243": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "totaltypeset",
+          "field_type": "XXZZZZZOZ\\ZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "283": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ShsLays4 Tnoup",
+          "field_type": "XXZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "33": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "JNotes",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "278": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "large_box_qty",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "370": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "toolkey",
+          "field_type": "value not utf-8.",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "211": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "coc_test_data_required",
+          "field_type": "[[ZZZZZOzZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "380": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "miscmaterial1",
+          "field_type": "[XZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "43": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "PNoDown",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "65": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "OpCpH",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "171": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "platescreenorderno",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "379": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "PrPer Copy",
+          "field_type": "XXZZZZZOZXZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "280": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "ShsLays1 Tnoup",
+          "field_type": "XXZZZZZOZZZzZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "259": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "flatsheet_across",
+          "field_type": "XXZZZZZZZRZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "273": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "trimed_overprinting",
+          "field_type": "[[YZZZZOzZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "294": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "transaction_flag",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "221": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Mcode_MachinMkeyPnp",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "136": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "adhCost1",
+          "field_type": "XXZZZZZOZXZzZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "14": {
+      "table_name": "HScodes",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "1": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "commodity_desc",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "commodity_code",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "10": {
+      "table_name": "Cost_centres",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "1": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Cost_Centre",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "desc",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "3": {
+      "table_name": "Depts",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "5": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Group",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "DeptNo",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "WCDesc",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "7": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Lead Time Hours",
+          "field_type": "[XZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Company",
+          "field_type": "[[ZZZZZOZZ^ZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "6": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Notes",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "1": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "Registration No",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "18": {
+      "table_name": "Tool_assignment",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "3": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "order_no",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "toolkey",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "5": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "creation_timestamp",
+          "field_type": "[_ZXZZZZZZZ[ZZZZZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "admin"
+        },
+        "1": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "process_id",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    },
+    "13": {
+      "table_name": "copy_positions",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "1": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "workinstruction",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "6": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "copy_key",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "copy_diagram",
+          "field_type": "[\\ZZZZZZZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "5": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "rollinout",
+          "field_type": "[[ZZZZZOZZZZZZ[ZZZZ[ZZZZZ[",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "copy position",
+          "field_type": "value not utf-8.",
+          "created_by_account": "James Tateossian",
+          "created_by_user": "admin"
+        }
+      }
+    }
+  },
+  "relationships": {},
+  "layouts": {}
+}

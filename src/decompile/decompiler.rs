@@ -18,7 +18,12 @@ const SECTOR_SIZE : usize = 4096;
 pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
     
     let mut file = File::open(path).expect("unable to open file.");
-    let mut fmp_file = FmpFile { name: "name".to_string(), tables: HashMap::new() };
+    let mut fmp_file = FmpFile { 
+        name: "name".to_string(),
+        tables: HashMap::new(), 
+        relationships: HashMap::new(),
+        layouts: HashMap::new(),
+    };
     let mut buffer = Vec::<u8>::new();
     file.read_to_end(&mut buffer).expect("Unable to read file.");
 
@@ -50,7 +55,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
             match &path.iter().as_slice() {
                 [4, 1, 7, x, ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                    // println!("data: {}", s);
                 },
                 [x, 3, 5, y] => {
                     if x >= &128 {
@@ -121,10 +125,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 },
                 [3, 16, 5, x] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                    println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                             &path.clone(),
-                             chunk.ref_simple,
-                             s);
                     if chunk.ctype == ChunkType::PathPush {
                         if !fmp_file.tables.contains_key(x) {
                             fmp_file.tables.insert(*x - 128, component::FMComponentTable { 
@@ -141,12 +141,30 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         }
                     }
                 },
-                _ => { 
+                [3, 17, 5, 0] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                    println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                    if chunk.ctype == ChunkType::PathPush {
+                        println!("NEW RELATIONSHIP FOUND");
+                    } else {
+                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
                              &path.clone(),
                              chunk.ref_simple,
                              s);
+                    }
+                    
+                }
+                _ => { 
+                    if path.len() > 0 { 
+                        let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
+                        if chunk.ctype == ChunkType::PathPush {
+                            println!("NEW PATH FOUND");
+                        } else {
+                            println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                                 &path.clone(),
+                                 chunk.ref_simple,
+                                 s);
+                        }
+                    }
                 }
             }
         }

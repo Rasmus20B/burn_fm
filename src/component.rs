@@ -29,6 +29,17 @@ pub struct FMComponentTable {
     pub fields: HashMap<u16, FMComponentField>
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FMComponentRelationship {
+    pub table1: u16,
+    pub table2: u16,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FMComponentLayout {
+    pub layout_name: String,
+}
+
 pub enum VecWrapper {
     Tables(Vec<FMComponentTable>),
     Fields(Vec<FMComponentField>)

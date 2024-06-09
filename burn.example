@@ -8,8 +8,20 @@ table Person:
   lastName: Text,
 
   sex: Text, foundIn[male_female],
+  jobid: Text,
+end table;
+
+table Job:
+  PrimaryKey: Unique, Required, Text, {get(uuid)},
+  !{!isEmpty(primary)},
+  "Used as a primary key for the Job table",
 end table;
 
 value_list male_female:
   "male", "female"
 end value_list;
+
+relationship PersonToJob:
+  Person -> Job,
+  jobid == PrimaryKey,
+end relationship;

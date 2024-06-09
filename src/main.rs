@@ -1,5 +1,6 @@
 use decompile::decompiler::decompile_fmp12_file;
-use std::path::Path;
+use serde::Serialize;
+use std::{fs::write, path::Path};
 
 mod component;
 mod decompile;
@@ -11,12 +12,7 @@ fn main() {
     // let input = Path::new("tests/input/blank.fmp12");
     let input = Path::new("../fm_vc/databases/Quotes.fmp12");
     let file = decompile_fmp12_file(&input);
+    let json = serde_json::to_string_pretty(&file).expect("Unable to generate json file");
 
-    for t in file.tables {
-        println!("Table name: {}", t.1.table_name);
-        for f in t.1.fields {
-            println!("\tfield: {}: {}", f.1.field_name, f.1.field_description);
-        }
-    }
-
+    write("test2", json).expect("Unable to write to file.");
 }
