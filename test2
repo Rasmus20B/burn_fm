@@ -6,30 +6,6 @@
       "created_by_account": "",
       "create_by_user": "",
       "fields": {
-        "1": {
-          "data_type": "",
-          "field_description": "Unique identifier of each record in this table",
-          "field_name": "PrimaryKey",
-          "field_type": "value not utf-8.",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
-        "5": {
-          "data_type": "",
-          "field_description": "Account name of the user who last modified each record",
-          "field_name": "ModifiedBy",
-          "field_type": "[[ZSZZZOZZ[[ZZZVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
-        "3": {
-          "data_type": "",
-          "field_description": "Account name of the user who created each record",
-          "field_name": "CreatedBy",
-          "field_type": "[[Z^ZZZOZZ[[ZZZVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
         "7": {
           "data_type": "",
           "field_description": "",
@@ -46,11 +22,35 @@
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },
+        "1": {
+          "data_type": "",
+          "field_description": "Unique identifier of each record in this table",
+          "field_name": "PrimaryKey",
+          "field_type": "value not utf-8.",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
+        "5": {
+          "data_type": "",
+          "field_description": "Account name of the user who last modified each record",
+          "field_name": "ModifiedBy",
+          "field_type": "[[ZSZZZOZZ[[ZZZVZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
         "8": {
           "data_type": "",
           "field_description": "",
           "field_name": "addition",
           "field_type": "value not utf-8.",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "Account name of the user who created each record",
+          "field_name": "CreatedBy",
+          "field_type": "[[Z^ZZZOZZ[[ZZZVZZZ[ZZZZZ[",
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },

@@ -87,7 +87,10 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         } else {
                             let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                             if chunk.ref_simple == Some(2) {
-                                println!("{:?} Data type: {:?}", chunk.ref_simple, chunk.data.unwrap_or(&[0]));
+                                println!("{:?} Data type: ", chunk.ref_simple);
+                                for (i, data) in chunk.data.unwrap().iter().enumerate() {
+                                    print!("({}: {}), ", i, data);
+                                }
                             } else {
                                 // println!("instr: {:x}. ref: {:?}, data: {}", chunk.code, chunk.ref_simple, s);
                             }
