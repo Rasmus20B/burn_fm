@@ -86,14 +86,14 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                     created_by_user: "".to_string() });
                         } else {
                             let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                            if chunk.ref_simple == Some(2) {
-                                println!("{:?} Data type: ", chunk.ref_simple);
-                                for (i, data) in chunk.data.unwrap().iter().enumerate() {
-                                    print!("({}: {}), ", i, data);
-                                }
-                            } else {
-                                // println!("instr: {:x}. ref: {:?}, data: {}", chunk.code, chunk.ref_simple, s);
-                            }
+                            match chunk.ref_simple.unwrap_or(0) {
+                                0 => {},
+                                2 => { println!("Data type: {:?}", chunk.data.unwrap_or(&[0])); },
+                                16 => { println!("Field Name: {}", s); }
+                                129 => { println!("created by user: {}", s); }
+                                130 => { println!("created by user Account: {}", s); }
+                                _   => { println!("instr: {:x}. ref: {:?}, data: {:?}", chunk.code, chunk.ref_simple, chunk.data.unwrap()); }
+                            };
                             let tidx = x - 128;
                             match chunk.ref_simple.unwrap_or(0) {
                                 metadata_constants::FIELD_TYPE => {

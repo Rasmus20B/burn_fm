@@ -1,5 +1,7 @@
 # FMP12 File Format Findings
 
+## File Tree Structure
+
 - Tables: [3].[16].[5]
 - Relationships: [3].[17].[5]
 - Fields: [table].[3].[5]
@@ -8,7 +10,7 @@
 - value lists: [33].[5].[valuelist]
 
 
-## Field type switches
+## Field type switches (Found at key 2 for field definition)
 
 ### Byte Index
 
@@ -124,7 +126,7 @@
 - 8 = Auto-Enter Calculation (**does not** replace existing value),
 - 16 = Value from last visited record,
 - 32 = Evaluate Calculation even if all referenced fields are empty, 
-- 128 = with idx 10 = 4 it is a lookup, otherwise ,
+- 128 = with idx 10 = 4 it is a lookup that is active, otherwise inactive but data saved elsewhere,
 - 136 = Auto-Enter Calculation (**does** replace existing value),
 
 ### 14:

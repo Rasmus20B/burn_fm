@@ -14,6 +14,14 @@
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },
+        "2": {
+          "data_type": "",
+          "field_description": "Date and time each record was created",
+          "field_name": "CreationTimestamp",
+          "field_type": "[_ZXZZZZZZ[[ZZzVZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
         "3": {
           "data_type": "",
           "field_description": "Account name of the user who created each record",
@@ -35,14 +43,6 @@
           "field_description": "Account name of the user who last modified each record",
           "field_name": "ModifiedBy",
           "field_type": "[[ZSZZZOZZ[[ZZZVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
-        "2": {
-          "data_type": "",
-          "field_description": "Date and time each record was created",
-          "field_name": "CreationTimestamp",
-          "field_type": "[_ZXZZZZZZ[[ZZzVZZZ[ZZZZZ[",
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },
