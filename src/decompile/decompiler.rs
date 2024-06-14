@@ -86,7 +86,11 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                     created_by_user: "".to_string() });
                         } else {
                             let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                            println!("instr: {:x}. ref: {:?}, data: {}", chunk.code, chunk.ref_simple, s);
+                            if chunk.ref_simple == Some(2) {
+                                println!("{:?} Data type: {:?}", chunk.ref_simple, chunk.data.unwrap_or(&[0]));
+                            } else {
+                                // println!("instr: {:x}. ref: {:?}, data: {}", chunk.code, chunk.ref_simple, s);
+                            }
                             let tidx = x - 128;
                             match chunk.ref_simple.unwrap_or(0) {
                                 metadata_constants::FIELD_TYPE => {
