@@ -12,9 +12,7 @@
 
 idx
 
-0:
-
-1:  Simple Data-types.  
+### 1:  Simple Data-types.  
 - 'X' = Number,
 - '[' = Text,
 - 'Y' = Date,
@@ -22,11 +20,7 @@ idx
 - '\_' = Timestamp,
 - '\\' = Container, 
 
-2:
-
-3:
-
-4:  Auto-Enter preset Options.  
+### 4:  Auto-Enter preset Options.  
 - 0 = Creation Date,
 - 1 = Creation Time,
 - 2 = Creation TimeStamp,
@@ -39,9 +33,9 @@ idx
 - 9 = Modification Account Name,
 
 
-5:
+### 5:
 
-7: Default language
+### 7: Default language
 
 2. Unicode,
 3. Default,
@@ -99,21 +93,20 @@ idx
 76. Korean,
 
 
-8:
+### 8:
 - 64 = Don't automatically create index,
 - 128 = ALways index this field,
 
-9:
+### 9:
 - 0 = regular storage
 - 1 = Global Field
 
-10:                     
+### 10:                     
 - 1: Prohibit modification of value during data-entry
 - 2: Serial Number **On Commit**,
 - 4: Set in conjunction with idx 11: 128 to signify lookup,
 
-
-11:                     
+### 11:
 - 1 = Options flag from idx 4,
 - 2 = Serial Number **On Creation**,
 - 4 = Data textbox,
@@ -122,7 +115,7 @@ idx
 - 128 = Set with idx 10: 4 to signify lookup,
 - 136 = Auto-Enter Calculation (**does** replace existing value),
 
-14:
+### 14:
 - 0 = Only validate during data entry,
 - 1 = Member of value list,
 - 2 = maximum number of characters,
@@ -131,7 +124,7 @@ idx
 - 32 = strict data-type: 4 digit year,
 - 64 = strict data-type: Time of Day,
         
-15:
+### 15:
 - 0 = User can override,
 - 1 = Validated by calculation,
 - 4 = User cannot override,
@@ -141,5 +134,5 @@ idx
 - 64 = within a range of values,
 - 128 = Display a validation error message,
 
-25:
+### 25:
 - byte 25 simply states how many repeitiions the field has
