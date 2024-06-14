@@ -25,31 +25,31 @@ idx
 
 3:
 
-4:  Auto-Enter preset Options.  0 = Creation Date,
-                                1 = Creation Time,
-                                2 = Creation TimeStamp,
-                                3 = Create Name,
-                                4 = Creation Account Name,
-                                5 = Modification Date,
-                                6 = Modification Time,
-                                7 = Modification TimeStamp,
-                                8 = Modification Name,
-                                9 = Modification Account Name,
+4:  Auto-Enter preset Options.  - 0 = Creation Date,
+                                - 1 = Creation Time,
+                                - 2 = Creation TimeStamp,
+                                - 3 = Create Name,
+                                - 4 = Creation Account Name,
+                                - 5 = Modification Date,
+                                - 6 = Modification Time,
+                                - 7 = Modification TimeStamp,
+                                - 8 = Modification Name,
+                                - 9 = Modification Account Name,
 
 
 5:
 
-10:                     2: Serial Number **On Commit**,
-                        4: Set in conjunction with idx 11: 128 to signify lookup,
+10:                     - 2: Serial Number **On Commit**,
+                        - 4: Set in conjunction with idx 11: 128 to signify lookup,
 
 
-11:                     1 = Options flag from idx 4,
-                        2 = Serial Number **On Creation**,
-                        4 = Data textbox,
-                        8 = Auto-Enter Calculation (**does not** replace existing value),
-                        16 = Value from last visited record,
-                        128 = Set with idx 10: 4 to signify lookup,
-                        136 = Auto-Enter Calculation (**does** replace existing value),
+11:                     - 1 = Options flag from idx 4,
+                        - 2 = Serial Number **On Creation**,
+                        - 4 = Data textbox,
+                        - 8 = Auto-Enter Calculation (**does not** replace existing value),
+                        - 16 = Value from last visited record,
+                        - 128 = Set with idx 10: 4 to signify lookup,
+                        - 136 = Auto-Enter Calculation (**does** replace existing value),
 
 
 
