@@ -10,15 +10,25 @@
 
 ## Field type switches
 
-idx
+### Byte Index
+
+### 0: Type of field (not data type, but simple, calculation, or summary)
+- 0 = Simple field,
+- 2 = Calculation field,
+- 3 = Summary field,
 
 ### 1:  Simple Data-types.  
-- 'X' = Number,
-- '[' = Text,
-- 'Y' = Date,
-- '^' = Time,
-- '\_' = Timestamp,
-- '\\' = Container, 
+- 1 = Text,
+- 2 = Number,
+- 3 = Date,
+- 4 = Time,
+- 5 = Timestamp,
+- 6 = Container, 
+
+### 1: Summary Field Data-types.
+- 1 = List of,
+- 2 = Total of || Count of || Standard Deviation || Fraction of Total of,
+- 5 = Average || Minimum || Maximum,
 
 ### 4:  Auto-Enter preset Options.  
 - 0 = Creation Date,
@@ -31,7 +41,6 @@ idx
 - 7 = Modification TimeStamp,
 - 8 = Modification Name,
 - 9 = Modification Account Name,
-
 
 ### 5:
 
@@ -98,8 +107,10 @@ idx
 - 128 = ALways index this field,
 
 ### 9:
-- 0 = regular storage
-- 1 = Global Field
+- 0 = regular storage,
+- 1 = Global Field,
+- 8 = Calculation field,
+- 10 = Unstored Calculation,
 
 ### 10:                     
 - 1: Prohibit modification of value during data-entry
@@ -112,7 +123,8 @@ idx
 - 4 = Data textbox,
 - 8 = Auto-Enter Calculation (**does not** replace existing value),
 - 16 = Value from last visited record,
-- 128 = Set with idx 10: 4 to signify lookup,
+- 32 = Evaluate Calculation even if all referenced fields are empty, 
+- 128 = with idx 10 = 4 it is a lookup, otherwise ,
 - 136 = Auto-Enter Calculation (**does** replace existing value),
 
 ### 14:
