@@ -7,3 +7,30 @@
 - Scripts: [17].[5].[script]
 - value lists: [33].[5].[valuelist]
 
+
+## Field type switches
+
+idx
+
+0:
+
+1:  Simple Data-types.  'X' = Number,
+                        '[' = Text,
+                        'Y' = Date,
+                        '^' = Time,
+                        '\_' = Timestamp,
+                        '\\' = Container, 
+
+2:
+
+3:
+
+4:
+
+5:
+
+
+
+
+        
+

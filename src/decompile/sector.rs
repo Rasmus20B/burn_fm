@@ -1,5 +1,5 @@
-use super::{chunk, encoding_util::get_int};
-use crate::decompile::encoding_util;
+use crate::encoding_util::get_int;
+use crate::chunk;
 
 #[derive(Clone, Default)]
 pub struct Sector<'a> {

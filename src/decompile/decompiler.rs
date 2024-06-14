@@ -8,10 +8,10 @@ use std::collections::HashMap;
 use crate::{component, metadata_constants};
 use crate::file::{self, FmpFile};
 use crate::decompile::sector;
-use crate::decompile::chunk;
+use crate::chunk;
 
-use super::chunk::{get_chunk_from_code, Chunk, ChunkType};
-use super::encoding_util::{fm_string_decrypt,get_int};
+use crate::chunk::{get_chunk_from_code, Chunk, ChunkType};
+use crate::encoding_util::{fm_string_decrypt,get_int};
 
 const SECTOR_SIZE : usize = 4096;
 
@@ -34,11 +34,18 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
     let first = sector::get_sector(&buffer[offset..]);
     let n_blocks = first.next;
 
-    sectors.resize(n_blocks + 1, sector::Sector { deleted: false, level: 0, previous: 0, next: 0, payload: &[0], chunks: vec![] });
+    sectors.resize(n_blocks + 1, sector::Sector { 
+        deleted: false, 
+        level: 0,
+        previous: 0,
+        next: 0,
+        payload: &[0],
+        chunks: vec![] 
+    });
     sectors[0] = first;
 
     let mut idx = 2;
-    let mut chunks =  Vec::<chunk::Chunk>::new();
+    let mut chunks =  Vec::<Chunk>::new();
     while idx != 0 {
         let start = idx * SECTOR_SIZE;
         let bound = start + SECTOR_SIZE;
@@ -79,7 +86,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                     created_by_user: "".to_string() });
                         } else {
                             let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                            // println!("instr: {:x}. ref: {:?}, data: {}", chunk.code, chunk.ref_simple, s);
+                            println!("instr: {:x}. ref: {:?}, data: {}", chunk.code, chunk.ref_simple, s);
                             let tidx = x - 128;
                             match chunk.ref_simple.unwrap_or(0) {
                                 metadata_constants::FIELD_TYPE => {
@@ -144,12 +151,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 [3, 17, 5, 0] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     if chunk.ctype == ChunkType::PathPush {
-                        println!("NEW RELATIONSHIP FOUND");
+                        // println!("NEW RELATIONSHIP FOUND");
                     } else {
-                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                             &path.clone(),
-                             chunk.ref_simple,
-                             s);
+                        // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                        //      &path.clone(),
+                        //      chunk.ref_simple,
+                        //      s);
                     }
                     
                 },
@@ -168,12 +175,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     if path.len() > 0 { 
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     if chunk.ctype == ChunkType::PathPush {
-                        println!("NEW PATH FOUND");
+                        // println!("NEW PATH FOUND");
                     } else {
-                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                             &path.clone(),
-                             chunk.ref_simple,
-                             s);
+                        // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                        //      &path.clone(),
+                        //      chunk.ref_simple,
+                        //      s);
                     }
                     }
                 }

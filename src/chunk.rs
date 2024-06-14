@@ -1,5 +1,4 @@
-use crate::decompile::encoding_util::*;
-
+use crate::encoding_util::{get_int, get_path_int};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ChunkType {
