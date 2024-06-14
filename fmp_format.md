@@ -42,6 +42,7 @@ idx
 5:
 
 7: Default language
+
 2. Unicode,
 3. Default,
 16. Catalan,
