@@ -1,17 +1,14 @@
 use std::fs::File;
-use std::io::{self, Read};
-use std::ops::Deref;
+use std::io::Read;
 use std::path::Path;
-use std::process::exit;
 use std::collections::HashMap;
 
 use crate::{component, metadata_constants};
-use crate::file::{self, FmpFile};
+use crate::file::FmpFile;
 use crate::decompile::sector;
-use crate::chunk;
 
-use crate::chunk::{get_chunk_from_code, Chunk, ChunkType};
-use crate::encoding_util::{fm_string_decrypt,get_int};
+use crate::chunk::{get_chunk_from_code, ChunkType};
+use crate::encoding_util::fm_string_decrypt;
 
 const SECTOR_SIZE : usize = 4096;
 
@@ -28,7 +25,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
     file.read_to_end(&mut buffer).expect("Unable to read file.");
 
     let mut offset = SECTOR_SIZE;
-    let mut next_id = 0_usize;
     let mut sectors = Vec::<sector::Sector>::new();
 
     let first = sector::get_sector(&buffer[offset..]);
@@ -45,7 +41,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
     sectors[0] = first;
 
     let mut idx = 2;
-    let mut chunks =  Vec::<Chunk>::new();
     while idx != 0 {
         let start = idx * SECTOR_SIZE;
         let bound = start + SECTOR_SIZE;
@@ -88,7 +83,17 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                             match chunk.ref_simple.unwrap_or(0) {
                                 0 => {},
-                                2 => { println!("Data type: {:?}", chunk.data.unwrap_or(&[0])); },
+                                2 => { println!("Data type: {:?}", match chunk.data.unwrap_or(&[0])[1] {
+                                    1 => "Text",
+                                    2 => "Number",
+                                    3 => "Date",
+                                    4 => "Time",
+                                    5 => "Timestamp",
+                                    6 => "Container",
+                                    _ => "Unknown"
+
+                                }); },
+                                3 => { println!("Description: {:?}", s); },
                                 16 => { println!("Field Name: {}", s); }
                                 129 => { println!("created by user: {}", s); }
                                 130 => { println!("created by user Account: {}", s); }

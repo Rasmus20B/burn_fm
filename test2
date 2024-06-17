@@ -22,19 +22,27 @@
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },
-        "3": {
-          "data_type": "",
-          "field_description": "Account name of the user who created each record",
-          "field_name": "CreatedBy",
-          "field_type": "[[Z^ZZZOZZ[[ZZZVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
         "4": {
           "data_type": "",
           "field_description": "Date and time each record was last modified",
           "field_name": "ModificationTimestamp",
           "field_type": "[_Z]ZZZZZZ[[ZZzVZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
+        "8": {
+          "data_type": "",
+          "field_description": "this is a comment thing",
+          "field_name": "addition",
+          "field_type": "value not utf-8.",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "Account name of the user who created each record",
+          "field_name": "CreatedBy",
+          "field_type": "[[Z^ZZZOZZ[[ZZZVZZZ[ZZZZZ[",
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },
@@ -51,14 +59,6 @@
           "field_description": "",
           "field_name": "email",
           "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
-        "8": {
-          "data_type": "",
-          "field_description": "",
-          "field_name": "addition",
-          "field_type": "value not utf-8.",
           "created_by_account": "admin",
           "created_by_user": "Admin"
         }
