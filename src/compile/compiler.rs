@@ -3,12 +3,11 @@ use crate::decompile;
 use crate::component;
 use crate::file;
 
-fn compile(fmp_file: &file::FmpFile) {
+pub fn compile_burn(code: &str) {
+    
+}
 
-    for table in &fmp_file.tables {
-        
-    }
-
-
+fn tokenize(code: &str) -> {
 
 }
+
