@@ -11,11 +11,21 @@ pub fn compile_burn(code: &str) {
 fn tokenize(code: &str) -> Vec<Token> {
     let mut list = Vec::<Token>::new();
     let mut buffer = String::new();
-
+    let mut in_string = false;
     for c in code.chars() {
         if !c.is_whitespace() || buffer.len() > 0 {
             buffer.push(c);
         }
+
+        if in_string == true {
+            if c == '"' {
+                list.push(Token { ttype: TokenType::String, text: buffer.to_string()});
+                in_string = false;
+                buffer.clear();
+            }
+            continue;
+        }
+
         let b = buffer.as_str();
 
         let tmp = match c {
@@ -32,7 +42,7 @@ fn tokenize(code: &str) -> Vec<Token> {
                                 .strip_suffix(',')
                                 .unwrap()
                                 .to_string() } ],
-                    _ => vec![]
+                    x => vec![ Token { ttype: TokenType::Identifier, text: x.to_string() }]
                 }
             },
             '[' => if buffer.is_empty() { 
@@ -53,10 +63,9 @@ fn tokenize(code: &str) -> Vec<Token> {
                             Token { ttype: TokenType::CloseSquare, text: "]".to_string() }
                         ]
                     }
-            '"' =>  if buffer.len() > 1 {
-                        vec![ Token { ttype: TokenType::String, text: buffer.to_string()}]
-                    } else {
-                        vec![]
+            '"' =>  {
+                        in_string = true;
+                        vec![] 
                     }
             '!' =>  if list.last().unwrap().ttype != TokenType::OpenCurly {
                         vec![Token { ttype: TokenType::Exclamation,  text: "!".to_string() }]
@@ -77,9 +86,18 @@ fn tokenize(code: &str) -> Vec<Token> {
                    else {
                        let mut ret = vec![];
                        let tmp = match buffer.trim() {
-                            "table" => Token { ttype: TokenType::Table, text: b.trim().to_string() },
-                            "relationship" => Token { ttype: TokenType::Relationship, text: b.trim().to_string() },
-                            "value_list" => Token { ttype: TokenType::ValueList, text: b.trim().to_string() },
+                            "table;" => Token { 
+                                ttype: TokenType::Table,
+                                text: b.trim().strip_suffix(';').unwrap().to_string() 
+                            },
+                            "relationship;" => Token { 
+                                ttype: TokenType::Relationship, 
+                                text: b.trim().strip_suffix(';').unwrap().to_string() 
+                            },
+                            "value_list;" => Token { 
+                                ttype: TokenType::ValueList,
+                                text: b.trim().strip_suffix(';').unwrap().to_string() 
+                            },
                             x =>Token { ttype: TokenType::Identifier, text: x.trim().to_string() },
                        };
                        ret.push(tmp);
@@ -88,7 +106,13 @@ fn tokenize(code: &str) -> Vec<Token> {
                    }
             ':' =>  if buffer.len() > 1 {
                         let mut tmp = vec![];
-                        tmp.push(Token { ttype:TokenType::Identifier, text: b.trim().strip_suffix(':').unwrap().to_string() });
+                        tmp.push(Token { 
+                            ttype:TokenType::Identifier,
+                            text: b.trim()
+                                .strip_suffix(':')
+                                .unwrap()
+                                .to_string() 
+                        });
                         tmp.push(Token {ttype: TokenType::Colon, text: ":".to_string() });
                         tmp
                     } else {
