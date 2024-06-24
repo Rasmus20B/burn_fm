@@ -159,7 +159,7 @@ the file value to append to the path above.
 - Each step is stored as a 24 byte subarray, most commonly starting with '2, 1'. 
 - The 3rd byte of each subarray can be used to index the "instruction directory"
 
-#### List of Instructions
+### List of Instructions
 
 #### 1. Perform Script
 #### 3. Save a Copy as XML
