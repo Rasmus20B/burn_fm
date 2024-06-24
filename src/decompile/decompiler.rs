@@ -197,6 +197,13 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                      ins[21]);
                             }
                         }
+                        None => {
+                            if chunk.ctype == ChunkType::DataSegment {
+                                println!("Data: {:?}. Segment: {:?}. Data: {:?}", chunk.path, chunk.segment_idx, chunk.data)
+                            } else {
+                                // println!("Instruction: {:?}. Data: {:?}", chunk.ctype, chunk.data)
+                            }
+                        }
                         x => {
                             // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
                             //      &path.clone(),

@@ -158,6 +158,7 @@
 the file value to append to the path above.
 - Each step is stored as a 24 byte subarray, most commonly starting with '2, 1'. 
 - The 3rd byte of each subarray can be used to index the "instruction directory"
+- **Important**: When script runs into space constraits, simple key ref does not suffice. Segments of the array are stored at **Path** [17].[5].[script].[4], rather than key-value.
 
 ### List of Instructions
 #### 1. Perform Script
