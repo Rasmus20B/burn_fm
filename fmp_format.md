@@ -160,7 +160,6 @@ the file value to append to the path above.
 - The 3rd byte of each subarray can be used to index the "instruction directory"
 
 ### List of Instructions
-
 #### 1. Perform Script
 #### 3. Save a Copy as XML
 #### 4. Go to Next Field
