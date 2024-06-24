@@ -192,9 +192,9 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             println!("TOP LEVEL: Path: {:?}", path); 
                             let instrs = chunk.data.unwrap().chunks(28);
                             for (i, ins) in instrs.enumerate() {
-                                println!("{}, ref_data: {:?}", 
-                                        i,
-                                     ins);
+                                println!("{}, ref_data: {}", 
+                                        i + 1,
+                                     ins[21]);
                             }
                         }
                         x => {
