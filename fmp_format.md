@@ -150,3 +150,36 @@
 
 ### 25:
 - byte 25 simply states how many repeitiions the field has
+
+## Scripting Structure
+
+### [17].[5].[script]::4 
+- This path stores the instructions from the script, some metadata, as well as
+the file value to append to the path above.
+- Each step is stored as a 24 byte subarray, most commonly starting with '2, 1'. 
+- The 3rd byte of each subarray can be used to index the "instruction directory"
+
+#### List of Instructions
+
+
+6. Go to Layout
+    - bytes 7, 8, and 9: Specify layout. If "original layout" these are all zero.
+
+68. If []
+
+69. Else
+
+70. End If
+
+85. Allow User abort. 26th byte option
+    - 26: 1 = Off, 3 = On. 
+
+125. Else If []
+
+205. Open Transaction
+
+206. Commit Transaction
+
+### [17].[5].[script].[5] - The Instruction Directory
+- The "data" for each script step is located in this folder.
+

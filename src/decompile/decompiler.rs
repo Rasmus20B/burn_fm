@@ -81,24 +81,24 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                     created_by_user: "".to_string() });
                         } else {
                             let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                            match chunk.ref_simple.unwrap_or(0) {
-                                0 => {},
-                                2 => { println!("Data type: {:?}", match chunk.data.unwrap_or(&[0])[1] {
-                                    1 => "Text",
-                                    2 => "Number",
-                                    3 => "Date",
-                                    4 => "Time",
-                                    5 => "Timestamp",
-                                    6 => "Container",
-                                    _ => "Unknown"
-
-                                }); },
-                                3 => { println!("Description: {:?}", s); },
-                                16 => { println!("Field Name: {}", s); }
-                                129 => { println!("created by user: {}", s); }
-                                130 => { println!("created by user Account: {}", s); }
-                                _   => { println!("instr: {:x}. ref: {:?}, data: {:?}", chunk.code, chunk.ref_simple, chunk.data.unwrap()); }
-                            };
+                            // match chunk.ref_simple.unwrap_or(0) {
+                            //     0 => {},
+                            //     2 => { println!("Data type: {:?}", match chunk.data.unwrap_or(&[0])[1] {
+                            //         1 => "Text",
+                            //         2 => "Number",
+                            //         3 => "Date",
+                            //         4 => "Time",
+                            //         5 => "Timestamp",
+                            //         6 => "Container",
+                            //         _ => "Unknown"
+                            //
+                            //     }); },
+                            //     3 => { println!("Description: {:?}", s); },
+                            //     16 => { println!("Field Name: {}", s); }
+                            //     129 => { println!("created by user: {}", s); }
+                            //     130 => { println!("created by user Account: {}", s); }
+                            //     _   => { println!("instr: {:x}. ref: {:?}, data: {:?}", chunk.code, chunk.ref_simple, chunk.data.unwrap()); }
+                            // };
                             let tidx = x - 128;
                             match chunk.ref_simple.unwrap_or(0) {
                                 metadata_constants::FIELD_TYPE => {
@@ -165,10 +165,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     if chunk.ctype == ChunkType::PathPush {
                         // println!("NEW RELATIONSHIP FOUND");
                     } else {
-                        // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                        //      &path.clone(),
-                        //      chunk.ref_simple,
-                        //      s);
                     }
                     
                 },
@@ -183,6 +179,32 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 //              s);
                 //     }
                 // }
+                [17, 5, x, ..] => {
+                    let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
+                    match &chunk.ref_simple {
+                        Some(2) => {
+                            // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                            //      &path.clone(),
+                            //      chunk.ref_simple,
+                            //      chunk.data);
+                        }
+                        Some(4) => {
+                            println!("TOP LEVEL: Path: {:?}", path); 
+                            let instrs = chunk.data.unwrap().chunks(28);
+                            for (i, ins) in instrs.enumerate() {
+                                println!("{}, ref_data: {:?}", 
+                                        i,
+                                     ins);
+                            }
+                        }
+                        x => {
+                            // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                            //      &path.clone(),
+                            //      chunk.ref_simple,
+                            //      chunk.data);
+                        }
+                    }
+                }
                 _ => { 
                     if path.len() > 0 { 
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
