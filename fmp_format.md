@@ -161,24 +161,69 @@ the file value to append to the path above.
 
 #### List of Instructions
 
+1. Perform Script
+
+4. Go to Next Field
+
+5. Go to Previous Field
 
 6. Go to Layout
     - bytes 7, 8, and 9: Specify layout. If "original layout" these are all zero.
 
-68. If []
-
+11. Insert From Index 
+13. Insert Current Date
+14. Insert Current Time
+16. Go to Record/Request/Page
+17. Go to Field
+22. Enter Find Mode
+41. Enter Preview Mode
+45. Undo/Redo
+46. Cut
+47. Copy
+48. Paste
+49. Clear
+50. Select All
+55. Enter Browser Mode
+60. Insert Current User Name
+62. Pause/Resume Script
+68. If
 69. Else
-
 70. End If
-
+71. Loop 
+72. Exit Loop If
+73. End Loop
+74. Go to Related Record
+77. Insert Calculated Result
 85. Allow User abort. 26th byte option
     - 26: 1 = Off, 3 = On. 
-
-125. Else If []
-
+86. Set Error Capture
+89. Blank Line
+90. Halt Script
+99. Go to Portal Row
+103. Exit Script 
+125. Else If
+128. Perform Find/Replace
+130. Set Selection
+131. Insert File
+132. Export Field Contents
+141. Set Variable
+145. Go to Object
+148. Install OnTimer Script
+159. Insert Audio/Video
+161. Insert From Device
+164. Perform Script on Server
+168. Set Layout Object Animation
+169. Close Popover
+185. Configure Region Monitor Script
+187. Configure Local Notification 
+200. Set Error Logging
+201. Configure NFC Reading
+202. Configure Machine Learning Model
 205. Open Transaction
-
 206. Commit Transaction
+207. Revert Transaction
+210. Perform Script on Server with Callback
+211. Trigger Claris Connect Flow
 
 ### [17].[5].[script].[5] - The Instruction Directory
 - The "data" for each script step is located in this folder.
