@@ -6,7 +6,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
     let mut in_string = false;
     let mut lex_iter = code.chars().into_iter().enumerate().peekable();
     while let Some((idx, c)) = &lex_iter.next() {
-
         if !c.is_whitespace() || buffer.len() > 0 {
             buffer.push(*c);
         }

@@ -182,12 +182,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 [17, 5, x, ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match &chunk.ref_simple {
-                        Some(2) => {
-                            // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                            //      &path.clone(),
-                            //      chunk.ref_simple,
-                            //      chunk.data);
-                        }
+                        // Some(2) => {
+                        //     println!("NAME: {:?}. reference: {:?}, ref_data: {:?}", 
+                        //          &path.clone(),
+                        //          chunk.ref_simple,
+                        //          chunk.data);
+                        // }
                         Some(4) => {
                             println!("TOP LEVEL: Path: {:?}", path); 
                             let instrs = chunk.data.unwrap().chunks(28);
@@ -212,18 +212,32 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         }
                     }
                 }
-                _ => { 
-                    if path.len() > 0 { 
+                [17, 1, x, ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                    if chunk.ctype == ChunkType::PathPush {
-                        // println!("NEW PATH FOUND");
-                    } else {
-                        // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                        //      &path.clone(),
+                    let s1 = fm_string_decrypt(chunk.ref_data.unwrap_or(&[0]));
+                    // if chunk.ref_simple == Some(16) {
+                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                             &path.clone(),
+                             chunk.ref_simple,
+                             s);
+                    // } else {
+                        // println!("Path: {:?}. reference: {:?}, data: {:?}, ref_data: {:?}", &path.clone(),
                         //      chunk.ref_simple,
-                        //      s);
-                    }
-                    }
+                        //      chunk.data,
+                        //      chunk.ref_data);
+                    // }
+                },
+                _ => { 
+                    let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
+                    // if chunk.ref_simple == Some(2) {
+                    //     // println!("NEW PATH FOUND");
+                    // // } else if chunk.ref_simple.unwrap() == 2 {
+                    // if !path.is_empty() {
+                    //     println!("Path: {:?}. reference: {:?}, string: {:?}, ref_data: {:?}", 
+                    //          &path.clone(),
+                    //          chunk.ref_simple,
+                    //          s, chunk.data);
+                    // }
                 }
             }
         }

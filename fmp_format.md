@@ -153,6 +153,9 @@
 
 ## Scripting Structure
 
+### [17].[1].[7].[script]
+- This path contains a small amount of metadata for the scripts, most notably their names located at key 16.
+
 ### [17].[5].[script]::4 
 - This path stores the instructions from the script, some metadata, as well as
 the file value to append to the path above.
