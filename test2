@@ -14,6 +14,22 @@
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },
+        "7": {
+          "data_type": "",
+          "field_description": "",
+          "field_name": "email",
+          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
+        "8": {
+          "data_type": "",
+          "field_description": "this is a comment thing",
+          "field_name": "addition",
+          "field_type": "value not utf-8.",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
         "2": {
           "data_type": "",
           "field_description": "Date and time each record was created",
@@ -30,11 +46,11 @@
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },
-        "8": {
+        "5": {
           "data_type": "",
-          "field_description": "this is a comment thing",
-          "field_name": "addition",
-          "field_type": "value not utf-8.",
+          "field_description": "Account name of the user who last modified each record",
+          "field_name": "ModifiedBy",
+          "field_type": "[[ZSZZZOZZ[[ZZZVZZZ[ZZZZZ[",
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },
@@ -45,26 +61,20 @@
           "field_type": "[[Z^ZZZOZZ[[ZZZVZZZ[ZZZZZ[",
           "created_by_account": "admin",
           "created_by_user": "Admin"
-        },
-        "5": {
-          "data_type": "",
-          "field_description": "Account name of the user who last modified each record",
-          "field_name": "ModifiedBy",
-          "field_type": "[[ZSZZZOZZ[[ZZZVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
-        "7": {
-          "data_type": "",
-          "field_description": "",
-          "field_name": "email",
-          "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
         }
       }
     }
   },
   "relationships": {},
-  "layouts": {}
+  "layouts": {},
+  "scripts": {
+    "2": {
+      "script_name": "testing",
+      "instructions": []
+    },
+    "3": {
+      "script_name": "new script though",
+      "instructions": []
+    }
+  }
 }

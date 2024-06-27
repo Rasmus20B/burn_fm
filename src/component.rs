@@ -3,12 +3,15 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
+use crate::script_engine::script_engine_instructions::Instruction;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum FMComponentType {
     Table,
     Field,
-    Layout
+    Layout,
+    Script,
+    Relationship
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -28,6 +31,12 @@ pub struct FMComponentTable {
     pub create_by_user: String,
     pub fields: HashMap<u16, FMComponentField>
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FMComponentScript {
+    pub script_name: String,
+    pub instructions: Vec<Instruction>,
+} 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FMComponentRelationship {

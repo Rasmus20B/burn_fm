@@ -1,4 +1,6 @@
-#[derive(Debug)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Instructions {
 	PerformScript = 1,
 	SaveACopyAsXml = 3,
@@ -190,3 +192,16 @@ pub enum Instructions {
 	PerformScriptOnServerWithCallback = 210,
 	TriggerClarisConnectFlow = 211,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Instruction {
+    opcode: Instructions,
+    switches: Vec<String>,
+}
+
+pub struct Script {
+    pub script_name: String,
+    pub instructions: Vec<Instruction>,
+}
+
+

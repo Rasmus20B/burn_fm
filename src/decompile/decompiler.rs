@@ -1,6 +1,6 @@
 use std::fs::File;
 use std::io::Read;
-use std::path::Path;
+use std::path::{Component, Path};
 use std::collections::HashMap;
 
 use crate::{component, metadata_constants};
@@ -20,6 +20,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
         tables: HashMap::new(), 
         relationships: HashMap::new(),
         layouts: HashMap::new(),
+        scripts: HashMap::new()
     };
     let mut buffer = Vec::<u8>::new();
     file.read_to_end(&mut buffer).expect("Unable to read file.");
@@ -179,7 +180,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 //              s);
                 //     }
                 // }
-                [17, 5, x, ..] => {
+                [17, 5, x] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match &chunk.ref_simple {
                         // Some(2) => {
@@ -192,9 +193,11 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             println!("TOP LEVEL: Path: {:?}", path); 
                             let instrs = chunk.data.unwrap().chunks(28);
                             for (i, ins) in instrs.enumerate() {
-                                println!("{}, ref_data: {}", 
-                                        i + 1,
-                                     ins[21]);
+                                if ins.len() >= 21 {
+                                    println!("{}, ref_data: {}", 
+                                            i + 1,
+                                         ins[21]);
+                                }
                             }
                         }
                         None => {
@@ -213,13 +216,36 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     }
                 }
                 [17, 1, x, ..] => {
-                    let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                    let s1 = fm_string_decrypt(chunk.ref_data.unwrap_or(&[0]));
+                    if chunk.ctype == ChunkType::PathPush 
+                        || chunk.ctype == ChunkType::PathPop {
+                        continue;
+                    }
+                    
+                    else if chunk.ctype == ChunkType::RefSimple {
+                        match chunk.ref_simple {
+                            Some(16) => {
+                                let handle = fmp_file.scripts.get_mut(x);
+                                if handle.is_none() {
+                                    let tmp = component::FMComponentScript {
+                                        script_name: fm_string_decrypt(chunk.data.unwrap()),
+                                        instructions: Vec::new()
+                                    };
+
+                                    fmp_file.scripts.insert(*path.last().unwrap(), tmp);
+                                } else {
+                                    handle.unwrap().script_name = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
+                                }
+                            },
+                            _ => {
+                                println!("{}", fm_string_decrypt(chunk.data.unwrap()));
+                            }
+                        }
+                    }
                     // if chunk.ref_simple == Some(16) {
-                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                             &path.clone(),
-                             chunk.ref_simple,
-                             s);
+                        // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                        //      &path.clone(),
+                        //      chunk.ref_simple,
+                        //      s);
                     // } else {
                         // println!("Path: {:?}. reference: {:?}, data: {:?}, ref_data: {:?}", &path.clone(),
                         //      chunk.ref_simple,
