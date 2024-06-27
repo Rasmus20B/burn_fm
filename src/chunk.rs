@@ -17,7 +17,7 @@ pub struct Chunk<'a> {
     pub code: u16,
     pub data: Option<&'a [u8]>,
     pub ref_data: Option<&'a [u8]>,
-    pub path: Vec::<usize>,
+    pub path: Vec::<String>,
     pub segment_idx: Option<u8>,
     pub ref_simple: Option<u16>,
 }
@@ -27,7 +27,7 @@ impl<'a> Chunk<'a> {
             code: u16,
            data: Option<&'a [u8]>,
            ref_data: Option<&'a [u8]>,
-           path: Vec::<usize>,
+           path: Vec::<String>,
            segment_idx: Option<u8>,
            ref_simple: Option<u16>,
         ) -> Self {
@@ -43,7 +43,7 @@ impl<'a> Chunk<'a> {
     }
 }
 
-pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec<usize>, local : usize) -> Result<Chunk<'a>, &'static str> {
+pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec<String>, local : usize) -> Result<Chunk<'a>, &'static str> {
     let mut chunk_code = code[*offset];
     let mut ctype = ChunkType::Noop;
     let mut data: Option<&[u8]> = None;
@@ -234,7 +234,7 @@ pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec
             }
             let idx = get_path_int(&code[*offset..*offset+1]);
             *offset += data.unwrap().len();
-            path.push(idx);
+            path.push(idx.to_string());
         },
         0x23 => {
             *offset += 1;
@@ -250,15 +250,15 @@ pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec
             data = Some(&code[*offset..*offset+2]);
             let idx = get_path_int(&code[*offset..*offset+2]);
             *offset += 2;
-            path.push(idx);
+            path.push(idx.to_string());
         },
         0x30 => {
             *offset += 1;
             ctype = ChunkType::PathPush;
             data = Some(&code[*offset..*offset+3]);
             // let dir = 0x80 + ((code[*offset + 1] as usize) << 8) + code[*offset + 2] as usize;
-            let dir = get_path_int(&code[*offset..*offset+3]);
-            path.push(dir.into());
+            let dir = get_path_int(&code[*offset..*offset+3]).to_string();
+            path.push(dir.to_string());
             *offset += 3;
         },
         0x38 => {
@@ -267,8 +267,7 @@ pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec
             let len = code[*offset] as usize;
             *offset += 1;
             data = Some(&code[*offset..*offset+2]);
-            let dir = get_path_int(&code[*offset..*offset+2]);
-            path.push(dir);
+            path.push(get_path_int(&code[*offset..*offset+2]).to_string());
             *offset += len;
         },
         0x3D | 0x40 => {
