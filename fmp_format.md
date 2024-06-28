@@ -9,6 +9,7 @@
 - Scripts: [17].[5].[script]
 - value lists: [33].[5].[valuelist]
 
+# Table Information
 
 ## Field type switches (Found at key 2 for field definition)
 
@@ -148,6 +149,26 @@
 
 ### 25:
 - byte 25 simply states how many repeitiions the field has
+
+# Relationships
+
+## Relationship Structure
+
+### [3].[17].[5].[0]
+
+- Each relationship is read sequentially at the same path, reusing the same key for references. 
+- Graph mapping data is stored at path **[3].[17].[5].[0].[251]**.
+
+### Keys used in each relationship
+
+- (2) => 35 bytes that specify metadata about the current table occurence. 
+    - Byte 7 specificies table that occurence is based on.
+- (16) => Name of the table occurence.
+- (216) => gimme some time
+- [3].[17].[5].[0].[251] => Simple Data. typically 5 Bytes.
+
+
+# Scripts
 
 ## Scripting Structure
 

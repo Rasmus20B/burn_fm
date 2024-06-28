@@ -2,10 +2,13 @@ use std::fs::File;
 use std::io::Read;
 use std::path::{Component, Path};
 use std::collections::HashMap;
+use std::time::{Duration, UNIX_EPOCH};
 
 use crate::{component, metadata_constants};
 use crate::file::FmpFile;
 use crate::decompile::sector;
+
+use chrono::{DateTime, Utc};
 
 use crate::chunk::{get_chunk_from_code, ChunkType};
 use crate::encoding_util::fm_string_decrypt;
@@ -59,6 +62,21 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 ["3", "17", "5", x, ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match chunk.ref_simple {
+                        Some(2) => {
+                            println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                                 &path.clone(),
+                                 chunk.ref_simple,
+                                 chunk.data);
+                            let tmp = component::FMComponentRelationship {
+                                table1: 0,
+                                table2: 0,
+                                table1_name: String::new(),
+                                table2_name: String::new(),
+                                create_by_user: String::new(),
+                                created_by_account: String::new(),
+                            };
+                            fmp_file.relationships.insert(fmp_file.relationships.len(), tmp);
+                        }
                         Some(16) => {
                             println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
                                  &path.clone(),
@@ -78,15 +96,18 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             }
                         },
                         Some(129) => {
-                            if fmp_file.layouts.contains_key(&x.parse().unwrap()) {
-                                fmp_file.layouts.get_mut(&x.parse().unwrap()).unwrap().create_by_user = s;
+                            if fmp_file.relationships.contains_key(&x.parse().unwrap()) {
+                                fmp_file.relationships.get_mut(&x.parse().unwrap()).unwrap().create_by_user = s;
                             } else {
-                                let tmp = component::FMComponentLayout {
-                                    layout_name: s,
+                                let tmp = component::FMComponentRelationship {
+                                    table1: 0,
+                                    table2: 0,
+                                    table1_name: String::new(),
+                                    table2_name: String::new(),
                                     create_by_user: String::new(),
                                     created_by_account: String::new(),
                                 };
-                                fmp_file.layouts.insert(x.parse().unwrap(), tmp);
+                                fmp_file.relationships.insert(x.parse().unwrap(), tmp);
                             }
                         },
                         Some(130) => {
@@ -101,11 +122,27 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 fmp_file.layouts.insert(x.parse().unwrap(), tmp);
                             }
                         },
+                        Some(131) => {
+                            let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
+                            println!("ts: {:?}", s);
+                        },
                         _ => {
-                            println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                                 &path.clone(),
-                                 chunk.ref_simple,
-                                 chunk.data);
+                            let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
+                            if s.is_empty() {
+                                continue;
+                            }
+                            if chunk.ctype == ChunkType::PathPush 
+                                || chunk.ctype == ChunkType::PathPop 
+                                || chunk.ctype == ChunkType::Noop {
+
+                            } else {
+                                println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:?}", 
+                                     &path.clone(),
+                                     chunk.ref_simple,
+                                     chunk.ref_data,
+                                     chunk.data,
+                                     );
+                            }
                         }
                     }
                 }
@@ -129,7 +166,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 },
                 [x, "3", "5", y] => {
                     if x.parse::<usize>().unwrap() >= 128 {
-                        println!("x: {}", x.parse::<usize>().unwrap());
                         if chunk.ctype == ChunkType::PathPush {
                             if !fmp_file.tables.contains_key(&(x.parse::<usize>().unwrap() - 128)) {
                                 fmp_file.tables.insert(x.parse::<usize>().unwrap() - 128,
@@ -229,14 +265,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         }
                     }
                 },
-                ["3", "17", "5", "0"] => {
-                    let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                    if chunk.ctype == ChunkType::PathPush {
-                        // println!("NEW RELATIONSHIP FOUND");
-                    } else {
-                    }
-                    
-                },
                 // [x, ..] if x < &128 => {
                 //     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                 //     if chunk.ctype == ChunkType::PathPush {
@@ -329,10 +357,10 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     //     // println!("NEW PATH FOUND");
                     // // } else if chunk.ref_simple.unwrap() == 2 {
                     if !path.is_empty() {
-                        println!("Path: {:?}. reference: {:?}, string: {:?}, ref_data: {:?}", 
-                             &path.clone(),
-                             chunk.ref_simple,
-                             s, chunk.data);
+                        // println!("Path: {:?}. reference: {:?}, string: {:?}, ref_data: {:?}", 
+                        //      &path.clone(),
+                        //      chunk.ref_simple,
+                        //      s, chunk.data);
                     }
                 }
             }
