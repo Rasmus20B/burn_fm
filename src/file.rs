@@ -12,4 +12,5 @@ pub struct FmpFile {
     pub relationships: HashMap<usize, component::FMComponentRelationship>,
     pub layouts: HashMap<usize, component::FMComponentLayout>,
     pub scripts: HashMap<usize, component::FMComponentScript>,
+    pub table_occurrences: HashMap<usize, component::FMComponentTableOccurence>,
 }

@@ -23,7 +23,8 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
         tables: HashMap::new(), 
         relationships: HashMap::new(),
         layouts: HashMap::new(),
-        scripts: HashMap::new()
+        scripts: HashMap::new(),
+        table_occurrences: HashMap::new(),
     };
     let mut buffer = Vec::<u8>::new();
     file.read_to_end(&mut buffer).expect("Unable to read file.");
@@ -59,7 +60,21 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                             &mut path, 
                                             start).expect("Unable to decode chunk.");          
             match &path.iter().map(|s| s.as_str()).collect::<Vec<_>>().as_slice() {
-                ["3", "17", "5", x, ..] => {
+                ["3", "17", "5", "0", "251"] => {
+                    if chunk.ctype == ChunkType::DataSimple {
+                        let tmp = component::FMComponentRelationship {
+                            table1: fmp_file.table_occurrences.len() as u16,
+                            table2: chunk.data.unwrap()[2] as u16,
+                            comparison: 0,
+                        };
+                        fmp_file.relationships.insert(fmp_file.relationships.len(), tmp);
+                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                             &path.clone(),
+                             chunk.ref_simple,
+                             chunk.data);
+                    }
+                },
+                ["3", "17", "5", "0", ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match chunk.ref_simple {
                         Some(2) => {
@@ -67,64 +82,23 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                  &path.clone(),
                                  chunk.ref_simple,
                                  chunk.data);
-                            let tmp = component::FMComponentRelationship {
-                                table1: 0,
-                                table2: 0,
-                                table1_name: String::new(),
-                                table2_name: String::new(),
+                            let tmp = component::FMComponentTableOccurence {
+                                table_occurence_name: String::new(),
                                 create_by_user: String::new(),
                                 created_by_account: String::new(),
+                                table_actual: chunk.data.unwrap()[6] as u16,
                             };
-                            fmp_file.relationships.insert(fmp_file.relationships.len(), tmp);
+                            println!("SIZE: {}", fmp_file.table_occurrences.len());
+                            fmp_file.table_occurrences.insert(fmp_file.table_occurrences.len() + 1, tmp);
                         }
                         Some(16) => {
-                            println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                                 &path.clone(),
-                                 chunk.ref_simple,
-                                 s);
-                            if fmp_file.relationships.contains_key(&x.parse::<usize>().unwrap()) {
-                            } else {
-                                let tmp = component::FMComponentRelationship {
-                                    table1: 0,
-                                    table2: 0,
-                                    table1_name: String::new(),
-                                    table2_name: String::new(),
-                                    create_by_user: String::new(),
-                                    created_by_account: String::new(),
-                                };
-                                fmp_file.relationships.insert(x.parse().unwrap(), tmp);
-                            }
+                            fmp_file.table_occurrences.get_mut(&(fmp_file.table_occurrences.len() )).unwrap().table_occurence_name = s;
                         },
                         Some(129) => {
-                            if fmp_file.relationships.contains_key(&x.parse().unwrap()) {
-                                fmp_file.relationships.get_mut(&x.parse().unwrap()).unwrap().create_by_user = s;
-                            } else {
-                                let tmp = component::FMComponentRelationship {
-                                    table1: 0,
-                                    table2: 0,
-                                    table1_name: String::new(),
-                                    table2_name: String::new(),
-                                    create_by_user: String::new(),
-                                    created_by_account: String::new(),
-                                };
-                                fmp_file.relationships.insert(x.parse().unwrap(), tmp);
-                            }
                         },
                         Some(130) => {
-                            if fmp_file.layouts.contains_key(&x.parse().unwrap()) {
-                                fmp_file.layouts.get_mut(&x.parse().unwrap()).unwrap().created_by_account = s;
-                            } else {
-                                let tmp = component::FMComponentLayout {
-                                    layout_name: s,
-                                    create_by_user: String::new(),
-                                    created_by_account: String::new(),
-                                };
-                                fmp_file.layouts.insert(x.parse().unwrap(), tmp);
-                            }
                         },
                         Some(131) => {
-                            let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                            println!("ts: {:?}", s);
                         },
                         _ => {
                             let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));

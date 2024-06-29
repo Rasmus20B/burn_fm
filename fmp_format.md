@@ -166,6 +166,7 @@
 - (16) => Name of the table occurence.
 - (216) => gimme some time
 - [3].[17].[5].[0].[251] => Simple Data. typically 5 Bytes.
+- (252) => ???
 
 
 # Scripts

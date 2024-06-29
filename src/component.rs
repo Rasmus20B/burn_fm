@@ -11,6 +11,7 @@ pub enum FMComponentType {
     Field,
     Layout,
     Script,
+    TableOccurence,
     Relationship
 }
 
@@ -41,13 +42,18 @@ pub struct FMComponentScript {
 } 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FMComponentRelationship {
-    pub table1: u16,
-    pub table1_name: String,
-    pub table2: u16,
-    pub table2_name: String,
+pub struct FMComponentTableOccurence {
+    pub table_occurence_name: String,
+    pub table_actual: u16,
     pub created_by_account: String,
     pub create_by_user: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FMComponentRelationship {
+    pub table1: u16,
+    pub table2: u16,
+    pub comparison: u8,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
