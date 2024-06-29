@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[repr(u8)]
 pub enum Instructions {
 	PerformScript = 1,
 	SaveACopyAsXml = 3,
@@ -195,8 +196,8 @@ pub enum Instructions {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Instruction {
-    opcode: Instructions,
-    switches: Vec<String>,
+    pub opcode: Instructions,
+    pub switches: Vec<String>,
 }
 
 pub struct Script {

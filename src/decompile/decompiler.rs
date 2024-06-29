@@ -4,6 +4,7 @@ use std::path::{Component, Path};
 use std::collections::HashMap;
 use std::time::{Duration, UNIX_EPOCH};
 
+use crate::script_engine::script_engine_instructions::Instruction;
 use crate::{component, metadata_constants};
 use crate::file::FmpFile;
 use crate::decompile::sector;
@@ -68,31 +69,32 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             comparison: 0,
                         };
                         fmp_file.relationships.insert(fmp_file.relationships.len(), tmp);
-                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                             &path.clone(),
-                             chunk.ref_simple,
-                             chunk.data);
+                        // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                        //      &path.clone(),
+                        //      chunk.ref_simple,
+                        //      chunk.data);
                     }
                 },
                 ["3", "17", "5", "0", ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match chunk.ref_simple {
                         Some(2) => {
-                            println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                                 &path.clone(),
-                                 chunk.ref_simple,
-                                 chunk.data);
+                            // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                            //      &path.clone(),
+                            //      chunk.ref_simple,
+                            //      chunk.data);
                             let tmp = component::FMComponentTableOccurence {
                                 table_occurence_name: String::new(),
                                 create_by_user: String::new(),
                                 created_by_account: String::new(),
                                 table_actual: chunk.data.unwrap()[6] as u16,
                             };
-                            println!("SIZE: {}", fmp_file.table_occurrences.len());
                             fmp_file.table_occurrences.insert(fmp_file.table_occurrences.len() + 1, tmp);
                         }
                         Some(16) => {
-                            fmp_file.table_occurrences.get_mut(&(fmp_file.table_occurrences.len() )).unwrap().table_occurence_name = s;
+                            fmp_file.table_occurrences
+                                .get_mut(&(fmp_file.table_occurrences.len())).unwrap()
+                                .table_occurence_name = s;
                         },
                         Some(129) => {
                         },
@@ -110,12 +112,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 || chunk.ctype == ChunkType::Noop {
 
                             } else {
-                                println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:?}", 
-                                     &path.clone(),
-                                     chunk.ref_simple,
-                                     chunk.ref_data,
-                                     chunk.data,
-                                     );
+                                // println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:?}", 
+                                //      &path.clone(),
+                                //      chunk.ref_simple,
+                                //      chunk.ref_data,
+                                //      chunk.data,
+                                //      );
                             }
                         }
                     }
@@ -260,16 +262,21 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         //          chunk.data);
                         // }
                         Some(4) => {
-                            // println!("TOP LEVEL: Path: {:?}", path); 
-                            // let instrs = chunk.data.unwrap().chunks(28);
-                            // for (i, ins) in instrs.enumerate() {
-                            //     if ins.len() >= 21 {
-                            //         println!("{}, ref_data: {}", 
-                            //                 i + 1,
-                            //              ins[21]);
-                            //     }
-                            // }
-                        }
+                            println!("TOP LEVEL: Path: {:?}", path); 
+                            let instrs = chunk.data.unwrap().chunks(28);
+                            for (i, ins) in instrs.enumerate() {
+                                if ins.len() >= 21 {
+                                    println!("{}, ref_data: {}", 
+                                            i + 1,
+                                         ins[21]);
+                                }
+                                let tmp = Instruction {
+                                    opcode: unsafe {std::mem::transmute(ins[21]) },
+                                    switches: Vec::new()
+                                };
+                                fmp_file.scripts.get_mut(&x.parse().unwrap()).unwrap().instructions.push(tmp);
+                            }
+                        },
                         None => {
                             if chunk.ctype == ChunkType::DataSegment {
                                 // println!("Data: {:?}. Segment: {:?}. Data: {:?}", chunk.path, chunk.segment_idx, chunk.data)
@@ -278,13 +285,13 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             }
                         }
                         x => {
-                            // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                            //      &path.clone(),
-                            //      chunk.ref_simple,
-                            //      chunk.data);
+                            println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                                 &path.clone(),
+                                 chunk.ref_simple,
+                                 chunk.data);
                         }
                     }
-                }
+                },
                 ["17", "1", x, ..] => {
                     if chunk.ctype == ChunkType::PathPush 
                         || chunk.ctype == ChunkType::PathPop {
