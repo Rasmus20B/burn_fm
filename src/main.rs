@@ -25,6 +25,8 @@ fn main() {
     // let file = compile_burn(&text);
 
     let file = decompile_fmp12_file(&input);
+    println!("read file");
     let json = serde_json::to_string_pretty(&file).expect("Unable to generate json file");
+    println!("got the json");
     write("test2", json).expect("Unable to write to file.");
 }

@@ -63,7 +63,3 @@ pub struct FMComponentLayout {
     pub create_by_user: String,
 }
 
-pub enum VecWrapper {
-    Tables(Vec<FMComponentTable>),
-    Fields(Vec<FMComponentField>)
-}

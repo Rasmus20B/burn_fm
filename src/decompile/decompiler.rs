@@ -1,15 +1,13 @@
 use std::fs::File;
 use std::io::Read;
-use std::path::{Component, Path};
-use std::collections::HashMap;
-use std::time::{Duration, UNIX_EPOCH};
+use std::path::Path;
+use std::collections::{BTreeMap, HashMap};
 
-use crate::script_engine::script_engine_instructions::Instruction;
+use crate::script_engine::script_engine_instructions::{Instruction, INSTRUCTIONMAP};
 use crate::{component, metadata_constants};
 use crate::file::FmpFile;
 use crate::decompile::sector;
 
-use chrono::{DateTime, Utc};
 
 use crate::chunk::{get_chunk_from_code, ChunkType};
 use crate::encoding_util::fm_string_decrypt;
@@ -47,6 +45,9 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
     sectors[0] = first;
 
     let mut idx = 2;
+
+    let mut segment_collection: HashMap<usize, BTreeMap<usize, Vec<u8>>> = HashMap::new();
+
     while idx != 0 {
         let start = idx * SECTOR_SIZE;
         let bound = start + SECTOR_SIZE;
@@ -121,7 +122,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             }
                         }
                     }
-                }
+                },
                 ["4", "1", "7", x, ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match chunk.ref_simple {
@@ -151,15 +152,15 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             create_by_user: "".to_string(),
                             fields: HashMap::new() });
                             }
-                            fmp_file.tables.get_mut(&(x.parse::<usize>().unwrap() - 128)).
-                                unwrap().fields
-                                .insert(y.parse::<usize>().unwrap() as u16, component::FMComponentField { 
-                                    data_type: "".to_string(),
-                                    field_description: "".to_string(),
-                                    field_name: "".to_string(),
-                                    field_type: "".to_string(),
-                                    created_by_account: "".to_string(),
-                                    created_by_user: "".to_string() });
+                            fmp_file.tables.get_mut(&(x.parse::<usize>().unwrap() - 128))
+                                .unwrap().fields
+                                    .insert(y.parse::<usize>().unwrap() as u16, component::FMComponentField { 
+                                        data_type: "".to_string(),
+                                        field_description: "".to_string(),
+                                        field_name: "".to_string(),
+                                        field_type: "".to_string(),
+                                        created_by_account: "".to_string(),
+                                        created_by_user: "".to_string() });
                         } else {
                             let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                             // match chunk.ref_simple.unwrap_or(0) {
@@ -252,7 +253,26 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 //              s);
                 //     }
                 // }
+                ["17", "5", x, "4"] => {
+                    if chunk.ctype == ChunkType::PathPush {
+                        if segment_collection.get(&x.parse().unwrap()).is_none() {
+                            segment_collection.insert(x.parse().unwrap(), BTreeMap::new());
+                        }
+                        continue;
+                    } else if chunk.ctype == ChunkType::Noop {
+                        continue;
+                    } else if chunk.ctype == ChunkType::DataSegment {
+                        let n = chunk.segment_idx.unwrap() as usize;
+                        segment_collection.get_mut(&x.parse().unwrap())
+                            .unwrap()
+                            .insert(n, chunk.data.unwrap().to_vec());
+                    } 
+                },
                 ["17", "5", x] => {
+                    if chunk.ctype == ChunkType::PathPop 
+                        || chunk.ctype == ChunkType::PathPush {
+                        continue;
+                    }
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match &chunk.ref_simple {
                         // Some(2) => {
@@ -262,16 +282,20 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         //          chunk.data);
                         // }
                         Some(4) => {
-                            println!("TOP LEVEL: Path: {:?}", path); 
+                            // println!("TOP LEVEL: Path: {:?}", path); 
                             let instrs = chunk.data.unwrap().chunks(28);
                             for (i, ins) in instrs.enumerate() {
                                 if ins.len() >= 21 {
-                                    println!("{}, ref_data: {}", 
-                                            i + 1,
-                                         ins[21]);
+                                    // println!("{}, ref_data: {}", 
+                                    //         i + 1,
+                                    //      ins[21]);
+                                }
+                                let oc = &INSTRUCTIONMAP[ins[21] as usize];
+                                if oc.is_none() {
+                                    continue;
                                 }
                                 let tmp = Instruction {
-                                    opcode: unsafe {std::mem::transmute(ins[21]) },
+                                    opcode: oc.clone().unwrap(),
                                     switches: Vec::new()
                                 };
                                 fmp_file.scripts.get_mut(&x.parse().unwrap()).unwrap().instructions.push(tmp);
@@ -283,13 +307,13 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             } else {
                                 // println!("Instruction: {:?}. Data: {:?}", chunk.ctype, chunk.data)
                             }
-                        }
-                        x => {
-                            println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                                 &path.clone(),
-                                 chunk.ref_simple,
-                                 chunk.data);
-                        }
+                        },
+                        _ => {
+                            // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
+                            //      &path.clone(),
+                            //      chunk.ref_simple,
+                            //      chunk.data);
+                        },
                     }
                 },
                 ["17", "1", x, ..] => {
@@ -346,8 +370,30 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 }
             }
         }
+
+
         idx = sectors[idx].next;
     }
+    /* Assemble scripts */
+    for (script, segments) in &mut segment_collection {
+        let mut instructions = Vec::<u8>::new();
+        for s in segments {
+            instructions.append(s.1);
+        }
 
+        for instr in instructions.chunks(28) {
+            if instr.len() < 28 {
+                continue;
+            }
+            let op = &INSTRUCTIONMAP[instr[21] as usize];
+            if op.is_none() {
+            }
+            let tmp = Instruction {
+                opcode: op.clone().unwrap(),
+                switches: vec![]
+            };
+            fmp_file.scripts.get_mut(&script).unwrap().instructions.push(tmp);
+        }
+    }
     return fmp_file;
 }

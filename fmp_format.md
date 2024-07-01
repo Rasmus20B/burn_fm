@@ -197,6 +197,7 @@ the file value to append to the path above.
 #### 6. Go to Layout
     - bytes 7, 8, and 9: Specify layout. If "original layout" these are all zero.
 #### 7. New Record/Request
+#### 8. Duplicate Record/Request
 #### 9. Delete Record/Request
 #### 10. Delete All Records
 #### 11. Insert From Index 
