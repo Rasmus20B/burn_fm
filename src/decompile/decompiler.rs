@@ -289,14 +289,13 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                     //      ins[21]);
                                 }
                                 let oc = &INSTRUCTIONMAP[ins[21] as usize];
-                                if oc.is_none() {
-                                    continue;
+                                if oc.is_some() {
+                                    let tmp = Instruction {
+                                        opcode: oc.clone().unwrap(),
+                                        switches: Vec::new()
+                                    };
+                                    fmp_file.scripts.get_mut(&x.parse().unwrap()).unwrap().instructions.push(tmp);
                                 }
-                                let tmp = Instruction {
-                                    opcode: oc.clone().unwrap(),
-                                    switches: Vec::new()
-                                };
-                                fmp_file.scripts.get_mut(&x.parse().unwrap()).unwrap().instructions.push(tmp);
                             }
                         },
                         None => {
