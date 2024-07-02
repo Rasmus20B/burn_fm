@@ -259,14 +259,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             segment_collection.insert(x.parse().unwrap(), BTreeMap::new());
                         }
                         continue;
-                    } else if chunk.ctype == ChunkType::Noop {
-                        continue;
                     } else if chunk.ctype == ChunkType::DataSegment {
                         let n = chunk.segment_idx.unwrap() as usize;
                         segment_collection.get_mut(&x.parse().unwrap())
                             .unwrap()
                             .insert(n, chunk.data.unwrap().to_vec());
-                    } 
+                    }
                 },
                 ["17", "5", x] => {
                     if chunk.ctype == ChunkType::PathPop 
