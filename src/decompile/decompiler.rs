@@ -8,7 +8,6 @@ use crate::{component, metadata_constants};
 use crate::file::FmpFile;
 use crate::decompile::sector;
 
-
 use crate::chunk::{get_chunk_from_code, ChunkType};
 use crate::encoding_util::fm_string_decrypt;
 
@@ -43,9 +42,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
         chunks: vec![] 
     });
     sectors[0] = first;
-
     let mut idx = 2;
-
     let mut segment_collection: HashMap<usize, BTreeMap<usize, Vec<u8>>> = HashMap::new();
 
     while idx != 0 {
@@ -147,20 +144,20 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             if !fmp_file.tables.contains_key(&(x.parse::<usize>().unwrap() - 128)) {
                                 fmp_file.tables.insert(x.parse::<usize>().unwrap() - 128,
                             component::FMComponentTable { 
-                            table_name: "".to_string(),
-                            created_by_account: "".to_string(),
-                            create_by_user: "".to_string(),
+                            table_name: String::new(),
+                            created_by_account: String::new(),
+                            create_by_user: String::new(),
                             fields: HashMap::new() });
                             }
                             fmp_file.tables.get_mut(&(x.parse::<usize>().unwrap() - 128))
                                 .unwrap().fields
                                     .insert(y.parse::<usize>().unwrap() as u16, component::FMComponentField { 
-                                        data_type: "".to_string(),
-                                        field_description: "".to_string(),
-                                        field_name: "".to_string(),
-                                        field_type: "".to_string(),
-                                        created_by_account: "".to_string(),
-                                        created_by_user: "".to_string() });
+                                        data_type: String::new(),
+                                        field_description: String::new(),
+                                        field_name: String::new(),
+                                        field_type: String::new(),
+                                        created_by_account: String::new(),
+                                        created_by_user: String::new() });
                         } else {
                             let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                             // match chunk.ref_simple.unwrap_or(0) {
@@ -229,10 +226,11 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     if chunk.ctype == ChunkType::PathPush {
                         if !fmp_file.tables.contains_key(&x.parse().unwrap()) {
                             fmp_file.tables.insert(x.parse::<usize>().unwrap() - 128, component::FMComponentTable { 
-                                table_name: "".to_string(),
-                                created_by_account: "".to_string(),
-                                create_by_user: "".to_string(),
-                                fields: HashMap::new() });
+                                table_name: String::new(),
+                                created_by_account: String::new(),
+                                create_by_user: String::new(),
+                                fields: HashMap::new() 
+                            });
                         } 
                     } else {
                         match chunk.ref_simple.unwrap_or(0) {
@@ -255,7 +253,8 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 // }
                 ["17", "5", x, "4"] => {
                     if chunk.ctype == ChunkType::PathPush {
-                        if segment_collection.get(&x.parse().unwrap()).is_none() {
+                        let script = segment_collection.get(&x.parse().unwrap());
+                        if script.is_none() {
                             segment_collection.insert(x.parse().unwrap(), BTreeMap::new());
                         }
                         continue;
@@ -282,7 +281,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         Some(4) => {
                             // println!("TOP LEVEL: Path: {:?}", path); 
                             let instrs = chunk.data.unwrap().chunks(28);
-                            for (i, ins) in instrs.enumerate() {
+                            for ins in instrs {
                                 if ins.len() >= 21 {
                                     // println!("{}, ref_data: {}", 
                                     //         i + 1,
@@ -294,7 +293,8 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                         opcode: oc.clone().unwrap(),
                                         switches: Vec::new()
                                     };
-                                    fmp_file.scripts.get_mut(&x.parse().unwrap()).unwrap().instructions.push(tmp);
+                                    fmp_file.scripts
+                                        .get_mut(&x.parse().unwrap()).unwrap().instructions.push(tmp);
                                 }
                             }
                         },
@@ -354,16 +354,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     // }
                 },
                 _ => { 
-                    let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                    // if chunk.ref_simple == Some(2) {
-                    //     // println!("NEW PATH FOUND");
-                    // // } else if chunk.ref_simple.unwrap() == 2 {
-                    if !path.is_empty() {
-                        // println!("Path: {:?}. reference: {:?}, string: {:?}, ref_data: {:?}", 
-                        //      &path.clone(),
-                        //      chunk.ref_simple,
-                        //      s, chunk.data);
-                    }
                 }
             }
         }
