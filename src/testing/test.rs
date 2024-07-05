@@ -20,7 +20,7 @@ impl<'a> TestEnvironment<'a> {
         }
     }
 
-    pub fn generate_tables_for_tests(self : &mut Self) {
+    pub fn generate_tables_for_tests(&mut self) {
         /* For each test, we will reuse the same table structure 
          * as defined in the fmp_file. Don't rebuild for each one */
         for table in &self.file_handle.tables {
@@ -28,13 +28,14 @@ impl<'a> TestEnvironment<'a> {
                 records: BTreeMap::new(),
             };
             self.vm.tables.push(vmtable_tmp);
-            println!("Pushes Table \"{}\" to test environment", table.1.table_name);
+            println!("Pushing Table \"{}\" to test environment", table.1.table_name);
             for f in &table.1.fields {
                 println!("Pushing field: \"{}::{}\" to test environemnt", table.1.table_name, f.1.field_name);
                 self.vm.tables.last_mut().unwrap().records
                     .insert(f.1.field_name.to_string(), vec![]);
             }
-            self.vm.record_ptrs.push(0);
+            /* Each table is empty, therefore no pointer to a record */
+            self.vm.record_ptrs.push(None);
         }
     }
 }

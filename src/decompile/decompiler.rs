@@ -3,7 +3,7 @@ use std::io::Read;
 use std::path::Path;
 use std::collections::{BTreeMap, HashMap};
 
-use crate::script_engine::script_engine_instructions::{Instruction, INSTRUCTIONMAP};
+use crate::fm_script_engine::fm_script_engine_instructions::{Instruction, INSTRUCTIONMAP};
 use crate::{component, metadata_constants};
 use crate::file::FmpFile;
 use crate::decompile::sector;
@@ -16,14 +16,7 @@ const SECTOR_SIZE : usize = 4096;
 pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
     
     let mut file = File::open(path).expect("unable to open file.");
-    let mut fmp_file = FmpFile { 
-        name: "name".to_string(),
-        tables: HashMap::new(), 
-        relationships: HashMap::new(),
-        layouts: HashMap::new(),
-        scripts: HashMap::new(),
-        table_occurrences: HashMap::new(),
-    };
+    let mut fmp_file = FmpFile::new();
     let mut buffer = Vec::<u8>::new();
     file.read_to_end(&mut buffer).expect("Unable to read file.");
 

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::script_engine::script_engine_instructions::Instruction;
+use crate::fm_script_engine::fm_script_engine_instructions::Instruction;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum FMComponentType {
@@ -25,12 +25,24 @@ pub struct FMComponentField {
     pub created_by_user: String,
 }
 
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FMComponentTable {
     pub table_name: String,
     pub created_by_account: String,
     pub create_by_user: String,
     pub fields: HashMap<u16, FMComponentField>
+}
+
+impl FMComponentTable {
+    pub fn new() -> Self {
+        Self {
+            table_name: String::new(),
+            created_by_account: String::new(),
+            create_by_user: String::new(),
+            fields: HashMap::new(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -41,12 +53,34 @@ pub struct FMComponentScript {
     pub instructions: Vec<Instruction>,
 } 
 
+impl FMComponentScript {
+    pub fn new() -> Self {
+        Self {
+            script_name: String::new(),
+            created_by_account: String::new(),
+            create_by_user: String::new(),
+            instructions: vec![]
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FMComponentTableOccurence {
     pub table_occurence_name: String,
     pub table_actual: u16,
     pub created_by_account: String,
     pub create_by_user: String,
+}
+
+impl FMComponentTableOccurence {
+    pub fn new() -> Self {
+        Self {
+            table_occurence_name: String::new(),
+            table_actual: 0,
+            created_by_account: String::new(),
+            create_by_user: String::new()
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -56,6 +90,16 @@ pub struct FMComponentRelationship {
     pub comparison: u8,
 }
 
+impl FMComponentRelationship {
+    pub fn new() -> Self {
+        Self {
+            table1: 0,
+            table2: 0,
+            comparison: 0,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FMComponentLayout {
     pub layout_name: String,
@@ -63,9 +107,29 @@ pub struct FMComponentLayout {
     pub create_by_user: String,
 }
 
+impl FMComponentLayout {
+    pub fn new() -> Self {
+        Self {
+            layout_name: String::new(),
+            created_by_account: String::new(),
+            create_by_user: String::new()
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FMComponentValueList {
     pub list_name: String,
     pub created_by_account: String,
     pub create_by_user: String,
+}
+
+impl FMComponentValueList {
+    pub fn new() -> Self {
+        Self {
+            list_name: String::new(),
+            created_by_account: String::new(),
+            create_by_user: String::new(),
+        }
+    }
 }

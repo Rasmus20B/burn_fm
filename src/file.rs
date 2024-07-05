@@ -1,7 +1,6 @@
 use crate::component;
 
 use serde::{Deserialize, Serialize};
-use serde_json::Result;
 
 use std::collections::HashMap;
 
@@ -13,4 +12,17 @@ pub struct FmpFile {
     pub layouts: HashMap<usize, component::FMComponentLayout>,
     pub scripts: HashMap<usize, component::FMComponentScript>,
     pub table_occurrences: HashMap<usize, component::FMComponentTableOccurence>,
+}
+
+impl FmpFile {
+    pub fn new() -> Self {
+        Self {
+            name: String::new(),
+            tables: HashMap::new(),
+            relationships: HashMap::new(),
+            layouts: HashMap::new(),
+            scripts: HashMap::new(),
+            table_occurrences: HashMap::new(),
+        }
+    }
 }

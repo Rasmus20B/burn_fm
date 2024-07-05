@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 pub struct VirtualMachine {
     pub tables: Vec<VMTable>,
     /* Each table has it's own record pointer, as per FileMaker */
-    pub record_ptrs: Vec<Record>
+    pub record_ptrs: Vec<Option<Record>>
 }
 
 impl VirtualMachine {

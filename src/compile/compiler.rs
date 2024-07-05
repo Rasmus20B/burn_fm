@@ -1,14 +1,11 @@
-use crate::decompile;
-use crate::component;
-use crate::file;
-
-use crate::compile::token::*;
 use crate::compile::parser;
 use crate::compile::lexer;
+use crate::file::FmpFile;
 
-pub fn compile_burn(code: &str) {
+pub fn compile_burn(code: &str) -> FmpFile {
     let tokens = lexer::tokenize(&code);
-    let tree = parser::parse_program(&tokens);
+    let p = parser::Parser::new(tokens);
+    p.parse_program()
 }
 
 

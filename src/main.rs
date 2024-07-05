@@ -1,8 +1,5 @@
 use decompile::decompiler::decompile_fmp12_file;
-use serde::Serialize;
-use std::{fs::{write, File}, io::Read, path::Path};
-
-use compile::compiler::compile_burn;
+use std::{fs::write, path::Path};
 
 mod component;
 mod compile;
@@ -11,7 +8,7 @@ mod file;
 mod metadata_constants;
 mod chunk;
 mod encoding_util;
-mod script_engine;
+mod fm_script_engine;
 mod testing;
 
 fn main() {
