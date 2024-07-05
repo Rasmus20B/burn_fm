@@ -43,7 +43,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
     });
     sectors[0] = first;
     let mut idx = 2;
-    let mut segment_collection: HashMap<usize, BTreeMap<usize, Vec<u8>>> = HashMap::new();
+    let mut script_segments: HashMap<usize, BTreeMap<usize, Vec<u8>>> = HashMap::new();
 
     while idx != 0 {
         let start = idx * SECTOR_SIZE;
@@ -253,14 +253,14 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 // }
                 ["17", "5", x, "4"] => {
                     if chunk.ctype == ChunkType::PathPush {
-                        let script = segment_collection.get(&x.parse().unwrap());
+                        let script = script_segments.get(&x.parse().unwrap());
                         if script.is_none() {
-                            segment_collection.insert(x.parse().unwrap(), BTreeMap::new());
+                            script_segments.insert(x.parse().unwrap(), BTreeMap::new());
                         }
                         continue;
                     } else if chunk.ctype == ChunkType::DataSegment {
                         let n = chunk.segment_idx.unwrap() as usize;
-                        segment_collection.get_mut(&x.parse().unwrap())
+                        script_segments.get_mut(&x.parse().unwrap())
                             .unwrap()
                             .insert(n, chunk.data.unwrap().to_vec());
                     }
@@ -362,7 +362,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
         idx = sectors[idx].next;
     }
     /* Assemble scripts */
-    for (script, segments) in &mut segment_collection {
+    for (script, segments) in &mut script_segments {
         let mut instructions = Vec::<u8>::new();
         for s in segments {
             instructions.append(s.1);
