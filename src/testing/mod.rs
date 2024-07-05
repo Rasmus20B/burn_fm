@@ -1,4 +1,4 @@
 
 pub mod engine;
-mod virtual_machine;
-mod test;
+pub mod virtual_machine;
+pub mod test;

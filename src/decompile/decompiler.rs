@@ -41,6 +41,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
         payload: &[0],
         chunks: vec![] 
     });
+
     sectors[0] = first;
     let mut idx = 2;
     let mut script_segments: HashMap<usize, BTreeMap<usize, Vec<u8>>> = HashMap::new();

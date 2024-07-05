@@ -63,3 +63,9 @@ pub struct FMComponentLayout {
     pub create_by_user: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FMComponentValueList {
+    pub list_name: String,
+    pub created_by_account: String,
+    pub create_by_user: String,
+}

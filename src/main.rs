@@ -30,4 +30,7 @@ fn main() {
     let json = serde_json::to_string_pretty(&file).expect("Unable to generate json file");
     println!("got the json");
     write("test2", json).expect("Unable to write to file.");
+
+    let mut env = testing::test::TestEnvironment::new(&file);
+    env.generate_tables_for_tests();
 }

@@ -24,7 +24,7 @@ pub struct Chunk<'a> {
 
 impl<'a> Chunk<'a> {
     pub fn new(ctype: ChunkType,
-            code: u16,
+           code: u16,
            data: Option<&'a [u8]>,
            ref_data: Option<&'a [u8]>,
            path: Vec::<String>,
