@@ -12,6 +12,7 @@ mod metadata_constants;
 mod chunk;
 mod encoding_util;
 mod script_engine;
+mod testing;
 
 fn main() {
     let input = Path::new("tests/input/blank.fmp12");

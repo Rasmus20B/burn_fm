@@ -6,6 +6,10 @@
 - [] => a list. Examples: [FIELD] = a list of fields, [STRING, ","] = comma seperated list of strings
 - {} => Optional
 
+- "export" after script definition will allow the script to be passed to the final file.
+    - Reasons to not use export may include: preamples for tests which require
+      some basic navigation logic.
+
 ## Table Definition
 1. TABLE => "table" -> IDENT -> ":\n" -> [FIELD] -> "\nend table;"
 2. FIELD => within table scope -> IDENT -> [FIELD\_OPTION, ","] -> {","}
@@ -21,4 +25,4 @@
     -> FIELDNAME from TABLE2
 6. VALUE\LIST => "value\_list" -> IDENT -> ":\n" -> [STRING, ","] -> "\nend value\_list;"
 
-
+7. SCRIPT => "script" -> {export} -> ":" -> scripting language
