@@ -108,7 +108,12 @@ impl Lexer {
                 {
                     let mut ret: Vec<Token> = vec![];
                     if !buffer.is_empty() {
-                        ret.push(Token::with_value(TokenType::Identifier, &buffer));
+                        let n = buffer.parse::<f64>();
+                        if n.is_ok() {
+                          ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
+                        } else {
+                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
+                        }
                     }
                     if lex_iter.peek().unwrap().1 != '=' {
                         ret.push(Token::new(TokenType::Assign));
@@ -131,7 +136,49 @@ impl Lexer {
                     }
                     ret.push(Token::new(TokenType::Plus));
                     Some(ret)
-                }
+                },
+                '-' =>
+                {
+                    let mut ret: Vec<Token> = vec![];
+                    if !buffer.is_empty() {
+                        let n = buffer.parse::<f64>();
+                        if n.is_ok() {
+                          ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
+                        } else {
+                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
+                        }
+                    }
+                    ret.push(Token::new(TokenType::Minus));
+                    Some(ret)
+                },
+                '*' =>
+                {
+                    let mut ret: Vec<Token> = vec![];
+                    if !buffer.is_empty() {
+                        let n = buffer.parse::<f64>();
+                        if n.is_ok() {
+                          ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
+                        } else {
+                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
+                        }
+                    }
+                    ret.push(Token::new(TokenType::Multiply));
+                    Some(ret)
+                },
+                '/' =>
+                {
+                    let mut ret: Vec<Token> = vec![];
+                    if !buffer.is_empty() {
+                        let n = buffer.parse::<f64>();
+                        if n.is_ok() {
+                          ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
+                        } else {
+                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
+                        }
+                    }
+                    ret.push(Token::new(TokenType::Divide));
+                    Some(ret)
+                },
                 _ => {
                     buffer.push(*c);
                     None

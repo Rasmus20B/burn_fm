@@ -35,7 +35,7 @@ impl Token {
     pub fn new(t: TokenType) -> Self {
         Self {
             ttype: t,
-            value: "".to_string(),
+            value: String::new(),
         }
     }
     pub fn with_value(t:TokenType, val: &str) -> Self {

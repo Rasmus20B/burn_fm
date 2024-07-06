@@ -1,66 +1,11 @@
 {
   "name": "",
   "tables": {
-    "3": {
-      "table_name": "third table",
-      "created_by_account": "",
-      "create_by_user": "",
-      "fields": {
-        "3": {
-          "data_type": "",
-          "field_description": "Account name of the user who created each record",
-          "field_name": "CreatedBy",
-          "field_type": "[[Z^ZZZOZZ[[ZZZVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
-        "5": {
-          "data_type": "",
-          "field_description": "Account name of the user who last modified each record",
-          "field_name": "ModifiedBy",
-          "field_type": "[[ZSZZZOZZ[[ZZZVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
-        "2": {
-          "data_type": "",
-          "field_description": "Date and time each record was created",
-          "field_name": "CreationTimestamp",
-          "field_type": "[_ZXZZZZZZ[[ZZzVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
-        "4": {
-          "data_type": "",
-          "field_description": "Date and time each record was last modified",
-          "field_name": "ModificationTimestamp",
-          "field_type": "[_Z]ZZZZZZ[[ZZzVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
-        "1": {
-          "data_type": "",
-          "field_description": "Unique identifier of each record in this table",
-          "field_name": "PrimaryKey",
-          "field_type": "value not utf-8.",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        }
-      }
-    },
     "1": {
       "table_name": "blank",
       "created_by_account": "",
       "create_by_user": "",
       "fields": {
-        "2": {
-          "data_type": "",
-          "field_description": "",
-          "field_name": "",
-          "field_type": "",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
         "5": {
           "data_type": "",
           "field_description": "Account name of the user who last modified each record",
@@ -77,10 +22,18 @@
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },
-        "8": {
+        "2": {
           "data_type": "",
-          "field_description": "this is a comment thing",
-          "field_name": "addition",
+          "field_description": "",
+          "field_name": "",
+          "field_type": "",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
+        "1": {
+          "data_type": "",
+          "field_description": "Unique identifier of each record in this table",
+          "field_name": "PrimaryKey",
           "field_type": "value not utf-8.",
           "created_by_account": "admin",
           "created_by_user": "Admin"
@@ -101,10 +54,10 @@
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },
-        "1": {
+        "8": {
           "data_type": "",
-          "field_description": "Unique identifier of each record in this table",
-          "field_name": "PrimaryKey",
+          "field_description": "this is a comment thing",
+          "field_name": "addition",
           "field_type": "value not utf-8.",
           "created_by_account": "admin",
           "created_by_user": "Admin"
@@ -116,19 +69,19 @@
       "created_by_account": "",
       "create_by_user": "",
       "fields": {
-        "4": {
-          "data_type": "",
-          "field_description": "Date and time each record was last modified",
-          "field_name": "ModificationTimestamp",
-          "field_type": "[_Z]ZZZZZZ[[ZZzVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
         "1": {
           "data_type": "",
           "field_description": "Unique identifier of each record in this table",
           "field_name": "PrimaryKey",
           "field_type": "value not utf-8.",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "Date and time each record was last modified",
+          "field_name": "ModificationTimestamp",
+          "field_type": "[_Z]ZZZZZZ[[ZZzVZZZ[ZZZZZ[",
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },
@@ -157,27 +110,64 @@
           "created_by_user": "Admin"
         }
       }
+    },
+    "3": {
+      "table_name": "third table",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {
+        "4": {
+          "data_type": "",
+          "field_description": "Date and time each record was last modified",
+          "field_name": "ModificationTimestamp",
+          "field_type": "[_Z]ZZZZZZ[[ZZzVZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "Account name of the user who created each record",
+          "field_name": "CreatedBy",
+          "field_type": "[[Z^ZZZOZZ[[ZZZVZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
+        "5": {
+          "data_type": "",
+          "field_description": "Account name of the user who last modified each record",
+          "field_name": "ModifiedBy",
+          "field_type": "[[ZSZZZOZZ[[ZZZVZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "Date and time each record was created",
+          "field_name": "CreationTimestamp",
+          "field_type": "[_ZXZZZZZZ[[ZZzVZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
+        "1": {
+          "data_type": "",
+          "field_description": "Unique identifier of each record in this table",
+          "field_name": "PrimaryKey",
+          "field_type": "value not utf-8.",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        }
+      }
     }
   },
   "relationships": {
-    "6": {
-      "table1": 4,
-      "table2": 5,
-      "comparison": 0
-    },
-    "4": {
-      "table1": 3,
-      "table2": 2,
-      "comparison": 0
-    },
     "5": {
       "table1": 4,
       "table2": 2,
       "comparison": 0
     },
-    "0": {
-      "table1": 1,
-      "table2": 2,
+    "6": {
+      "table1": 4,
+      "table2": 5,
       "comparison": 0
     },
     "2": {
@@ -190,6 +180,11 @@
       "table2": 1,
       "comparison": 0
     },
+    "4": {
+      "table1": 3,
+      "table2": 2,
+      "comparison": 0
+    },
     "3": {
       "table1": 2,
       "table2": 4,
@@ -199,16 +194,16 @@
       "table1": 5,
       "table2": 4,
       "comparison": 0
+    },
+    "0": {
+      "table1": 1,
+      "table2": 2,
+      "comparison": 0
     }
   },
   "layouts": {
-    "2": {
-      "layout_name": "testing",
-      "created_by_account": "",
-      "create_by_user": ""
-    },
-    "4": {
-      "layout_name": "third table",
+    "1": {
+      "layout_name": "blank",
       "created_by_account": "",
       "create_by_user": ""
     },
@@ -217,8 +212,13 @@
       "created_by_account": "",
       "create_by_user": ""
     },
-    "1": {
-      "layout_name": "blank",
+    "2": {
+      "layout_name": "testing",
+      "created_by_account": "",
+      "create_by_user": ""
+    },
+    "4": {
+      "layout_name": "third table",
       "created_by_account": "",
       "create_by_user": ""
     }
@@ -452,8 +452,8 @@
     }
   },
   "table_occurrences": {
-    "3": {
-      "table_occurence_name": "THis is cool",
+    "2": {
+      "table_occurence_name": "blank 2",
       "table_actual": 1,
       "created_by_account": "",
       "create_by_user": ""
@@ -464,26 +464,26 @@
       "created_by_account": "",
       "create_by_user": ""
     },
-    "6": {
-      "table_occurence_name": "third table",
-      "table_actual": 3,
-      "created_by_account": "",
-      "create_by_user": ""
-    },
-    "1": {
-      "table_occurence_name": "blank",
-      "table_actual": 1,
-      "created_by_account": "",
-      "create_by_user": ""
-    },
     "4": {
       "table_occurence_name": "second table",
       "table_actual": 2,
       "created_by_account": "",
       "create_by_user": ""
     },
-    "2": {
-      "table_occurence_name": "blank 2",
+    "6": {
+      "table_occurence_name": "third table",
+      "table_actual": 3,
+      "created_by_account": "",
+      "create_by_user": ""
+    },
+    "3": {
+      "table_occurence_name": "THis is cool",
+      "table_actual": 1,
+      "created_by_account": "",
+      "create_by_user": ""
+    },
+    "1": {
+      "table_occurence_name": "blank",
       "table_actual": 1,
       "created_by_account": "",
       "create_by_user": ""
