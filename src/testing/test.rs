@@ -3,20 +3,18 @@ use std::collections::BTreeMap;
 use crate::file;
 use crate::component;
 
-use super::virtual_machine;
-use super::virtual_machine::VMTable;
-use super::virtual_machine::VirtualMachine;
+use super::test_environment_instance::*;
 
 pub struct TestEnvironment<'a> {
     pub file_handle: &'a file::FmpFile,
-    pub vm: virtual_machine::VirtualMachine
+    pub vm: TestEnvironmentInstance
 }
 impl<'a> TestEnvironment<'a> {
 
     pub fn new(file: &'a file::FmpFile) -> Self {
         Self {
             file_handle: file,
-            vm: VirtualMachine::new()
+            vm: TestEnvironmentInstance::new()
         }
     }
 

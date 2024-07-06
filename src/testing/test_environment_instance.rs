@@ -1,12 +1,12 @@
 use std::collections::BTreeMap;
 
-pub struct VirtualMachine {
+pub struct TestEnvironmentInstance {
     pub tables: Vec<VMTable>,
     /* Each table has it's own record pointer, as per FileMaker */
     pub record_ptrs: Vec<Option<Record>>
 }
 
-impl VirtualMachine {
+impl TestEnvironmentInstance {
     pub fn new() -> Self {
         Self {
             tables: vec![],

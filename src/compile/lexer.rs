@@ -21,7 +21,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
 
         let b = buffer.as_str();
 
-
         let tmp = match c {
             ' ' => if buffer.is_empty() { vec![] } else {
                 match buffer.trim() {

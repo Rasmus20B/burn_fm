@@ -11,7 +11,7 @@ impl Parser {
             tokens: ts,
         }
     }
-    pub fn parse_table(&self, tokens: &Vec<Token>, table: &mut FMComponentTable) {
+    pub fn parse_table(&self, table: &mut FMComponentTable) {
 
     }
 

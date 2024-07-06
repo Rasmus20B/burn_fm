@@ -5,6 +5,7 @@ mod component;
 mod compile;
 mod decompile;
 mod file;
+mod burn_script;
 mod metadata_constants;
 mod chunk;
 mod encoding_util;
