@@ -184,7 +184,7 @@ the file value to append to the path above.
 - **Important**: When script runs into space constraits, simple key ref does not suffice. Segments of the array are stored at **Path** [17].[5].[script].[4], rather than key-value.
 
 
-- Script attributes should be parsed in order of appearance in file format. If the script content appears first, store it's id ith the contant, with a blank name field and other options. Then when we find the name in the metadata directory, just look for the corresponding script and fill in the name.
+- Script attributes should be parsed in order of appearance in file format. If the script content appears first, store it's id ith the content, with a blank name field and other options. Then when we find the name in the metadata directory, just look for the corresponding script and fill in the name.
 
 ### [17].[5].[script].[4]
 - Used when script exceeds size limitations. replaces key of 4 in script directory ([17].[5].[script]).

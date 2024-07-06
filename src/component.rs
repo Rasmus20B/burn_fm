@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::fm_script_engine::fm_script_engine_instructions::Instruction;
+use crate::fm_script_engine::fm_script_engine_instructions::ScriptStep;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum FMComponentType {
@@ -50,7 +50,7 @@ pub struct FMComponentScript {
     pub script_name: String,
     pub created_by_account: String,
     pub create_by_user: String,
-    pub instructions: Vec<Instruction>,
+    pub instructions: Vec<ScriptStep>,
 } 
 
 impl FMComponentScript {

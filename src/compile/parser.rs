@@ -1,5 +1,5 @@
 
-use crate::{compile::token::*, component::FMComponentTable, file::FmpFile, fm_script_engine::fm_script_engine_instructions::Instructions};
+use crate::{compile::token::*, component::FMComponentTable, file::FmpFile, fm_script_engine::fm_script_engine_instructions::ScriptStep};
 
 pub struct Parser {
     tokens: Vec<Token>,

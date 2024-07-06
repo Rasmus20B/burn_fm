@@ -1,11 +1,8 @@
-
 use crate::fm_script_engine::fm_script_engine_instructions::Instruction;
-
 use super::lexer;
 
 pub struct BurnScriptCompiler {
 }
-
 impl BurnScriptCompiler {
 
     pub fn compile_burn_script(code: &str) {
