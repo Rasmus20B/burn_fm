@@ -1,9 +1,10 @@
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 
 pub struct TestEnvironmentInstance {
     pub tables: Vec<VMTable>,
     /* Each table has it's own record pointer, as per FileMaker */
-    pub record_ptrs: Vec<Option<Record>>
+    pub record_ptrs: Vec<Option<Record>>,
+    pub instruction_ptr: usize,
 }
 
 impl TestEnvironmentInstance {
@@ -11,12 +12,14 @@ impl TestEnvironmentInstance {
         Self {
             tables: vec![],
             record_ptrs: vec![],
+            instruction_ptr: 0,
         }
     }
 }
 
 pub struct VMTable {
-    pub records: BTreeMap<String, Vec<String>>,
+    pub name: String,
+    pub records: HashMap<String, Vec<String>>,
 }
 
 type Record = usize;

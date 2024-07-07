@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 
 use crate::file;
 use crate::component;
@@ -7,14 +7,16 @@ use super::test_environment_instance::*;
 
 pub struct TestEnvironment<'a> {
     pub file_handle: &'a file::FmpFile,
-    pub vm: TestEnvironmentInstance
+    pub vm: TestEnvironmentInstance,
+    pub tests: Vec<Test>,
 }
 impl<'a> TestEnvironment<'a> {
 
     pub fn new(file: &'a file::FmpFile) -> Self {
         Self {
             file_handle: file,
-            vm: TestEnvironmentInstance::new()
+            vm: TestEnvironmentInstance::new(),
+            tests: vec![],
         }
     }
 
@@ -23,7 +25,8 @@ impl<'a> TestEnvironment<'a> {
          * as defined in the fmp_file. Don't rebuild for each one */
         for table in &self.file_handle.tables {
             let vmtable_tmp = VMTable {
-                records: BTreeMap::new(),
+                name: table.1.table_name.clone(),
+                records: HashMap::new(),
             };
             self.vm.tables.push(vmtable_tmp);
             println!("Pushing Table \"{}\" to test environment", table.1.table_name);
@@ -39,7 +42,7 @@ impl<'a> TestEnvironment<'a> {
 }
 
 pub struct Test {
-    pub scripts: Vec<component::FMComponentScript>,
+    script: component::FMComponentScript,
 }
 
 

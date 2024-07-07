@@ -33,7 +33,6 @@ impl Lexer {
                             _ => {
                                 ret.push(Token::with_value(TokenType::Identifier, &buffer));
                             }
-
                         }
                     }
                     Some(ret)
@@ -69,7 +68,12 @@ impl Lexer {
                 {
                     let mut ret: Vec<Token> = vec![];
                     if !buffer.is_empty() {
-                        ret.push(Token::with_value(TokenType::Identifier, &buffer));
+                        let n = buffer.parse::<f64>();
+                        if n.is_ok() {
+                            ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
+                        } else {
+                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
+                        }
                     }
                     ret.push(Token::new(TokenType::CloseParen));
                     Some(ret)
@@ -203,11 +207,12 @@ mod tests {
     use super::Lexer;
     #[test]
     fn lex_test_basic() {
-        let code = "define test_func(x, y) {
-            let i = x;
+        let code = "
+        define test_func(x, y) {
+            set_variable(i, x);
             loop {
                 exit_loop_if(i == y);
-                i = i + 1;
+                set_variable(i, i + 1);
             }
             exit_script(i);
         }";
@@ -221,10 +226,12 @@ mod tests {
             Token::with_value(TokenType::Identifier, "y"),
             Token::new(TokenType::CloseParen), 
             Token::new(TokenType::OpenBracket),
-            Token::new(TokenType::Let),
+            Token::with_value(TokenType::Identifier, "set_variable"),
+            Token::new(TokenType::OpenParen),
             Token::with_value(TokenType::Identifier, "i"),
-            Token::new(TokenType::Assign),
+            Token::new(TokenType::Comma),
             Token::with_value(TokenType::Identifier, "x"),
+            Token::new(TokenType::CloseParen),
             Token::new(TokenType::SemiColon),
             Token::new(TokenType::Loop),
             Token::new(TokenType::OpenBracket),
@@ -235,11 +242,14 @@ mod tests {
             Token::with_value(TokenType::Identifier, "y"),
             Token::new(TokenType::CloseParen),
             Token::new(TokenType::SemiColon),
+            Token::with_value(TokenType::Identifier, "set_variable"),
+            Token::new(TokenType::OpenParen),
             Token::with_value(TokenType::Identifier, "i"),
-            Token::new(TokenType::Assign),
+            Token::new(TokenType::Comma),
             Token::with_value(TokenType::Identifier, "i"),
             Token::new(TokenType::Plus),
             Token::with_value(TokenType::NumericLiteral, "1"),
+            Token::new(TokenType::CloseParen),
             Token::new(TokenType::SemiColon),
             Token::new(TokenType::CloseBracket),
             Token::with_value(TokenType::Identifier, "exit_script"),

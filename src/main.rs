@@ -1,4 +1,4 @@
-use std::{fs::{read, write, File}, io::Read, path::Path};
+use std::{fs::{write, File}, io::Read, path::Path};
 use clap::Parser;
 use decompile::decompiler::decompile_fmp12_file;
 
