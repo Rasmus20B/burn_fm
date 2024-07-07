@@ -1,6 +1,8 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, str::FromStr};
 
-use crate::{component::FMComponentScript, fm_script_engine::fm_script_engine_instructions::Instruction};
+use clap::parser;
+
+use crate::{component::FMComponentScript, fm_script_engine::fm_script_engine_instructions::{Instruction, ScriptStep}};
 
 use super::tokens::{self, Token, TokenType};
 
@@ -41,11 +43,70 @@ impl Parser {
                                 continue;
                             },
                             TokenType::CloseParen => {
-                                break;
+                                continue;
                             },
+                            TokenType::OpenBracket => {
+                                break;
+                            }
                             _ => { eprintln!("invalid token."); }
                         };
                     }
+
+                    /* Parse the instructions inside the script with their options */
+                    while let Some(t) = parser_iter.next() {
+                        println!("Found instruction: {:?} : {}", t.ttype, t.value);
+                        match t.ttype {
+                            TokenType::Identifier => {
+                                if let Ok(op) = Instruction::from_str(&t.value) {
+                                    let mut step = ScriptStep {
+                                        opcode: op,
+                                        index: 0,
+                                        switches: vec![],
+                                    };
+
+                                    while let Some(t) = parser_iter.next() {
+                                        match t.ttype {
+                                            TokenType::Identifier => {
+                                                step.switches.push(t.value.clone());
+                                            }
+                                            TokenType::SemiColon => {
+                                                println!("Breaking from current");
+                                                break;
+                                            },
+                                            TokenType::OpenParen => {
+                                                continue;
+                                            },
+                                            TokenType::CloseParen => {
+                                                continue;
+                                            }
+                                            TokenType::Comma => {
+                                                continue;
+                                            }
+                                            _ => { eprintln!("Unexpected Token."); }
+                                        }
+                                    }
+                                    tmp.instructions.push(step);
+                                } else {
+                                    eprintln!("Invalid script step: {}", t.value);
+                                }
+                            },
+                            TokenType::Loop => {
+                                let check = parser_iter.next();
+                                if check.unwrap().ttype != TokenType::OpenBracket {
+                                    eprintln!("Expected '{{' after loop.");
+                                    break;
+                                }
+                                let step = ScriptStep {
+                                    opcode: Instruction::Loop,
+                                    index: 0,
+                                    switches: vec![],
+                                };
+                                tmp.instructions.push(step);
+                            }
+                            _ => { eprintln!("Invalid token in script"); }
+                        }
+                    }
+                    
                     scripts.push(tmp);
                 },
                 _ => {
@@ -53,15 +114,13 @@ impl Parser {
                 }
             }
         }
-
-
         return scripts;
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::burn_script::lexer;
+    use crate::{burn_script::lexer, fm_script_engine::fm_script_engine_instructions::Instruction};
 
     use super::Parser;
 
@@ -83,5 +142,14 @@ mod tests {
         let handle = scripts[0].clone();
         assert_eq!(handle.script_name, "test_func");
         assert_eq!(handle.arguments, vec!["x", "y"]);
+
+        let instrs_actual = vec![Instruction::SetVariable,
+                                 Instruction::Loop,
+                                 Instruction::ExitLoopIf,
+                                 Instruction::SetVariable,
+                                 Instruction::ExitScript];
+        for (i, step) in instrs_actual.iter().enumerate() {
+            assert_eq!(*step, handle.instructions[i].opcode);
+        }
     }
 }

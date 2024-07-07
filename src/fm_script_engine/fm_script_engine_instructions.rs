@@ -1,6 +1,8 @@
+use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[repr(u8)] pub enum Instruction {
 	PerformScript = 1,
 	SaveACopyAsXml = 3,
@@ -193,6 +195,22 @@ use serde::{Deserialize, Serialize};
 	SetDictionary = 209,
 	PerformScriptOnServerWithCallback = 210,
 	TriggerClarisConnectFlow = 211,
+}
+
+impl FromStr for Instruction {
+    type Err = ();
+
+    fn from_str(input: &str) -> Result<Instruction, Self::Err> {
+        match input {
+            "perform_script" => Ok(Instruction::PerformScript),
+            "set_variable" => Ok(Instruction::SetVariable),
+            "loop" => Ok(Instruction::Loop),
+            "exit_loop_if" => Ok(Instruction::ExitLoopIf),
+            "exit_script" => Ok(Instruction::ExitScript),
+            _ => Err(()),
+        }
+    }
+
 }
 
 pub static INSTRUCTIONMAP : [Option<Instruction>; 212] = [
