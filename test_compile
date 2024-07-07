@@ -75,13 +75,15 @@
   "table_occurrences": {
     "0": {
       "table_occurence_name": "Job",
-      "table_actual": "Job",
+      "table_actual": 0,
+      "table_actual_name": "Job",
       "created_by_account": "",
       "create_by_user": ""
     },
     "1": {
       "table_occurence_name": "Person",
-      "table_actual": "Person",
+      "table_actual": 0,
+      "table_actual_name": "Person",
       "created_by_account": "",
       "create_by_user": ""
     }

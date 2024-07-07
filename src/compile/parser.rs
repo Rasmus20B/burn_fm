@@ -24,7 +24,6 @@ impl Parser {
                     if parser_iter.peek().unwrap().ttype != TokenType::Identifier {
                         return Err("Expected Table name after \"table\" keyword.".to_string())
                     } else {
-                        println!("table: {}", parser_iter.peek().unwrap().text);
                         table.table_name = parser_iter.next().unwrap().text.clone();
                     }
                     while let Some(mut n) = parser_iter.next() {
@@ -34,11 +33,11 @@ impl Parser {
                                 n = parser_iter.next().unwrap();
                                 if n.ttype == TokenType::Table {
                                     if parser_iter.next().unwrap().ttype != TokenType::SemiColon {
-                                        eprintln!("Please end top level constructs with \";\"");
+                                        return Err("Please end top level constructs with \";\"".to_string());
                                     }
                                     break;
                                 } else {
-                                    eprintln!("Unexpected {} after \"end\"", n.text);
+                                    return Err(std::format!("Unexpected {} after \"end\"", n.text).to_string());
                                 }
                             }
                             _ => {
@@ -70,11 +69,11 @@ impl Parser {
                                 n = parser_iter.next().unwrap();
                                 if n.ttype == TokenType::Relationship {
                                     if parser_iter.next().unwrap().ttype != TokenType::SemiColon {
-                                        eprintln!("Please end top level constructs with \";\"");
+                                        return Err("Please end top level constructs with \";\"".to_string());
                                     }
                                     break;
                                 } else {
-                                    eprintln!("Unexpected {} after \"end\"", n.text);
+                                    return Err(std::format!("Unexpected {} after \"end\"", n.text).to_string());
                                 }
                             }
                             _ => {
@@ -83,7 +82,6 @@ impl Parser {
                         }
                     }
                     ret.relationships.insert(ret.tables.len(), relationship);
-                    println!("TopLevel Relationship");
                 },
                 TokenType::ValueList => {
                     println!("TopLevel valuelist");
@@ -91,7 +89,6 @@ impl Parser {
                     if parser_iter.peek().unwrap().ttype != TokenType::Identifier {
                         return Err("Expected identifier after \"value_list\" keyword.".to_string())
                     } else {
-                        println!("table: {}", parser_iter.peek().unwrap().text);
                         value_list.list_name = parser_iter.next().unwrap().text.clone();
                     }
                     while let Some(mut n) = parser_iter.next() {
@@ -101,11 +98,11 @@ impl Parser {
                                 n = parser_iter.next().unwrap();
                                 if n.ttype == TokenType::ValueList {
                                     if parser_iter.next().unwrap().ttype != TokenType::SemiColon {
-                                        eprintln!("Please end top level constructs with \";\"");
+                                        return Err("Please end top level constructs with \";\"".to_string());
                                     }
                                     break;
                                 } else {
-                                    eprintln!("Unexpected {} after \"end\"", n.text);
+                                    return Err(std::format!("Unexpected {} after \"end\"", n.text).to_string());
                                 }
                             }
                             _ => {
@@ -116,7 +113,6 @@ impl Parser {
                     ret.value_lists.insert(ret.value_lists.len(), value_list);
                 },
                 TokenType::Script => {
-                    println!("TopLevel Script");
                     let mut scripts: Vec<FMComponentScript> = vec![];
                     if parser_iter.peek().unwrap().ttype != TokenType::Colon {
                         return Err("Expected Colon after top level declaration script keyword.".to_string());
@@ -145,7 +141,6 @@ impl Parser {
                     if parser_iter.peek().unwrap().ttype != TokenType::Identifier {
                         return Err("Expected Table name after \"table\" keyword.".to_string())
                     } else {
-                        println!("table: {}", parser_iter.peek().unwrap().text);
                         table_occurence.table_occurence_name = parser_iter.next().unwrap().text.clone();
                     }
                     while let Some(mut t) = parser_iter.next() {
@@ -169,11 +164,11 @@ impl Parser {
                                 t = parser_iter.next().unwrap();
                                 if t.ttype == TokenType::TableOccurence {
                                     if parser_iter.next().unwrap().ttype != TokenType::SemiColon {
-                                        eprintln!("Please end top level constructs with \";\"");
+                                        return Err("Please end top level constructs with \";\"".to_string());
                                     }
                                     break;
                                 } else {
-                                    eprintln!("Unexpected {} after \"end\"", t.text);
+                                    return Err(std::format!("Unexpected {} after \"end\"", t.text).to_string());
                                 }
                             }
                             _ => {
@@ -209,7 +204,6 @@ impl Parser {
                                     return Err("Please ensure that tests only have 1 script defined.".to_string());
                                 }
                                 test.script = scripts[0].clone();
-                                println!("Pushed script success");
                                 continue;
                             }
                             TokenType::AssertionBlock => {
@@ -219,7 +213,6 @@ impl Parser {
                                 while let Some(t) = parser_iter.next() {
                                     match t.ttype {
                                         TokenType::Assertion => {
-                                            println!("Pushing: {}", t.text.clone());
                                             test.assertions.push(t.text.clone());
                                         },
                                         TokenType::Comma => {
@@ -237,11 +230,11 @@ impl Parser {
                                 n = parser_iter.next().unwrap();
                                 if n.ttype == TokenType::Test {
                                     if parser_iter.next().unwrap().ttype != TokenType::SemiColon {
-                                        eprintln!("Please end top level constructs with \";\"");
+                                        return Err("Please end top level constructs with \";\"".to_string());
                                     }
                                     break;
                                 } else {
-                                    eprintln!("Unexpected {} after \"end\"", n.text);
+                                    return Err(std::format!("Unexpected {} after \"end\"", n.text).to_string());
                                 }
                             }
                             _ => {
@@ -252,7 +245,7 @@ impl Parser {
                     ret.tests.push(test);
                 },
                 _ => {
-                    println!("Unrecognized top level structure.");
+                    return Err("Unrecognized top level structure.".to_string());
                 }
             }
         }
