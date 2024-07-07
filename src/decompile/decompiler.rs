@@ -340,6 +340,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                         script_name: fm_string_decrypt(chunk.data.unwrap()),
                                         instructions: Vec::new(),
                                         create_by_user: String::new(),
+                                        arguments: Vec::new(),
                                         created_by_account: String::new(),
                                     };
                                     fmp_file.scripts.insert(path.last().unwrap().parse().unwrap(), tmp);

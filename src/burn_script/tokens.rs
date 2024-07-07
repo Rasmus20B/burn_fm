@@ -27,8 +27,8 @@ pub enum TokenType {
 
 #[derive(PartialEq, Debug)]
 pub struct Token {
-    ttype: TokenType,
-    value: String,
+    pub ttype: TokenType,
+    pub value: String,
 }
 
 impl Token {

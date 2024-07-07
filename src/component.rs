@@ -50,6 +50,7 @@ pub struct FMComponentScript {
     pub script_name: String,
     pub created_by_account: String,
     pub create_by_user: String,
+    pub arguments: Vec<String>,
     pub instructions: Vec<ScriptStep>,
 } 
 
@@ -59,6 +60,7 @@ impl FMComponentScript {
             script_name: String::new(),
             created_by_account: String::new(),
             create_by_user: String::new(),
+            arguments: vec![],
             instructions: vec![]
         }
     }

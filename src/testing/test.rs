@@ -39,6 +39,10 @@ impl<'a> TestEnvironment<'a> {
             self.vm.record_ptrs.push(None);
         }
     }
+
+    pub fn run_tests(&self) {
+
+    }
 }
 
 pub struct Test {

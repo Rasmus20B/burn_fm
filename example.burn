@@ -26,3 +26,14 @@ relationship PersonToJob:
   Person:Job,
   jobid == PrimaryKey,
 end relationship;
+
+script: [
+  define basic_script(x, y) {
+    set_variable(i, x);
+    loop {
+      exit_loop_if(i == y);
+      set_variable(i, i + 1);
+    }
+    exit(i);
+  }
+]
