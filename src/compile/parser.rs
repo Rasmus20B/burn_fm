@@ -160,7 +160,7 @@ impl Parser {
                                 if t.ttype != TokenType::Identifier {
                                     return Err("Expected Identifier for table reference.".to_string());
                                 }
-                                table_occurence.table_actual = t.text.clone();
+                                table_occurence.table_actual_name = t.text.clone();
                             },
                             TokenType::Comma => {
 

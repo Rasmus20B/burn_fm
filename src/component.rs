@@ -90,7 +90,8 @@ impl FMComponentScript {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FMComponentTableOccurence {
     pub table_occurence_name: String,
-    pub table_actual: String,
+    pub table_actual: u16,
+    pub table_actual_name: String,
     pub created_by_account: String,
     pub create_by_user: String,
 }
@@ -99,7 +100,8 @@ impl FMComponentTableOccurence {
     pub fn new() -> Self {
         Self {
             table_occurence_name: String::new(),
-            table_actual: String::new(),
+            table_actual: 0,
+            table_actual_name: String::new(),
             created_by_account: String::new(),
             create_by_user: String::new()
         }

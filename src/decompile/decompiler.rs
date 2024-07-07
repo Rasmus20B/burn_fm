@@ -69,15 +69,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match chunk.ref_simple {
                         Some(2) => {
-                            // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                            //      &path.clone(),
-                            //      chunk.ref_simple,
-                            //      chunk.data);
                             let tmp = component::FMComponentTableOccurence {
                                 table_occurence_name: String::new(),
                                 create_by_user: String::new(),
                                 created_by_account: String::new(),
-                                table_actual: fmp_file.tables.get(&(chunk.data.unwrap()[6] as usize)).unwrap().table_name.clone(),
+                                table_actual: chunk.data.unwrap()[6] as u16,
+                                table_actual_name: String::new(),
                             };
                             fmp_file.table_occurrences.insert(fmp_file.table_occurrences.len() + 1, tmp);
                         }

@@ -1,14 +1,14 @@
 {
   "name": "",
   "tables": {
-    "0": {
-      "table_name": "Person",
+    "1": {
+      "table_name": "Job",
       "created_by_account": "",
       "create_by_user": "",
       "fields": {}
     },
-    "1": {
-      "table_name": "Job",
+    "0": {
+      "table_name": "Person",
       "created_by_account": "",
       "create_by_user": "",
       "fields": {}
