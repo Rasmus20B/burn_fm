@@ -64,24 +64,34 @@ impl Parser {
                                         switches: vec![],
                                     };
 
+                                    let mut buffer = String::new();
                                     while let Some(t) = parser_iter.next() {
                                         match t.ttype {
-                                            TokenType::Identifier => {
-                                                step.switches.push(t.value.clone());
+                                            TokenType::Identifier | TokenType::NumericLiteral => {
+                                                buffer.push_str(&t.value);
                                             }
                                             TokenType::SemiColon => {
-                                                println!("Breaking from current");
                                                 break;
                                             },
                                             TokenType::OpenParen => {
                                                 continue;
                                             },
                                             TokenType::CloseParen => {
+                                                step.switches.push(buffer.clone());
+                                                buffer.clear();
                                                 continue;
                                             }
                                             TokenType::Comma => {
+                                                step.switches.push(buffer.clone());
+                                                buffer.clear();
                                                 continue;
                                             }
+                                            TokenType::Eq => {
+                                                buffer.push_str("==");
+                                            },
+                                            TokenType::Plus => {
+                                                buffer.push('+');
+                                            },
                                             _ => { eprintln!("Unexpected Token."); }
                                         }
                                     }
@@ -120,7 +130,7 @@ impl Parser {
 
 #[cfg(test)]
 mod tests {
-    use crate::{burn_script::lexer, fm_script_engine::fm_script_engine_instructions::Instruction};
+    use crate::{burn_script::lexer, fm_script_engine::fm_script_engine_instructions::{Instruction, ScriptStep}};
 
     use super::Parser;
 
@@ -143,13 +153,37 @@ mod tests {
         assert_eq!(handle.script_name, "test_func");
         assert_eq!(handle.arguments, vec!["x", "y"]);
 
+        let steps_actual = vec![
+            ScriptStep { opcode: Instruction::SetVariable,
+                         switches: vec!["i".to_string(), "x".to_string()],
+                         index: 0,
+            },
+            ScriptStep { opcode: Instruction::Loop,
+                         switches: vec![],
+                         index: 0,
+            },
+            ScriptStep { opcode: Instruction::ExitLoopIf,
+                         switches: vec!["i==y".to_string()],
+                         index: 0,
+            },
+            ScriptStep { opcode: Instruction::SetVariable,
+                         switches: vec!["i".to_string(), "i+1".to_string()],
+                         index: 0,
+            },
+            ScriptStep { opcode: Instruction::ExitScript,
+                         switches: vec!["i".to_string()],
+                         index: 0,
+            },
+
+        ];
+
         let instrs_actual = vec![Instruction::SetVariable,
                                  Instruction::Loop,
                                  Instruction::ExitLoopIf,
                                  Instruction::SetVariable,
                                  Instruction::ExitScript];
-        for (i, step) in instrs_actual.iter().enumerate() {
-            assert_eq!(*step, handle.instructions[i].opcode);
+        for (i, step) in steps_actual.iter().enumerate() {
+            assert_eq!(*step, handle.instructions[i]);
         }
     }
 }

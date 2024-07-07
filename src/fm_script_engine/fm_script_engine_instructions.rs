@@ -428,7 +428,7 @@ pub static INSTRUCTIONMAP : [Option<Instruction>; 212] = [
 	Some(Instruction::TriggerClarisConnectFlow),
 ];
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ScriptStep {
     pub opcode: Instruction,
     pub index: usize,
