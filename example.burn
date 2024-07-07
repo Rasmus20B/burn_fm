@@ -12,6 +12,14 @@ table Person:
   jobid: Text,
 end table;
 
+table_occurence Job:
+  table: Job,
+end table_occurence;
+
+table_occurence Person:
+  table: Person,
+end table_occurence;
+
 table Job:
   PrimaryKey: Unique, Required, Text, {get(uuid)},
   !{!isEmpty(primary)},
@@ -22,7 +30,7 @@ value_list male_female:
   "male", "female"
 end value_list;
 
-relationship PersonToJob:
+relationship:
   Person:Job,
   jobid == PrimaryKey,
 end relationship;
@@ -41,7 +49,7 @@ script: [
 test BasicTest:
   script: [
     define test() {
-      basic_script(2, 10);
+      set_variable(x, 2);
     }
   ],
   assertions:

@@ -55,11 +55,9 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
             match &path.iter().map(|s| s.as_str()).collect::<Vec<_>>().as_slice() {
                 ["3", "17", "5", "0", "251"] => {
                     if chunk.ctype == ChunkType::DataSimple {
-                        let tmp = component::FMComponentRelationship {
-                            table1: fmp_file.table_occurrences.len() as u16,
-                            table2: chunk.data.unwrap()[2] as u16,
-                            comparison: 0,
-                        };
+                        let mut tmp = component::FMComponentRelationship::new();
+                        tmp.table1 = fmp_file.table_occurrences.len() as u16;
+                        tmp.table2 = chunk.data.unwrap()[2] as u16;
                         fmp_file.relationships.insert(fmp_file.relationships.len(), tmp);
                         // println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
                         //      &path.clone(),
@@ -79,7 +77,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 table_occurence_name: String::new(),
                                 create_by_user: String::new(),
                                 created_by_account: String::new(),
-                                table_actual: chunk.data.unwrap()[6] as u16,
+                                table_actual: fmp_file.tables.get(&(chunk.data.unwrap()[6] as usize)).unwrap().table_name.clone(),
                             };
                             fmp_file.table_occurrences.insert(fmp_file.table_occurrences.len() + 1, tmp);
                         }

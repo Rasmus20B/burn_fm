@@ -7,6 +7,7 @@ pub enum TokenType {
     Script,
     Test,
     TableOccurence,
+    AssertionBlock,
     Assertion,
     Identifier,
     Assign,

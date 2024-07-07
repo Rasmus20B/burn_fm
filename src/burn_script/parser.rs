@@ -173,7 +173,6 @@ mod tests {
                          switches: vec!["i".to_string()],
                          index: 0,
             },
-
         ];
         for (i, step) in steps_actual.iter().enumerate() {
             assert_eq!(*step, handle.instructions[i]);

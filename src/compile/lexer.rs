@@ -19,7 +19,7 @@ pub fn tokenize(code: &str) -> Vec<Token> {
             "table_occurence" => Ok(Token::new(TokenType::TableOccurence)),
             "script" => Ok(Token::new(TokenType::Script)),
             "test" => Ok(Token::new(TokenType::Test)),
-            "assertions" => Ok(Token::new(TokenType::Assertion)),
+            "assertions" => Ok(Token::new(TokenType::AssertionBlock)),
             "end" => Ok(Token::new(TokenType::End)),
             _ => {
                 let n = b.parse::<f64>();
@@ -54,6 +54,7 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                 list.push(Token { ttype: TokenType::Script, text: buffer.to_string()});
                 in_script = false;
                 buffer.clear();
+                break;
             }
             buffer.push(c);
             c = lex_iter.next().unwrap().1;
@@ -73,8 +74,26 @@ pub fn tokenize(code: &str) -> Vec<Token> {
         while in_assertion == true {
             if scope == 0 {
                 list.push(Token { ttype: TokenType::Assertion, text: buffer.to_string()});
-                in_assertion = false;
+                println!("Pushing: {}", buffer.to_string());
                 buffer.clear();
+                while c.is_whitespace() {
+                    c = lex_iter.next().unwrap().1;
+                    continue;
+                }
+                if c == ',' {
+                    c = lex_iter.next().unwrap().1;
+                    while c.is_whitespace() {
+                        c = lex_iter.next().unwrap().1;
+                    }
+                    println!("Gets to {}", c);
+                    if c == '(' {
+                        scope = 1;
+                    } else {
+                        in_assertion = false;
+                    }
+                } else {
+                    in_assertion = false;
+                }
             } else if c == '(' {
                 scope += 1;
             } else if c == ')' {
@@ -156,7 +175,7 @@ pub fn tokenize(code: &str) -> Vec<Token> {
             },
             '(' => 
             {
-                if list[list.len() - 2].ttype == TokenType::Assertion {
+                if list[list.len() - 2].ttype == TokenType::AssertionBlock {
                     in_assertion = true;       
                     buffer.push(c);
                     vec![]

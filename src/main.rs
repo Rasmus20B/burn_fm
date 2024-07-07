@@ -36,7 +36,7 @@ fn main() {
         let input = Path::new(path);
         let file = decompile_fmp12_file(&input);
         let json = serde_json::to_string_pretty(&file).expect("Unable to generate json file");
-        write("test_decompile", json).expect("Unable to write to file.");
+        write("test_decompile_relationships", json).expect("Unable to write to file.");
         if args.test {
             let mut env = testing::test::TestEnvironment::new(&file);
             env.generate_tables_for_tests();
