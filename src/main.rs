@@ -25,6 +25,8 @@ fn main() {
         let mut text = String::new();
         code.read_to_string(&mut text).expect("Unable to parse file to string");
         let file = compile::compiler::compile_burn(&text);
+        let json = serde_json::to_string_pretty(&file).expect("Unable to generate json file");
+        write("test_compile", json).expect("Unable to write to file.");
         if args.test {
             let mut env = testing::test::TestEnvironment::new(&file);
             env.generate_tables_for_tests();
@@ -33,10 +35,8 @@ fn main() {
         let path = &args.decompile.unwrap()[0];
         let input = Path::new(path);
         let file = decompile_fmp12_file(&input);
-        println!("read file");
         let json = serde_json::to_string_pretty(&file).expect("Unable to generate json file");
-        println!("got the json");
-        write("test2", json).expect("Unable to write to file.");
+        write("test_decompile", json).expect("Unable to write to file.");
         if args.test {
             let mut env = testing::test::TestEnvironment::new(&file);
             env.generate_tables_for_tests();

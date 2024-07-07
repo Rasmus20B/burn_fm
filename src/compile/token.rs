@@ -4,7 +4,12 @@ pub enum TokenType {
     Table,
     Relationship,
     ValueList,
+    Script,
+    Test,
+    TableOccurence,
+    Assertion,
     Identifier,
+    Assign,
     DataType,
     SemiColon,
     Colon,
@@ -13,6 +18,8 @@ pub enum TokenType {
     CloseCurly,
     OpenSquare,
     CloseSquare,
+    OpenParen,
+    CloseParen,
     OpenQuote,
     CloseQuote,
     Exclamation,
@@ -32,10 +39,21 @@ pub enum TokenType {
     FoundIn,
     Context,
     String,
+    NumericLiteral,
     EOF,
 }
 
 pub struct Token {
     pub ttype: TokenType,
     pub text: String,
+}
+
+impl Token {
+    pub fn new(t: TokenType) -> Self {
+        Self { ttype: t, text: String::new() }
+    }
+
+    pub fn with_value(t: TokenType, val: String) -> Self {
+        Self { ttype: t, text: val }
+    }
 }

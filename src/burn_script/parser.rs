@@ -63,7 +63,6 @@ impl Parser {
                                         index: 0,
                                         switches: vec![],
                                     };
-
                                     let mut buffer = String::new();
                                     while let Some(t) = parser_iter.next() {
                                         match t.ttype {
@@ -136,7 +135,7 @@ mod tests {
 
 
     #[test]
-    pub fn parse_test1() {
+    pub fn parse_test_basic() {
         let code = "
         define test_func(x, y) {
             set_variable(i, x);
@@ -176,12 +175,6 @@ mod tests {
             },
 
         ];
-
-        let instrs_actual = vec![Instruction::SetVariable,
-                                 Instruction::Loop,
-                                 Instruction::ExitLoopIf,
-                                 Instruction::SetVariable,
-                                 Instruction::ExitScript];
         for (i, step) in steps_actual.iter().enumerate() {
             assert_eq!(*step, handle.instructions[i]);
         }

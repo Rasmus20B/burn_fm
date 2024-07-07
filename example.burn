@@ -7,7 +7,7 @@ table Person:
 
   lastName: Text,
 
-  sex: Text, FoundIn[male_female],
+  sex: Text, foundIn[male_female],
   age: Number,
   jobid: Text,
 end table;
@@ -37,3 +37,24 @@ script: [
     exit(i);
   }
 ]
+
+test BasicTest:
+  script: [
+    define test() {
+      basic_script(2, 10);
+    }
+  ],
+  assertions:
+    (assert (empty? (Person)) (False)),
+    (assert_eq (Eq Person[0] (Person (
+      firstName: "Kevin",
+      lastName: "Matthews",
+      sex: "male",
+      age: 50,
+      jobid: null
+    )))),
+end test;
+
+
+
+

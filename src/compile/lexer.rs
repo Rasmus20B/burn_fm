@@ -1,155 +1,299 @@
+use serde_json::to_string;
+
 use crate::compile::token::*;
 
 pub fn tokenize(code: &str) -> Vec<Token> {
     let mut list = Vec::<Token>::new();
     let mut buffer = String::new();
     let mut in_string = false;
+    let mut in_calc = false;
+    let mut in_script = false;
+    let mut in_assertion = false;
     let mut lex_iter = code.chars().into_iter().enumerate().peekable();
-    while let Some((idx, c)) = &lex_iter.next() {
-        if !c.is_whitespace() || buffer.len() > 0 {
-            buffer.push(*c);
+
+    let flush_buffer = |b: &str| -> Result<Token, String> {
+        match b {
+            "table" => Ok(Token::new(TokenType::Table)),
+            "relationship" => Ok(Token::new(TokenType::Relationship)),
+            "value_list" => Ok(Token::new(TokenType::ValueList)),
+            "table_occurence" => Ok(Token::new(TokenType::TableOccurence)),
+            "script" => Ok(Token::new(TokenType::Script)),
+            "test" => Ok(Token::new(TokenType::Test)),
+            "assertions" => Ok(Token::new(TokenType::Assertion)),
+            "end" => Ok(Token::new(TokenType::End)),
+            _ => {
+                let n = b.parse::<f64>();
+                if n.is_ok() {
+                    Ok(Token::with_value(TokenType::NumericLiteral, n.unwrap().to_string()))
+                } else if !b.as_bytes()[0].is_ascii_digit() {
+                    Ok(Token::with_value(TokenType::Identifier, b.to_string()))
+                } else {
+                    Err("Unrecognized Keyword".to_string())
+                }
+            }
+        }
+    };
+
+    while let Some((idx, mut c)) = &lex_iter.next() {
+        if c.is_whitespace() && buffer.is_empty() {
+            continue;
         }
 
-        if in_string == true {
-            if *c == '"' {
+        while in_string == true {
+            if c == '"' {
                 list.push(Token { ttype: TokenType::String, text: buffer.to_string()});
                 in_string = false;
                 buffer.clear();
             }
-            continue;
+            buffer.push(c);
+            c = lex_iter.next().unwrap().1;
+        }
+
+        while in_script == true {
+            if c == ']' {
+                list.push(Token { ttype: TokenType::Script, text: buffer.to_string()});
+                in_script = false;
+                buffer.clear();
+            }
+            buffer.push(c);
+            c = lex_iter.next().unwrap().1;
+        }
+
+        while in_calc == true {
+            if c == '}' {
+                list.push(Token { ttype: TokenType::Calculation, text: buffer.to_string()});
+                in_calc = false;
+                buffer.clear();
+            }
+            buffer.push(c);
+            c = lex_iter.next().unwrap().1;
+        }
+
+        let mut scope = 1;
+        while in_assertion == true {
+            if scope == 0 {
+                list.push(Token { ttype: TokenType::Assertion, text: buffer.to_string()});
+                in_assertion = false;
+                buffer.clear();
+            } else if c == '(' {
+                scope += 1;
+            } else if c == ')' {
+                scope -= 1;
+            }
+            buffer.push(c);
+            c = lex_iter.next().unwrap().1;
         }
 
         let b = buffer.as_str();
 
         let tmp = match c {
-            ' ' => if buffer.is_empty() { vec![] } else {
-                match buffer.trim() {
-                    "table" => vec![Token { ttype: TokenType::Table, text: b.trim().to_string() }],
-                    "relationship" => vec![Token { ttype: TokenType::Relationship, text: b.trim().to_string() }],
-                    "value_list" => vec![Token { ttype: TokenType::ValueList, text: b.trim().to_string() }],
-                    "end" => vec![Token { ttype: TokenType::End, text: "end".trim().to_string() }],
-                    "FoundIn" => vec![Token { ttype: TokenType::FoundIn, text: "FoundIn".to_string() }],
-                    "Text," | "Number," | "Date," | "Time," | "Timestamp," | "Container," => 
-                        vec![Token { ttype: TokenType::DataType, 
-                            text: b
-                                .strip_suffix(',')
-                                .unwrap()
-                                .to_string() } ],
-                    x => vec![ Token { ttype: TokenType::Identifier, text: x.to_string() }]
+            x if x.is_whitespace() => 
+            {
+                let mut ret: Vec<Token> = vec![];
+                if !buffer.is_empty() {
+                    let out = flush_buffer(b);
+                    if out.is_ok() {
+                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
+                        ret.push(out.unwrap());
+                    buffer.clear();
+                    }
                 }
-            },
-            '=' =>  if lex_iter.next().unwrap().1 == '=' {
-                        vec![ Token { ttype: TokenType::EComparison, text: "==".to_string() }]
-                    } else {
-                        vec![]
-                    }
-            '[' => if buffer.is_empty() { 
-                        vec![ Token { ttype: TokenType::OpenSquare, text: "[".to_string() }]
-                    } else {
-                        match buffer.trim().strip_suffix('[').unwrap() {
-                            "FoundIn" => vec![
-                                Token { ttype: TokenType::FoundIn, text: "FoundIn".to_string() },
-                                Token { ttype: TokenType::OpenSquare, text: "[".to_string() }],
-                            _ => vec![]
-                    }
-            },
-            ']' =>  if buffer.is_empty() { 
-                        vec![Token { ttype: TokenType::CloseSquare, text: "]".to_string() }]
-                    } else {
-                        vec![
-                            Token { ttype: TokenType::Identifier, text: buffer.strip_suffix(']').unwrap().to_string() },
-                            Token { ttype: TokenType::CloseSquare, text: "]".to_string() }
-                        ]
-                    }
-            '"' =>  {
-                        in_string = true;
-                        vec![] 
-                    }
-            '!' =>  if list.last().unwrap().ttype != TokenType::OpenCurly {
-                        vec![Token { ttype: TokenType::Exclamation,  text: "!".to_string() }]
-                    } else {
-                        vec![]
-                    }
-            '{' => vec![Token { ttype: TokenType::OpenCurly, text: "{".to_string() }],
-            '}' =>  if buffer.len() > 1 {
-                        let mut ret = vec![];
-                        let calc = buffer.split('}').collect::<Vec::<&str>>()[0];
-                        ret.push(Token { ttype: TokenType::Calculation, text: calc.to_string() });
-                        ret.push(Token { ttype: TokenType::CloseCurly, text: "}".to_string() });
-                        ret
-                    } else {
-                        vec![]
-                    },
-            ';' => if buffer.is_empty() { vec![Token { ttype: TokenType::SemiColon, text: ";".to_string() }] }
-                   else {
-                       let mut ret = vec![];
-                       let tmp = match buffer.trim() {
-                            "table;" => Token { 
-                                ttype: TokenType::Table,
-                                text: b.trim().strip_suffix(';').unwrap().to_string() 
-                            },
-                            "relationship;" => Token { 
-                                ttype: TokenType::Relationship, 
-                                text: b.trim().strip_suffix(';').unwrap().to_string() 
-                            },
-                            "value_list;" => Token { 
-                                ttype: TokenType::ValueList,
-                                text: b.trim().strip_suffix(';').unwrap().to_string() 
-                            },
-                            x =>Token { ttype: TokenType::Identifier, text: x.trim().to_string() },
-                       };
-                       ret.push(tmp);
-                       ret.push(Token { ttype: TokenType::SemiColon, text: ";".to_string() });
-                       ret
-                   }
-            ':' =>  if buffer.len() > 1 {
-                        let mut tmp = vec![];
-                        tmp.push(Token { 
-                            ttype:TokenType::Identifier,
-                            text: b.trim()
-                                .strip_suffix(':')
-                                .unwrap()
-                                .to_string() 
-                        });
-                        tmp.push(Token {ttype: TokenType::Colon, text: ":".to_string() });
-                        tmp
-                    } else {
-                        vec![Token {ttype: TokenType::Colon, text: ":".to_string() }]
-                    }
-            ',' =>  if buffer.len() > 1 {
-                        let mut ret = vec![];
-                        let tmp = match buffer.strip_suffix(',').unwrap() {
-                            "Required" => Token { ttype: TokenType::Required, text: buffer.trim()
-                                .strip_suffix(',')
-                                .unwrap()
-                                .to_string() },
-                            "Unique" => Token { ttype: TokenType::Unique, text: buffer.trim()
-                                .strip_suffix(',')
-                                .unwrap()
-                                .to_string() },
-                            "Existing" => Token { ttype: TokenType::Existing, text: buffer.trim()
-                                .strip_suffix(',')
-                                .unwrap()
-                                .to_string() },
-                            "Text" | "Number" | "Date" | "Time" | "Timestamp" | "Container" => 
-                                Token { ttype: TokenType::DataType, 
-                                    text: b
-                                        .strip_suffix(',')
-                                        .unwrap()
-                                        .to_string() },
-                            x => Token { ttype: TokenType::Identifier, 
-                                         text: x.trim()
-                                             .to_string() }
-                        };
-                        ret.push(tmp); 
-                        ret.push(Token { ttype: TokenType::Comma, text: ",".to_string() });
-                        ret
-                    } else {
-                        vec![Token { ttype: TokenType::Comma, text: ",".to_string() }]
-                    }
-            _ => vec![]
-        };
+                ret
 
+            },
+            '=' =>  
+            {
+                let mut ret: Vec<Token> = vec![];
+                if !buffer.is_empty() {
+                    let out = flush_buffer(b);
+                    if out.is_ok() {
+                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
+                        ret.push(out.unwrap());
+                    }
+                    buffer.clear();
+                }
+
+                if let Some(n) = lex_iter.peek() {
+                    if n.1 == '=' {
+                        ret.push(Token::new(TokenType::EComparison));
+                        lex_iter.next();
+                    } else {
+                        ret.push(Token::new(TokenType::Assign));
+                    }
+                }
+                ret
+            },
+            '[' => 
+            {
+                let mut ret: Vec<Token> = vec![];
+                if !buffer.is_empty() {
+                    let out = flush_buffer(b);
+                    if out.is_ok() {
+                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
+                        ret.push(out.unwrap());
+                    }
+                    buffer.clear();
+                }
+                ret.push(Token::new(TokenType::OpenSquare));
+                if list.last().unwrap().ttype != TokenType::FoundIn {
+                    in_script = true;
+                }
+                ret
+            },
+            ']' => 
+            {
+                let mut ret: Vec<Token> = vec![];
+                if !buffer.is_empty() {
+                    let out = flush_buffer(b);
+                    if out.is_ok() {
+                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
+                        ret.push(out.unwrap());
+                    }
+                    buffer.clear();
+                }
+                ret.push(Token::new(TokenType::CloseSquare));
+                ret
+            },
+            '(' => 
+            {
+                if list[list.len() - 2].ttype == TokenType::Assertion {
+                    in_assertion = true;       
+                    buffer.push(c);
+                    vec![]
+                } else {
+                    let mut ret: Vec<Token> = vec![];
+                    if !buffer.is_empty() {
+                        let out = flush_buffer(b);
+                        if out.is_ok() {
+                            println!("Found a {:?}", out.as_ref().unwrap().ttype);
+                            ret.push(out.unwrap());
+                        }
+                        buffer.clear();
+                    }
+                    ret.push(Token::new(TokenType::OpenParen));
+                    ret
+                }
+
+            },
+            ')' => 
+            {
+                let mut ret: Vec<Token> = vec![];
+                if !buffer.is_empty() {
+                    let out = flush_buffer(b);
+                    if out.is_ok() {
+                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
+                        ret.push(out.unwrap());
+                    }
+                    buffer.clear();
+                }
+                ret.push(Token::new(TokenType::CloseParen));
+                ret
+
+            },
+            '"' =>  
+            {
+                let mut ret: Vec<Token> = vec![];
+                if !buffer.is_empty() {
+                    let out = flush_buffer(b);
+                    if out.is_ok() {
+                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
+                        ret.push(out.unwrap());
+                    }
+                    buffer.clear();
+                }
+                in_string = true;
+                ret
+            },
+            '!' =>  
+            {
+                let mut ret: Vec<Token> = vec![];
+                if !buffer.is_empty() {
+                    let out = flush_buffer(b);
+                    if out.is_ok() {
+                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
+                        ret.push(out.unwrap());
+                    }
+                    buffer.clear();
+                }
+                ret.push(Token::new(TokenType::Exclamation));
+                ret
+            },
+            '{' => 
+            {
+                let mut ret: Vec<Token> = vec![];
+                if !buffer.is_empty() {
+                    let out = flush_buffer(b);
+                    if out.is_ok() {
+                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
+                        ret.push(out.unwrap());
+                    }
+                    buffer.clear();
+                }
+                ret.push(Token::new(TokenType::OpenCurly));
+                in_calc = true;
+                ret
+            },
+            '}' => {
+                let mut ret: Vec<Token> = vec![];
+                if !buffer.is_empty() {
+                    let out = flush_buffer(b);
+                    if out.is_ok() {
+                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
+                        ret.push(out.unwrap());
+                    }
+                    buffer.clear();
+                }
+                ret.push(Token::new(TokenType::CloseCurly));
+                ret
+            },
+            ';' => 
+            {
+                let mut ret: Vec<Token> = vec![];
+                if !buffer.is_empty() {
+                    let out = flush_buffer(b);
+                    if out.is_ok() {
+                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
+                        ret.push(out.unwrap());
+                    }
+                    buffer.clear();
+                }
+                ret.push(Token::new(TokenType::SemiColon));
+                ret
+            },
+            ':' =>
+            {
+                let mut ret: Vec<Token> = vec![];
+                if !buffer.is_empty() {
+                    let out = flush_buffer(b);
+                    if out.is_ok() {
+                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
+                        ret.push(out.unwrap());
+                    }
+                    buffer.clear();
+                }
+                ret.push(Token::new(TokenType::Colon));
+                ret
+            }
+            ',' =>  
+            {
+                let mut ret: Vec<Token> = vec![];
+                if !buffer.is_empty() {
+                    let out = flush_buffer(b);
+                    if out.is_ok() {
+                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
+                        ret.push(out.unwrap());
+                    }
+                    buffer.clear();
+                }
+                ret.push(Token::new(TokenType::Comma));
+                ret
+            }
+            _ => 
+            {
+                buffer.push(c);
+                vec![]
+            }
+        };
         if !tmp.is_empty() {
             for t in tmp {
                 list.push(t);

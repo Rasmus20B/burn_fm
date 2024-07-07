@@ -267,12 +267,8 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     }
                     if chunk.segment_idx == Some(4) {
                             let instrs = chunk.data.unwrap().chunks(28);
-                            for ins in instrs {
+                            for (i, ins) in instrs.enumerate() {
                                 if ins.len() >= 21 {
-                                    // println!("{}, ref_data: {}", 
-                                    //         i + 1,
-                                    //      ins[21]);
-                                }
                                 let oc = &INSTRUCTIONMAP[ins[21] as usize];
                                 if oc.is_some() {
                                     let tmp = ScriptStep {
@@ -282,6 +278,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                     };
                                     fmp_file.scripts
                                         .get_mut(&x.parse().unwrap()).unwrap().instructions.push(tmp);
+                                }
                                 }
                             }
                     } else {
@@ -296,7 +293,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                         // println!("{}, ref_data: {}", 
                                         //         i + 1,
                                         //      ins[21]);
-                                    }
                                     let oc = &INSTRUCTIONMAP[ins[21] as usize];
                                     if oc.is_some() {
                                         let tmp = ScriptStep {
@@ -306,6 +302,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                         };
                                         fmp_file.scripts
                                             .get_mut(&x.parse().unwrap()).unwrap().instructions.push(tmp);
+                                    }
                                     }
                                 }
                             },
