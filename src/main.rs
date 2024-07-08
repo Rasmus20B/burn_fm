@@ -27,9 +27,10 @@ fn main() {
         let file = compile::compiler::compile_burn(&text);
         let json = serde_json::to_string_pretty(&file).expect("Unable to generate json file");
         write("test_compile", json).expect("Unable to write to file.");
-        if args.test {
+        if args.no_testing == false {
             let mut env = testing::test::TestEnvironment::new(&file);
             env.generate_tables_for_tests();
+            env.run_tests();
         }
     } else if args.decompile.is_some() {
         let path = &args.decompile.unwrap()[0];
@@ -37,9 +38,10 @@ fn main() {
         let file = decompile_fmp12_file(&input);
         let json = serde_json::to_string_pretty(&file).expect("Unable to generate json file");
         write("test_decompile", json).expect("Unable to write to file.");
-        if args.test {
+        if args.no_testing == false {
             let mut env = testing::test::TestEnvironment::new(&file);
             env.generate_tables_for_tests();
+            env.run_tests();
         }
     }
 

@@ -8,5 +8,7 @@ pub struct CLI {
     #[clap(short = 'd', conflicts_with="compile")]
     pub decompile: Option<Vec<String>>,
     #[clap(short = 't')]
-    pub test: bool,
+    pub test: Option<Vec<String>>,
+    #[clap(long = "no-testing")]
+    pub no_testing: bool
 }

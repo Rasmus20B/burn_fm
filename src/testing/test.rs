@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use crate::component::FMComponentTest;
 use crate::file;
 use crate::component;
 
@@ -8,7 +9,6 @@ use super::test_environment_instance::*;
 pub struct TestEnvironment<'a> {
     pub file_handle: &'a file::FmpFile,
     pub vm: TestEnvironmentInstance,
-    pub tests: Vec<Test>,
 }
 impl<'a> TestEnvironment<'a> {
 
@@ -16,7 +16,15 @@ impl<'a> TestEnvironment<'a> {
         Self {
             file_handle: file,
             vm: TestEnvironmentInstance::new(),
-            tests: vec![],
+        }
+    }
+
+    pub fn run_tests(&mut self) {
+        for test in &self.file_handle.tests {
+            /* 1. Run the script 
+             * 2. Check Assertions defined in test component
+             * 3. Clean the test environment for next test */
+
         }
     }
 
@@ -39,14 +47,6 @@ impl<'a> TestEnvironment<'a> {
             self.vm.record_ptrs.push(None);
         }
     }
-
-    pub fn run_tests(&self) {
-
-    }
-}
-
-pub struct Test {
-    script: component::FMComponentScript,
 }
 
 
