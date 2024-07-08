@@ -1,6 +1,7 @@
 use clap::Parser;
 
 #[derive(Parser)]
+#[command(arg_required_else_help(true))]
 pub struct CLI {
     #[clap(short = 'c', conflicts_with="decompile")]
     pub compile: Option<Vec<String>>,
