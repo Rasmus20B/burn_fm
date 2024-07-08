@@ -1,0 +1,20 @@
+test BasicTest:
+  script: [
+    define blank_test() {
+      set_variable(x, 1);
+      loop {
+        new_record_request();
+      }
+    }
+  ],
+  assertions:
+    (assert (empty? (Person)) (False)),
+    (assert_eq (Eq Person[0] (Person (
+      firstName: "Kevin",
+      lastName: "Matthews",
+      sex: "male",
+      age: 50,
+      jobid: null
+    )))),
+    ()
+end test;

@@ -1,21 +1,62 @@
 use std::collections::HashMap;
 
+use crate::component::FMComponentScript;
 use crate::component::FMComponentTest;
 use crate::file;
 use crate::component;
 
-use super::test_environment_instance::*;
+pub struct Variable {
+    name: String,
+    value: String,
+    global: bool,
+}
+
+impl Variable {
+    pub fn new(n: String, val: String, g: bool) -> Self {
+        Self {
+            name: n,
+            value: val,
+            global: g,
+        }
+    } 
+
+    pub fn set(&mut self, val: String) {
+        self.value = val;
+    }
+}
+
+pub struct VMTable {
+    pub name: String,
+    pub records: HashMap<String, Vec<String>>,
+}
+
+type Record = usize;
 
 pub struct TestEnvironment<'a> {
     pub file_handle: &'a file::FmpFile,
-    pub vm: TestEnvironmentInstance,
+    pub tables: Vec<VMTable>,
+    /* Each table has it's own record pointer, as per FileMaker */
+    pub record_ptrs: Vec<Option<Record>>,
+    /* Each script has it's own instruction ptr.
+     * on calling of a script, a new ptr is pushed.
+     * When script is finished, we pop the instruction ptr.
+     * Nothing more complex than function calls. No generators etc,
+     * so this is fine.
+     */
+    pub instruction_ptr: Vec<(String, usize)>,
+    pub variables: Vec<HashMap<String, Variable>>,
+    pub current_test: Option<FMComponentTest>, 
 }
 impl<'a> TestEnvironment<'a> {
 
     pub fn new(file: &'a file::FmpFile) -> Self {
         Self {
             file_handle: file,
-            vm: TestEnvironmentInstance::new(),
+            tables: vec![],
+            record_ptrs: vec![],
+            instruction_ptr: vec![],
+            variables: vec![],
+            current_test: None,
         }
     }
 
@@ -24,11 +65,52 @@ impl<'a> TestEnvironment<'a> {
             /* 1. Run the script 
              * 2. Check Assertions defined in test component
              * 3. Clean the test environment for next test */
-
+            self.load_test(test.clone());
+            while !self.instruction_ptr.is_empty() {
+                self.step();
+            }
         }
     }
 
-    pub fn generate_tables_for_tests(&mut self) {
+    pub fn load_test(&mut self, test: FMComponentTest) {
+        self.current_test = Some(test.clone());
+        let script_name = &self.current_test.as_ref().unwrap().script.script_name;
+        self.instruction_ptr.push((script_name.to_string(), 0));
+    }
+
+    pub fn step(&mut self) {
+
+        assert!(self.current_test.is_some());
+        let ip_handle: (String, usize);
+        let mut script_handle: &FMComponentScript;
+        let n_stack = self.instruction_ptr.len() - 1;
+        ip_handle = self.instruction_ptr[n_stack].clone();
+
+
+        if self.instruction_ptr.len() > 1 {
+            script_handle = self.file_handle.scripts.get(&ip_handle.1).unwrap();
+        } else {
+            script_handle = &self.current_test.as_ref().unwrap().script;
+        }
+        
+        if ip_handle.1 > script_handle.instructions.len() - 1{
+            println!("Popping script: {}", ip_handle.0);
+            self.instruction_ptr.pop();
+            return;
+        }
+        let cur_instruction = &script_handle.instructions[ip_handle.1];
+        match cur_instruction {
+            _ => {
+                eprintln!("Unimplemented instruction: {:?}", cur_instruction.opcode);
+                self.instruction_ptr[n_stack].1 += 1;
+
+            }
+        }
+
+    }
+
+
+    pub fn generate_test_environment(&mut self) {
         /* For each test, we will reuse the same table structure 
          * as defined in the fmp_file. Don't rebuild for each one */
         for table in &self.file_handle.tables {
@@ -36,15 +118,16 @@ impl<'a> TestEnvironment<'a> {
                 name: table.1.table_name.clone(),
                 records: HashMap::new(),
             };
-            self.vm.tables.push(vmtable_tmp);
+            self.tables.push(vmtable_tmp);
             println!("Pushing Table \"{}\" to test environment", table.1.table_name);
+            println!("Table has \"{}\" fields", table.1.fields.len());
             for f in &table.1.fields {
                 println!("Pushing field: \"{}::{}\" to test environemnt", table.1.table_name, f.1.field_name);
-                self.vm.tables.last_mut().unwrap().records
+                self.tables.last_mut().unwrap().records
                     .insert(f.1.field_name.to_string(), vec![]);
             }
             /* Each table is empty, therefore no pointer to a record */
-            self.vm.record_ptrs.push(None);
+            self.record_ptrs.push(None);
         }
     }
 }
