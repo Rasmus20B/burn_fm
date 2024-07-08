@@ -34,36 +34,46 @@ fn main() {
     }
 
     if args.compile.is_some() {
-        let path = &args.compile.unwrap()[0];
-        let input = Path::new(path);
-        let mut code = File::open(input).expect("Unable to open file.");
-        let mut text = String::new();
-        code.read_to_string(&mut text).expect("Unable to parse file to string");
-        let file = compile::compiler::compile_burn(&text);
-        let json = serde_json::to_string_pretty(&file).expect("Unable to generate json file");
-        write("test_compile", json).expect("Unable to write to file.");
-        if args.no_testing == false {
-            let mut env = testing::test::TestEnvironment::new(&file);
-            env.generate_test_environment();
-            env.run_tests();
+        for f in args.decompile.unwrap() {
+            let input = Path::new(&f);
+            let mut code = File::open(input).expect("Unable to open file.");
+            let mut text = String::new();
+            code.read_to_string(&mut text).expect("Unable to parse file to string");
+            let tmp = compile::compiler::compile_burn(&text);
+            file.tables.extend(tmp.tables);
+            file.relationships.extend(tmp.relationships);
+            file.value_lists.extend(tmp.value_lists);
+            file.table_occurrences.extend(tmp.table_occurrences);
+            file.scripts.extend(tmp.scripts);
+            file.layouts.extend(tmp.layouts);
+            file.tests.extend(tmp.tests);
+            let json = serde_json::to_string_pretty(&file).expect("Unable to generate json file");
+            write("test_compile", json).expect("Unable to write to file.");
+            if args.no_testing == false {
+                let mut env = testing::test::TestEnvironment::new(&file);
+                env.generate_test_environment();
+                env.run_tests();
+            }
         }
     } else if args.decompile.is_some() {
-        let path = &args.decompile.unwrap()[0];
-        let input = Path::new(path);
-        let tmp = decompile_fmp12_file(&input);
-        let json = serde_json::to_string_pretty(&tmp).expect("Unable to generate json file");
-        write("test_decompile", json).expect("Unable to write to file.");
-        file.tables.extend(tmp.tables);
-        file.relationships.extend(tmp.relationships);
-        file.value_lists.extend(tmp.value_lists);
-        file.table_occurrences.extend(tmp.table_occurrences);
-        file.scripts.extend(tmp.scripts);
-        file.layouts.extend(tmp.layouts);
-        file.tests.extend(tmp.tests);
-        if args.no_testing == false {
-            let mut env = testing::test::TestEnvironment::new(&file);
-            env.generate_test_environment();
-            env.run_tests();
+        for f in args.decompile.unwrap() {
+            let path = f;
+            let input = Path::new(&path);
+            let tmp = decompile_fmp12_file(&input);
+            let json = serde_json::to_string_pretty(&tmp).expect("Unable to generate json file");
+            write("test_decompile", json).expect("Unable to write to file.");
+            file.tables.extend(tmp.tables);
+            file.relationships.extend(tmp.relationships);
+            file.value_lists.extend(tmp.value_lists);
+            file.table_occurrences.extend(tmp.table_occurrences);
+            file.scripts.extend(tmp.scripts);
+            file.layouts.extend(tmp.layouts);
+            file.tests.extend(tmp.tests);
+            if args.no_testing == false {
+                let mut env = testing::test::TestEnvironment::new(&file);
+                env.generate_test_environment();
+                env.run_tests();
+            }
         }
     }
 
