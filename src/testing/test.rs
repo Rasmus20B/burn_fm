@@ -4,6 +4,7 @@ use crate::component::FMComponentScript;
 use crate::component::FMComponentTest;
 use crate::file;
 use crate::component;
+use crate::fm_script_engine::fm_script_engine_instructions::Instruction;
 
 pub struct Variable {
     name: String,
@@ -60,56 +61,6 @@ impl<'a> TestEnvironment<'a> {
         }
     }
 
-    pub fn run_tests(&mut self) {
-        for test in &self.file_handle.tests {
-            /* 1. Run the script 
-             * 2. Check Assertions defined in test component
-             * 3. Clean the test environment for next test */
-            self.load_test(test.clone());
-            while !self.instruction_ptr.is_empty() {
-                self.step();
-            }
-        }
-    }
-
-    pub fn load_test(&mut self, test: FMComponentTest) {
-        self.current_test = Some(test.clone());
-        let script_name = &self.current_test.as_ref().unwrap().script.script_name;
-        self.instruction_ptr.push((script_name.to_string(), 0));
-    }
-
-    pub fn step(&mut self) {
-
-        assert!(self.current_test.is_some());
-        let ip_handle: (String, usize);
-        let mut script_handle: &FMComponentScript;
-        let n_stack = self.instruction_ptr.len() - 1;
-        ip_handle = self.instruction_ptr[n_stack].clone();
-
-
-        if self.instruction_ptr.len() > 1 {
-            script_handle = self.file_handle.scripts.get(&ip_handle.1).unwrap();
-        } else {
-            script_handle = &self.current_test.as_ref().unwrap().script;
-        }
-        
-        if ip_handle.1 > script_handle.instructions.len() - 1{
-            println!("Popping script: {}", ip_handle.0);
-            self.instruction_ptr.pop();
-            return;
-        }
-        let cur_instruction = &script_handle.instructions[ip_handle.1];
-        match cur_instruction {
-            _ => {
-                eprintln!("Unimplemented instruction: {:?}", cur_instruction.opcode);
-                self.instruction_ptr[n_stack].1 += 1;
-
-            }
-        }
-
-    }
-
-
     pub fn generate_test_environment(&mut self) {
         /* For each test, we will reuse the same table structure 
          * as defined in the fmp_file. Don't rebuild for each one */
@@ -130,6 +81,65 @@ impl<'a> TestEnvironment<'a> {
             self.record_ptrs.push(None);
         }
     }
+
+    pub fn run_tests(&mut self) {
+        for test in &self.file_handle.tests {
+            /* 1. Run the script 
+             * 2. Check Assertions defined in test component
+             * 3. Clean the test environment for next test */
+            self.load_test(test.clone());
+            while !self.instruction_ptr.is_empty() {
+                self.step();
+            }
+        }
+    }
+
+    pub fn load_test(&mut self, test: FMComponentTest) {
+        self.current_test = Some(test.clone());
+        let script_name = &self.current_test.as_ref().unwrap().script.script_name;
+        self.instruction_ptr.push((script_name.to_string(), 0));
+        self.variables.push(HashMap::new());
+    }
+
+    pub fn step(&mut self) {
+
+        assert!(self.current_test.is_some());
+        let ip_handle: (String, usize);
+        let mut script_handle: &FMComponentScript;
+        let n_stack = self.instruction_ptr.len() - 1;
+        ip_handle = self.instruction_ptr[n_stack].clone();
+        if self.instruction_ptr.len() > 1 {
+            script_handle = self.file_handle.scripts.get(&ip_handle.1).unwrap();
+        } else {
+            script_handle = &self.current_test.as_ref().unwrap().script;
+        }
+        
+        if ip_handle.1 > script_handle.instructions.len() - 1{
+            println!("Popping script: {}", ip_handle.0);
+            self.instruction_ptr.pop();
+            return;
+        }
+        let cur_instruction = &script_handle.instructions[ip_handle.1];
+        match &cur_instruction.opcode {
+            Instruction::SetVariable => {
+                let name : &str = cur_instruction.switches[0].as_ref();
+                let val : &str = cur_instruction.switches[1].as_ref();
+                let tmp = Variable::new(name.to_string(), val.to_string(), false);
+                let handle = self.variables[n_stack].get_mut(name);
+                if handle.is_none() {
+                    self.variables[n_stack].insert(name.to_string(), tmp);
+                }
+                self.instruction_ptr[n_stack].1 += 1;
+            }
+            _ => {
+                eprintln!("Unimplemented instruction: {:?}", cur_instruction.opcode);
+                self.instruction_ptr[n_stack].1 += 1;
+            }
+        }
+
+    }
+
+
 }
 
 
