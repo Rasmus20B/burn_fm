@@ -28,7 +28,7 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                 } else if !b.as_bytes()[0].is_ascii_digit() {
                     Ok(Token::with_value(TokenType::Identifier, b.to_string()))
                 } else {
-                    Err("Unrecognized Keyword".to_string())
+                    Err("Invalid Identifier".to_string())
                 }
             }
         }

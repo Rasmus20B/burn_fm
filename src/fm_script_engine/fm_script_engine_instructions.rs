@@ -206,6 +206,7 @@ impl FromStr for Instruction {
             "set_variable" => Ok(Instruction::SetVariable),
             "loop" => Ok(Instruction::Loop),
             "exit_loop_if" => Ok(Instruction::ExitLoopIf),
+            "new_record_request" => Ok(Instruction::NewRecordRequest),
             "exit_script" => Ok(Instruction::ExitScript),
             _ => Err(()),
         }

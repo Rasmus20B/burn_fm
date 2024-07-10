@@ -20,9 +20,11 @@ impl Parser {
         }
     }
 
-    pub fn parse(&self) -> Vec<FMComponentScript> {
+    pub fn parse(&self) -> Result<Vec<FMComponentScript>, &str> {
         let mut scripts = vec![];
         let mut parser_iter = self.tokens.iter().peekable();
+
+        let mut punc_stack: Vec<Instruction> = vec![];
 
         while let Some(t) = parser_iter.next() {
             match t.ttype {
@@ -99,6 +101,33 @@ impl Parser {
                                     eprintln!("Invalid script step: {}", t.value);
                                 }
                             },
+
+                            TokenType::CloseBracket => {
+
+                                let top = punc_stack.last();
+                                if top.is_none() {
+                                    return Err("Invalid Scope end. Please check that all 'if' or 'loop' instructions are properly resolved.");
+                                }
+                                let op: Instruction;
+                                match top.unwrap() {
+                                    Instruction::If => {
+                                        op = Instruction::EndIf;
+                                    },
+                                    Instruction::Loop => {
+                                        op = Instruction::EndLoop;
+                                    },
+                                    _ => {
+                                        return Err("Unknown scope signifier.");
+                                    }
+
+                                }
+                                let step = ScriptStep {
+                                    opcode: op,
+                                    index: 0,
+                                    switches: vec![],
+                                };
+                                tmp.instructions.push(step);
+                            }
                             TokenType::Loop => {
                                 let check = parser_iter.next();
                                 if check.unwrap().ttype != TokenType::OpenBracket {
@@ -111,6 +140,7 @@ impl Parser {
                                     switches: vec![],
                                 };
                                 tmp.instructions.push(step);
+                                punc_stack.push(Instruction::Loop);
                             }
                             _ => { eprintln!("Invalid token in script"); }
                         }
@@ -123,7 +153,7 @@ impl Parser {
                 }
             }
         }
-        return scripts;
+        return Ok(scripts);
     }
 }
 
@@ -146,7 +176,7 @@ mod tests {
             exit_script(i);
         }";
         let tokens = lexer::Lexer::new(code.to_string()).get_tokens();
-        let scripts = Parser::new(tokens).parse();
+        let scripts = Parser::new(tokens).parse().expect("Unable to parse token stream");
 
         let handle = scripts[0].clone();
         assert_eq!(handle.script_name, "test_func");
@@ -167,6 +197,10 @@ mod tests {
             },
             ScriptStep { opcode: Instruction::SetVariable,
                          switches: vec!["i".to_string(), "i+1".to_string()],
+                         index: 0,
+            },
+            ScriptStep { opcode: Instruction::EndLoop,
+                         switches: vec![],
                          index: 0,
             },
             ScriptStep { opcode: Instruction::ExitScript,

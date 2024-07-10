@@ -1,15 +1,23 @@
 use std::collections::HashMap;
+use std::io;
+use std::io::Write;
 
 use crate::component::FMComponentScript;
 use crate::component::FMComponentTest;
 use crate::file;
 use crate::component;
 use crate::fm_script_engine::fm_script_engine_instructions::Instruction;
+use crate::testing::calc_eval;
+
+use super::calc_eval::Node;
+use super::calc_tokens;
+use super::calc_tokens::Token;
+use super::calc_tokens::TokenType;
 
 pub struct Variable {
-    name: String,
-    value: String,
-    global: bool,
+    pub name: String,
+    pub value: String,
+    pub global: bool,
 }
 
 impl Variable {
@@ -47,9 +55,10 @@ pub struct TestEnvironment<'a> {
     pub instruction_ptr: Vec<(String, usize)>,
     pub variables: Vec<HashMap<String, Variable>>,
     pub current_test: Option<FMComponentTest>, 
+    pub table_ptr: Option<usize>,
+    pub loop_scopes: Vec<usize>,
 }
 impl<'a> TestEnvironment<'a> {
-
     pub fn new(file: &'a file::FmpFile) -> Self {
         Self {
             file_handle: file,
@@ -58,6 +67,8 @@ impl<'a> TestEnvironment<'a> {
             instruction_ptr: vec![],
             variables: vec![],
             current_test: None,
+            table_ptr: None,
+            loop_scopes: vec![],
         }
     }
 
@@ -80,17 +91,21 @@ impl<'a> TestEnvironment<'a> {
             /* Each table is empty, therefore no pointer to a record */
             self.record_ptrs.push(None);
         }
+        self.table_ptr = Some(0);
     }
 
     pub fn run_tests(&mut self) {
+        println!("Running test:");
         for test in &self.file_handle.tests {
             /* 1. Run the script 
              * 2. Check Assertions defined in test component
              * 3. Clean the test environment for next test */
+            println!("Running test: {}", test.test_name);
             self.load_test(test.clone());
             while !self.instruction_ptr.is_empty() {
                 self.step();
             }
+            println!("Finished running test: {}", self.current_test.as_ref().unwrap().test_name);
         }
     }
 
@@ -104,7 +119,7 @@ impl<'a> TestEnvironment<'a> {
     pub fn step(&mut self) {
 
         assert!(self.current_test.is_some());
-        let ip_handle: (String, usize);
+        let mut ip_handle: (String, usize);
         let mut script_handle: &FMComponentScript;
         let n_stack = self.instruction_ptr.len() - 1;
         ip_handle = self.instruction_ptr[n_stack].clone();
@@ -119,27 +134,219 @@ impl<'a> TestEnvironment<'a> {
             self.instruction_ptr.pop();
             return;
         }
-        let cur_instruction = &script_handle.instructions[ip_handle.1];
+        let mut cur_instruction = &script_handle.instructions[ip_handle.1];
         match &cur_instruction.opcode {
             Instruction::SetVariable => {
                 let name : &str = cur_instruction.switches[0].as_ref();
-                let val : &str = cur_instruction.switches[1].as_ref();
+                let val : &str = &self.eval_calculation(&cur_instruction.switches[1]);
+                println!("setting {} to {}", name, val);
                 let tmp = Variable::new(name.to_string(), val.to_string(), false);
-                let handle = self.variables[n_stack].get_mut(name);
+                let handle = &mut self.variables[n_stack].get_mut(name);
                 if handle.is_none() {
+                    println!("Didn't find it bruv");
                     self.variables[n_stack].insert(name.to_string(), tmp);
+                } else {
+                    handle.as_mut().unwrap().value = tmp.value;
                 }
                 self.instruction_ptr[n_stack].1 += 1;
+            },
+            Instruction::Loop => {
+                println!("We in loop");
+                self.loop_scopes.push(ip_handle.1);
+                self.instruction_ptr[n_stack].1 += 1;
+            },
+            Instruction::EndLoop => {
+                println!("end of the loop, back to the start");
+                self.instruction_ptr[n_stack].1 = self.loop_scopes.last().unwrap() + 1;
+                // self.instruction_ptr[n_stack].1 += 1;
+            },
+            Instruction::ExitLoopIf => {
+                println!("{}", self.variables[0].get("x").unwrap().value);
+                let val : &str = &self.eval_calculation(&cur_instruction.switches[0]);
+                if val == "true" {
+                    while cur_instruction.opcode != Instruction::EndLoop {
+                        cur_instruction = &script_handle.instructions[ip_handle.1];
+                        ip_handle.1 += 1;
+                    }
+                    self.instruction_ptr[n_stack].1 = ip_handle.1 + 1; 
+                } else {
+                    self.instruction_ptr[n_stack].1 += 1;
+                }
             }
+            Instruction::NewRecordRequest => {
+                for (name, f) in &mut self.tables[self.table_ptr.unwrap()].records {
+                    f.push(String::new());
+                }
+                println!("Creating a new record.");
+                self.instruction_ptr[n_stack].1 += 1;
+            },
             _ => {
                 eprintln!("Unimplemented instruction: {:?}", cur_instruction.opcode);
                 self.instruction_ptr[n_stack].1 += 1;
             }
         }
-
     }
 
+    pub fn eval_calculation(&self, calculation: &str) -> String {
+        let result = String::new();
+        /* Lex */
+        let flush_buffer = |b: &str| -> Result<calc_tokens::Token, String> {
+            match b {
+                x => {
+                    let n = b.parse::<f64>();
+                    if n.is_ok() {
+                        Ok(Token::with_value(calc_tokens::TokenType::NumericLiteral, n.unwrap().to_string()))
+                    } else if !b.as_bytes()[0].is_ascii_digit() {
+                        Ok(Token::with_value(calc_tokens::TokenType::Identifier, b.to_string()))
+                    } else {
+                        Err("Invalid Identifier".to_string())
+                    }
+                }
+            }
+        };
 
+        let mut tokens : Vec<Token> = vec![];
+        let mut lex_iter = calculation.chars().into_iter().enumerate().peekable();
+        let mut buffer = String::new();
+        while let Some((idx, mut c)) = &lex_iter.next() {
+            if c.is_whitespace() && buffer.is_empty() {
+                continue;
+            }
+
+            match c {
+                ' ' => {
+                    let b = flush_buffer(buffer.as_str());
+                    buffer.clear();
+                    tokens.push(b.unwrap());
+                }
+                '(' => {
+                    let b = flush_buffer(buffer.as_str());
+                    tokens.push(b.unwrap());
+                    buffer.clear();
+                    tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::OpenParen)).unwrap());
+                }
+                '+' => {
+                    let b = flush_buffer(buffer.as_str());
+                    tokens.push(b.unwrap());
+                    buffer.clear();
+                    tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::Plus)).unwrap());
+                },
+                '=' => {
+                    let b = flush_buffer(buffer.as_str());
+                    tokens.push(b.unwrap());
+                    buffer.clear();
+                    if lex_iter.peek().unwrap().1 == '=' {
+                        tokens.push(Ok::<calc_tokens::Token, String>(
+                                calc_tokens::Token::new(calc_tokens::TokenType::Eq)).unwrap());
+                        lex_iter.next();
+                    }
+
+                }
+                _ => {
+                    buffer.push(c);
+                }
+            }
+        }
+        let b = flush_buffer(buffer.as_str());
+        tokens.push(b.unwrap());
+
+        /* Once we have our tokens, parse them into a binary expression. */
+        
+        let ast = calc_eval::Parser::new(tokens).parse().expect("unable to parse tokens.");
+        self.evaluate(ast)
+    }
+
+    pub fn evaluate(&self, ast: Box<Node>) -> String {
+        match *ast {
+            Node::Unary { value, child } => {
+                if child.is_none() {
+                    return value;
+                } else {
+                    
+                }
+                "".to_string()
+            },
+            Node::Binary { left, operation, right } => {
+                let mut lhs = self.evaluate(left);
+                let mut rhs = self.evaluate(right);
+
+                let mut lhs_n = lhs.parse::<f64>();
+                let mut rhs_n = rhs.parse::<f64>();
+
+                let scope = self.instruction_ptr.len() - 1;
+
+                if lhs_n.is_err() {
+                    lhs_n = Ok(self.variables[scope]
+                        .get(&lhs).expect("Variable not in scope").value
+                        .clone().parse::<f64>().unwrap_or(0.0));
+                }
+                if rhs_n.is_err() {
+                    rhs_n = Ok(self.variables[scope]
+                        .get(&rhs).expect("Variable not in scope").value
+                        .clone().parse::<f64>().unwrap_or(0.0));
+                }
+
+                match operation {
+                    TokenType::Plus => { 
+                        (lhs_n.clone().unwrap()
+                         + 
+                         rhs_n.clone().unwrap()
+                         ).to_string() 
+                    },
+                    TokenType::Eq => { 
+                        (lhs_n
+                         == 
+                         rhs_n
+                         ).to_string() 
+                    },
+                    _ => { unreachable!()}
+                }
+            },
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::path::Path;
+    use crate::{burn_script::compiler::BurnScriptCompiler, compile::compiler::{self, compile_burn}, decompile::decompiler::decompile_fmp12_file};
+
+    use super::TestEnvironment;
+
+    #[test]
+    pub fn basic_loop_test() {
+        let code = "
+        test BasicTest:
+          script: [
+            define blank_test() {
+              set_variable(x, 1);
+              loop {
+                new_record_request();
+                exit_loop_if(x == 10);
+                set_variable(x, x + 1);
+              }
+            }
+          ],
+          assertions:
+            (assert (empty? (Person)) (False)),
+            (assert_eq (Eq Person[0] (Person (
+              firstName: \"Kevin\",
+              lastName: \"Matthews\",
+              sex: \"male\",
+              age: 50,
+              jobid: null
+            )))),
+            ()
+        end test;";
+        let input = Path::new("tests/input/blank.fmp12");
+        let mut file = decompile_fmp12_file(&input);
+        let mut tests = compile_burn(code);
+        file.tests.append(&mut tests.tests);
+        let mut te : TestEnvironment = TestEnvironment::new(&file);
+        te.generate_test_environment();
+        te.run_tests();
+        assert_eq!(te.tables[0].records.get("PrimaryKey").unwrap().len(), 10);
+    }
 }
 
 

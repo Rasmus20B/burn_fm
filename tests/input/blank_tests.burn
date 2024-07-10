@@ -4,6 +4,8 @@ test BasicTest:
       set_variable(x, 1);
       loop {
         new_record_request();
+        exit_loop_if(x == 10);
+        set_variable(x, x + 1);
       }
     }
   ],
