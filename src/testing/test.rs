@@ -128,9 +128,11 @@ impl<'a> TestEnvironment<'a> {
         } else {
             script_handle = &self.current_test.as_ref().unwrap().script;
         }
+
         
         if ip_handle.1 > script_handle.instructions.len() - 1{
             println!("Popping script: {}", ip_handle.0);
+            println!("Script was {} lines long.", script_handle.instructions.len());
             self.instruction_ptr.pop();
             return;
         }
@@ -152,8 +154,27 @@ impl<'a> TestEnvironment<'a> {
             Instruction::SetField => {
                 let name : &str = cur_instruction.switches[0].as_ref();
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[1]);
-                let parts : Vec<&str> = val.split("::").collect();
-                println!("Setting field {} to {}::{}", name, parts[0], parts[1]);
+                let parts : Vec<&str> = name.split("::").collect();
+                println!("Setting field {}::{} to {}", parts[0], parts[1], val);
+
+                let mut table_handle : Option<&mut VMTable> = None;
+                let mut n = 0;
+                println!("GETS HERE");
+                for (i, table) in self.tables.iter_mut().enumerate() {
+                    if table.name == parts[0] {
+                        table_handle = Some(table);
+                        n = i;
+                        break;
+                    }
+                }
+
+                if table_handle.is_none() {
+                    eprintln!("Table does not exist.");
+                    self.instruction_ptr[n_stack].1 += 1;
+                    return;
+                }
+                table_handle.unwrap().records.get_mut(parts[1])
+                    .expect("Field does not exist.")[self.record_ptrs[n].unwrap()] = val.to_string();
                 self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::Loop => {
@@ -181,6 +202,12 @@ impl<'a> TestEnvironment<'a> {
             Instruction::NewRecordRequest => {
                 for (name, f) in &mut self.tables[self.table_ptr.unwrap()].records {
                     f.push(String::new());
+                }
+                let mut handle = &mut self.record_ptrs[self.table_ptr.unwrap()];
+                if handle.is_none() {
+                    *handle = Some(0);
+                } else {
+                    *handle = Some(handle.unwrap() + 1);
                 }
                 println!("Creating a new record.");
                 self.instruction_ptr[n_stack].1 += 1;
@@ -218,40 +245,68 @@ impl<'a> TestEnvironment<'a> {
 
             match c {
                 ' ' => {
-                    let b = flush_buffer(buffer.as_str());
-                    buffer.clear();
-                    tokens.push(b.unwrap());
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        tokens.push(b.unwrap());
+                    }
                 },
                 '(' => {
-                    let b = flush_buffer(buffer.as_str());
-                    tokens.push(b.unwrap());
-                    buffer.clear();
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        tokens.push(b.unwrap());
+                    }
                     tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::OpenParen)).unwrap());
                 },
                 '+' => {
-                    let b = flush_buffer(buffer.as_str());
-                    tokens.push(b.unwrap());
-                    buffer.clear();
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        tokens.push(b.unwrap());
+                    }
                     tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::Plus)).unwrap());
                 },
                 '=' => {
-                    let b = flush_buffer(buffer.as_str());
-                    tokens.push(b.unwrap());
-                    buffer.clear();
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        tokens.push(b.unwrap());
+                    }
                     if *lex_iter.peek().unwrap() == '=' {
                         tokens.push(Ok::<calc_tokens::Token, String>(
                                 calc_tokens::Token::new(calc_tokens::TokenType::Eq)).unwrap());
                         lex_iter.next();
                     }
                 },
+                '"' => {
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        tokens.push(b.unwrap());
+                    }
+                    while let Some(c) = &lex_iter.next() {
+                        if *c == '"' {
+                            buffer.push(*c);
+                            break;
+                        }
+                        buffer.push(*c);
+                    }
+                    buffer.push(*c);
+                    println!("Buffer: {}", buffer);
+                    tokens.push(Token::with_value(TokenType::String, buffer.clone()));
+                },
                 _ => {
                     buffer.push(*c);
                 }
             }
         }
-        let b = flush_buffer(buffer.as_str());
-        tokens.push(b.unwrap());
 
+        if buffer.len() > 0 {
+            let b = flush_buffer(buffer.as_str());
+            buffer.clear();
+            tokens.push(b.unwrap());
+        }
         /* Once we have our tokens, parse them into a binary expression. */
         
         let ast = calc_eval::Parser::new(tokens).parse().expect("unable to parse tokens.");
@@ -271,12 +326,9 @@ impl<'a> TestEnvironment<'a> {
             Node::Binary { left, operation, right } => {
                 let lhs = self.evaluate(left);
                 let rhs = self.evaluate(right);
-
                 let mut lhs_n = lhs.parse::<f64>();
                 let mut rhs_n = rhs.parse::<f64>();
-
                 let scope = self.instruction_ptr.len() - 1;
-
                 if lhs_n.is_err() {
                     lhs_n = Ok(self.variables[scope]
                                .get(&lhs)
@@ -330,7 +382,7 @@ mod tests {
                 new_record_request();
                 exit_loop_if(x == 10);
                 set_variable(x, x + 1);
-                set_field(Person::first_name, \"Kevin\")
+                set_field(blank::PrimaryKey, \"Kevin\");
               }
             }
           ],
@@ -353,6 +405,7 @@ mod tests {
         te.generate_test_environment();
         te.run_tests();
         assert_eq!(te.tables[0].records.get("PrimaryKey").unwrap().len(), 10);
+        assert_eq!(te.tables[0].records.get("PrimaryKey").unwrap()[7], "Kevin");
     }
 }
 

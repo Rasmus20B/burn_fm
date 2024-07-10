@@ -194,16 +194,7 @@ impl Lexer {
                             ret.push(Token::with_value(TokenType::Identifier, &buffer))
                         }
                     }
-                    buffer.clear();
-                    buffer.push(*c);
-                    while let Some((idx, c)) = &lex_iter.next() {
-                        if *c == '"' {
-                            buffer.push(*c);
-                            break;
-                        }
-                        buffer.push(*c);
-                    }
-                    ret.push(Token::with_value(TokenType::String, &buffer));
+
                     Some(ret)
 
                 }

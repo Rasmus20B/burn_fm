@@ -43,10 +43,10 @@ impl Parser {
 
     pub fn parse_identifier(&mut self, tok: Token) -> Result<Box<Node>, &str> {
         let n = self.next();
+        println!("HERE");
         if n.is_none() {
             return Ok(Box::new(Node::Unary { value: self.current().value.clone(), child: None }));
         }
-
         match n.unwrap().ttype {
             TokenType::Plus => {
                 Ok(Box::new(Node::Binary { 
@@ -94,14 +94,36 @@ impl Parser {
         }
     }
 
+    fn parse_string(&mut self, tok: Token) -> Result<Box<Node>, &str> {
+        let n = self.next();
+        if n.is_none() {
+            return Ok(Box::new(Node::Unary { value: tok.value, child: None }));
+        }
+        match n.unwrap().ttype {
+            calc_tokens::TokenType::Ampersand => {
+                Ok(Box::new(Node::Binary { left: Box::new(Node::Unary { value: tok.value, child: None } ), 
+                    operation: n.unwrap().ttype, 
+                    right: self.parse().expect("unable to parse") }))
+            }
+            _ => { Err("Unable to perform specified binary operation on string.") }
+        }
+    }
+
     pub fn parse(&mut self) -> Result<Box<Node>, &str> {
-        let cur = self.next().unwrap().clone();
+        let n = self.next();
+        if n.is_none() {
+            return Err("Nothing to parse.");
+        }
+        let cur = n.unwrap().clone();
         match cur.ttype {
             calc_tokens::TokenType::Identifier => {
                 Ok(self.parse_identifier(cur).expect("Unable to parse identifier"))
             },
             calc_tokens::TokenType::NumericLiteral => {
                 Ok(self.parse_numeric(cur).expect("Unable to parse numeric literal"))
+            },
+            calc_tokens::TokenType::String => {
+                Ok(self.parse_string(cur).expect("Unable to parse numeric literal"))
             },
             _ => {
                 Err("Unable to parse calculation")

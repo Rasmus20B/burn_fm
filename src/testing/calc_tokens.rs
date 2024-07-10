@@ -5,6 +5,8 @@ pub enum TokenType {
     CloseParen,
     Identifier,
     NumericLiteral,
+    String,
+    Ampersand,
     SemiColon,
     OpenSquare,
     CloseSquare,
