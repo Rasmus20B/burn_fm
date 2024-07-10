@@ -183,6 +183,30 @@ impl Lexer {
                     ret.push(Token::new(TokenType::Divide));
                     Some(ret)
                 },
+                '"' => 
+                {
+                    let mut ret: Vec<Token> = vec![];
+                    if !buffer.is_empty() {
+                        let n = buffer.parse::<f64>();
+                        if n.is_ok() {
+                          ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
+                        } else {
+                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
+                        }
+                    }
+                    buffer.clear();
+                    buffer.push(*c);
+                    while let Some((idx, c)) = &lex_iter.next() {
+                        if *c == '"' {
+                            buffer.push(*c);
+                            break;
+                        }
+                        buffer.push(*c);
+                    }
+                    ret.push(Token::with_value(TokenType::String, &buffer));
+                    Some(ret)
+
+                }
                 _ => {
                     buffer.push(*c);
                     None

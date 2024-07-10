@@ -86,7 +86,7 @@ impl Parser {
                                                 step.switches.push(buffer.clone());
                                                 buffer.clear();
                                                 continue;
-                                            }
+                                            },
                                             TokenType::Eq => {
                                                 buffer.push_str("==");
                                             },

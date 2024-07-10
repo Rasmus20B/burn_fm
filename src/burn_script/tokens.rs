@@ -23,6 +23,7 @@ pub enum TokenType {
     Gt,
     Lt,
     NumericLiteral,
+    String,
 }
 
 #[derive(PartialEq, Debug)]

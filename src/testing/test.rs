@@ -139,7 +139,7 @@ impl<'a> TestEnvironment<'a> {
             Instruction::SetVariable => {
                 let name : &str = cur_instruction.switches[0].as_ref();
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[1]);
-                println!("setting {} to {}", name, val);
+                println!("setting var {} to {}", name, val);
                 let tmp = Variable::new(name.to_string(), val.to_string(), false);
                 let handle = &mut self.variables[n_stack].get_mut(name);
                 if handle.is_none() {
@@ -147,6 +147,13 @@ impl<'a> TestEnvironment<'a> {
                 } else {
                     handle.as_mut().unwrap().value = tmp.value;
                 }
+                self.instruction_ptr[n_stack].1 += 1;
+            },
+            Instruction::SetField => {
+                let name : &str = cur_instruction.switches[0].as_ref();
+                let val : &str = &self.eval_calculation(&cur_instruction.switches[1]);
+                let parts : Vec<&str> = val.split("::").collect();
+                println!("Setting field {} to {}::{}", name, parts[0], parts[1]);
                 self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::Loop => {
@@ -186,7 +193,6 @@ impl<'a> TestEnvironment<'a> {
     }
 
     pub fn eval_calculation(&self, calculation: &str) -> String {
-        /* Lex */
         let flush_buffer = |b: &str| -> Result<calc_tokens::Token, String> {
             match b {
                 _ => {
@@ -215,13 +221,13 @@ impl<'a> TestEnvironment<'a> {
                     let b = flush_buffer(buffer.as_str());
                     buffer.clear();
                     tokens.push(b.unwrap());
-                }
+                },
                 '(' => {
                     let b = flush_buffer(buffer.as_str());
                     tokens.push(b.unwrap());
                     buffer.clear();
                     tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::OpenParen)).unwrap());
-                }
+                },
                 '+' => {
                     let b = flush_buffer(buffer.as_str());
                     tokens.push(b.unwrap());
@@ -237,8 +243,7 @@ impl<'a> TestEnvironment<'a> {
                                 calc_tokens::Token::new(calc_tokens::TokenType::Eq)).unwrap());
                         lex_iter.next();
                     }
-
-                }
+                },
                 _ => {
                     buffer.push(*c);
                 }
@@ -325,18 +330,19 @@ mod tests {
                 new_record_request();
                 exit_loop_if(x == 10);
                 set_variable(x, x + 1);
+                set_field(Person::first_name, \"Kevin\")
               }
             }
           ],
           assertions:
-            (assert (empty? (Person)) (False)),
-            (assert_eq (Eq Person[0] (Person (
+            (assert_eq (empty? (Person)) (False)),
+            (assert_eq (Person[0]) (Person (
               firstName: \"Kevin\",
               lastName: \"Matthews\",
               sex: \"male\",
               age: 50,
               jobid: null
-            )))),
+            ))),
             ()
         end test;";
         let input = Path::new("tests/input/blank.fmp12");

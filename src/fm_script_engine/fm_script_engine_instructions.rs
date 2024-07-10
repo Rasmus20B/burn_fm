@@ -203,6 +203,7 @@ impl FromStr for Instruction {
     fn from_str(input: &str) -> Result<Instruction, Self::Err> {
         match input {
             "perform_script" => Ok(Instruction::PerformScript),
+            "set_field" => Ok(Instruction::SetField),
             "set_variable" => Ok(Instruction::SetVariable),
             "loop" => Ok(Instruction::Loop),
             "exit_loop_if" => Ok(Instruction::ExitLoopIf),
