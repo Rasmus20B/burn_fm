@@ -143,7 +143,6 @@ impl<'a> TestEnvironment<'a> {
                 let tmp = Variable::new(name.to_string(), val.to_string(), false);
                 let handle = &mut self.variables[n_stack].get_mut(name);
                 if handle.is_none() {
-                    println!("Didn't find it bruv");
                     self.variables[n_stack].insert(name.to_string(), tmp);
                 } else {
                     handle.as_mut().unwrap().value = tmp.value;
@@ -188,11 +187,10 @@ impl<'a> TestEnvironment<'a> {
     }
 
     pub fn eval_calculation(&self, calculation: &str) -> String {
-        let result = String::new();
         /* Lex */
         let flush_buffer = |b: &str| -> Result<calc_tokens::Token, String> {
             match b {
-                x => {
+                _ => {
                     let n = b.parse::<f64>();
                     if n.is_ok() {
                         Ok(Token::with_value(calc_tokens::TokenType::NumericLiteral, n.unwrap().to_string()))
@@ -206,9 +204,9 @@ impl<'a> TestEnvironment<'a> {
         };
 
         let mut tokens : Vec<Token> = vec![];
-        let mut lex_iter = calculation.chars().into_iter().enumerate().peekable();
+        let mut lex_iter = calculation.chars().into_iter().peekable();
         let mut buffer = String::new();
-        while let Some((idx, mut c)) = &lex_iter.next() {
+        while let Some(c) = &lex_iter.next() {
             if c.is_whitespace() && buffer.is_empty() {
                 continue;
             }
@@ -235,7 +233,7 @@ impl<'a> TestEnvironment<'a> {
                     let b = flush_buffer(buffer.as_str());
                     tokens.push(b.unwrap());
                     buffer.clear();
-                    if lex_iter.peek().unwrap().1 == '=' {
+                    if *lex_iter.peek().unwrap() == '=' {
                         tokens.push(Ok::<calc_tokens::Token, String>(
                                 calc_tokens::Token::new(calc_tokens::TokenType::Eq)).unwrap());
                         lex_iter.next();
@@ -243,7 +241,7 @@ impl<'a> TestEnvironment<'a> {
 
                 }
                 _ => {
-                    buffer.push(c);
+                    buffer.push(*c);
                 }
             }
         }
@@ -267,8 +265,8 @@ impl<'a> TestEnvironment<'a> {
                 "".to_string()
             },
             Node::Binary { left, operation, right } => {
-                let mut lhs = self.evaluate(left);
-                let mut rhs = self.evaluate(right);
+                let lhs = self.evaluate(left);
+                let rhs = self.evaluate(right);
 
                 let mut lhs_n = lhs.parse::<f64>();
                 let mut rhs_n = rhs.parse::<f64>();
@@ -277,13 +275,17 @@ impl<'a> TestEnvironment<'a> {
 
                 if lhs_n.is_err() {
                     lhs_n = Ok(self.variables[scope]
-                        .get(&lhs).expect("Variable not in scope").value
-                        .clone().parse::<f64>().unwrap_or(0.0));
+                               .get(&lhs)
+                               .unwrap_or(&Variable::new(lhs, "0.0".to_string(), false))
+                                    .value.parse::<f64>().expect("unable to parse variable value as number"));
+                        // .get(&lhs).expect("Variable not in scope").value
+                        // .clone().parse::<f64>().unwrap_or(0.0));
                 }
                 if rhs_n.is_err() {
                     rhs_n = Ok(self.variables[scope]
-                        .get(&rhs).expect("Variable not in scope").value
-                        .clone().parse::<f64>().unwrap_or(0.0));
+                               .get(&rhs)
+                               .unwrap_or(&Variable::new(rhs, "0.0".to_string(), false))
+                                    .value.parse::<f64>().expect("unable to parse variable value as number"));
                 }
 
                 match operation {
@@ -309,7 +311,7 @@ impl<'a> TestEnvironment<'a> {
 #[cfg(test)]
 mod tests {
     use std::path::Path;
-    use crate::{burn_script::compiler::BurnScriptCompiler, compile::compiler::{self, compile_burn}, decompile::decompiler::decompile_fmp12_file};
+    use crate::{compile::compiler::compile_burn, decompile::decompiler::decompile_fmp12_file};
 
     use super::TestEnvironment;
 
