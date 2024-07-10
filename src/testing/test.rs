@@ -160,7 +160,6 @@ impl<'a> TestEnvironment<'a> {
                 // self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::ExitLoopIf => {
-                println!("{}", self.variables[0].get("x").unwrap().value);
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[0]);
                 if val == "true" {
                     while cur_instruction.opcode != Instruction::EndLoop {

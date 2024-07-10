@@ -47,7 +47,6 @@ impl Parser {
             return Ok(Box::new(Node::Unary { value: self.current().value.clone(), child: None }));
         }
 
-        println!("{:?}", n);
         match n.unwrap().ttype {
             TokenType::Plus => {
                 Ok(Box::new(Node::Binary { 
