@@ -195,6 +195,7 @@ use serde::{Deserialize, Serialize};
 	SetDictionary = 209,
 	PerformScriptOnServerWithCallback = 210,
 	TriggerClarisConnectFlow = 211,
+    Assert = 255,
 }
 
 impl FromStr for Instruction {
@@ -209,6 +210,7 @@ impl FromStr for Instruction {
             "exit_loop_if" => Ok(Instruction::ExitLoopIf),
             "new_record_request" => Ok(Instruction::NewRecordRequest),
             "exit_script" => Ok(Instruction::ExitScript),
+            "assert" => Ok(Instruction::Assert),
             _ => Err(()),
         }
     }
@@ -470,7 +472,7 @@ pub static INSTRUCTIONMAP : [Option<Instruction>; 255] = [
     None,
     None,
     None,
-    None,
+    Some(Instruction::Assert),
 ];
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]

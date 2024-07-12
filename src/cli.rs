@@ -9,6 +9,8 @@ pub struct CLI {
     pub decompile: Option<Vec<String>>,
     #[clap(short = 't')]
     pub test: Option<Vec<String>>,
+    #[clap(long = "print-header")]
+    pub print_header: bool,
     #[clap(long = "no-testing")]
     pub no_testing: bool
 }

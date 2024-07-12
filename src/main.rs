@@ -1,7 +1,7 @@
 use std::{fs::{write, File}, io::Read, path::Path};
 use clap::Parser;
 use compile::compiler::compile_burn;
-use decompile::decompiler::decompile_fmp12_file;
+use decompile::decompiler::{decompile_fmp12_file, decompile_fmp12_file_with_header};
 use file::FmpFile;
 
 mod cli;
@@ -59,7 +59,12 @@ fn main() {
         for f in args.decompile.unwrap() {
             let path = f;
             let input = Path::new(&path);
-            let tmp = decompile_fmp12_file(&input);
+            let tmp: FmpFile;
+            if args.print_header == true {
+                tmp = decompile_fmp12_file_with_header(&input);
+            } else {
+                tmp = decompile_fmp12_file(&input);
+            }
             let json = serde_json::to_string_pretty(&tmp).expect("Unable to generate json file");
             write("test_decompile", json).expect("Unable to write to file.");
             file.tables.extend(tmp.tables);
@@ -74,6 +79,7 @@ fn main() {
                 env.generate_test_environment();
                 env.run_tests();
             }
+
         }
     }
 

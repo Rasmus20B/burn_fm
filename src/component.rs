@@ -25,6 +25,18 @@ pub struct FMComponentField {
     pub created_by_account: String,
     pub created_by_user: String,
 }
+impl FMComponentField {
+    pub fn new() -> Self {
+        Self {
+            data_type: String::new(),
+            field_description: String::new(),
+            field_name: String::new(),
+            field_type: String::new(),
+            created_by_account: String::new(),
+            created_by_user: String::new(),
+        }
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FMComponentTest {
@@ -52,7 +64,8 @@ pub struct FMComponentTable {
     pub table_name: String,
     pub created_by_account: String,
     pub create_by_user: String,
-    pub fields: HashMap<u16, FMComponentField>
+    pub fields: HashMap<u16, FMComponentField>,
+    pub init: bool,
 }
 
 impl FMComponentTable {
@@ -62,7 +75,19 @@ impl FMComponentTable {
             created_by_account: String::new(),
             create_by_user: String::new(),
             fields: HashMap::new(),
+            init: false
         }
+    }
+
+    pub fn new_init() -> Self {
+        Self {
+            table_name: String::new(),
+            created_by_account: String::new(),
+            create_by_user: String::new(),
+            fields: HashMap::new(),
+            init: true
+        }
+
     }
 }
 

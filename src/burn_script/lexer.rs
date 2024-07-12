@@ -194,7 +194,6 @@ impl Lexer {
                             ret.push(Token::with_value(TokenType::Identifier, &buffer))
                         }
                     }
-
                     Some(ret)
 
                 }

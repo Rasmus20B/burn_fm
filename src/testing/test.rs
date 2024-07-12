@@ -75,7 +75,8 @@ impl<'a> TestEnvironment<'a> {
     pub fn generate_test_environment(&mut self) {
         /* For each test, we will reuse the same table structure 
          * as defined in the fmp_file. Don't rebuild for each one */
-        for table in &self.file_handle.tables {
+        self.record_ptrs.resize(self.file_handle.tables.len(), None);
+        for (i, table) in self.file_handle.tables.clone().into_iter().enumerate() {
             let vmtable_tmp = VMTable {
                 name: table.1.table_name.clone(),
                 records: HashMap::new(),
@@ -89,9 +90,11 @@ impl<'a> TestEnvironment<'a> {
                     .insert(f.1.field_name.to_string(), vec![]);
             }
             /* Each table is empty, therefore no pointer to a record */
-            self.record_ptrs.push(None);
+            println!("found table: {}. {}", table.0, table.1.table_name);
+            if table.0 == 1 {
+                self.table_ptr = Some(i);
+            }
         }
-        self.table_ptr = Some(0);
     }
 
     pub fn run_tests(&mut self) {
@@ -102,6 +105,9 @@ impl<'a> TestEnvironment<'a> {
              * 3. Clean the test environment for next test */
             println!("Running test: {}", test.test_name);
             self.load_test(test.clone());
+            for t in &self.tables {
+                println!("{:?}", t.name);
+            }
             while !self.instruction_ptr.is_empty() {
                 self.step();
             }
@@ -136,6 +142,7 @@ impl<'a> TestEnvironment<'a> {
             self.instruction_ptr.pop();
             return;
         }
+
         let mut cur_instruction = &script_handle.instructions[ip_handle.1];
         match &cur_instruction.opcode {
             Instruction::SetVariable => {
@@ -173,6 +180,11 @@ impl<'a> TestEnvironment<'a> {
                     self.instruction_ptr[n_stack].1 += 1;
                     return;
                 }
+
+                for t in &self.record_ptrs {
+                    println!("Found ptr: {:?}", t);
+                }
+
                 table_handle.unwrap().records.get_mut(parts[1])
                     .expect("Field does not exist.")[self.record_ptrs[n].unwrap()] = val.to_string();
                 self.instruction_ptr[n_stack].1 += 1;
@@ -209,13 +221,23 @@ impl<'a> TestEnvironment<'a> {
                 } else {
                     *handle = Some(handle.unwrap() + 1);
                 }
-                println!("Creating a new record.");
+                println!("Creating a new {} record", self.tables[self.table_ptr.unwrap()].name);
+                self.instruction_ptr[n_stack].1 += 1;
+            },
+            Instruction::Assert => {
+                let val : &str = &self.eval_calculation(&cur_instruction.switches[0]);
+                if val == "false" {
+                    println!("Assertion failed: {}", val);
+                } else {
+                    println!("Please enter valid assertion. Assertions must equate to Boolean");
+                }
                 self.instruction_ptr[n_stack].1 += 1;
             },
             _ => {
                 eprintln!("Unimplemented instruction: {:?}", cur_instruction.opcode);
                 self.instruction_ptr[n_stack].1 += 1;
             }
+
         }
     }
 
@@ -404,8 +426,8 @@ mod tests {
         let mut te : TestEnvironment = TestEnvironment::new(&file);
         te.generate_test_environment();
         te.run_tests();
-        assert_eq!(te.tables[0].records.get("PrimaryKey").unwrap().len(), 10);
-        assert_eq!(te.tables[0].records.get("PrimaryKey").unwrap()[7], "Kevin");
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap().len(), 10);
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[7], "Kevin");
     }
 }
 

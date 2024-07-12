@@ -13,6 +13,21 @@ use crate::encoding_util::fm_string_decrypt;
 
 const SECTOR_SIZE : usize = 4096;
 
+pub fn decompile_fmp12_file_with_header(path: &Path) -> FmpFile {
+    let mut file = File::open(path).expect("unable to open file.");
+    let mut fmp_file = FmpFile::new();
+    let mut buffer = Vec::<u8>::new();
+    file.read_to_end(&mut buffer).expect("Unable to read file.");
+
+    let mut offset = SECTOR_SIZE;
+    let mut sectors = Vec::<sector::Sector>::new();
+
+    println!("Found: {:?}", &buffer[0..4095]);
+    let first = sector::get_sector(&buffer[offset..]);
+
+    decompile_fmp12_file(path)
+}
+
 pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
     
     let mut file = File::open(path).expect("unable to open file.");
@@ -39,6 +54,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
     let mut idx = 2;
     let mut script_segments: HashMap<usize, BTreeMap<usize, Vec<u8>>> = HashMap::new();
 
+
     while idx != 0 {
         let start = idx * SECTOR_SIZE;
         let bound = start + SECTOR_SIZE;
@@ -53,6 +69,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                             &mut path, 
                                             start).expect("Unable to decode chunk.");          
             match &path.iter().map(|s| s.as_str()).collect::<Vec<_>>().as_slice() {
+                /* Examining relatinoships of table occurences */
                 ["3", "17", "5", "0", "251"] => {
                     if chunk.ctype == ChunkType::DataSimple {
                         let mut tmp = component::FMComponentRelationship::new();
@@ -65,6 +82,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         //      chunk.data);
                     }
                 },
+                /* Examining table occurences */
                 ["3", "17", "5", "0", ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match chunk.ref_simple {
@@ -99,18 +117,22 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 || chunk.ctype == ChunkType::Noop {
 
                             } else {
-                                // println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:?}", 
-                                //      &path.clone(),
-                                //      chunk.ref_simple,
-                                //      chunk.ref_data,
-                                //      chunk.data,
-                                //      );
                             }
                         }
                     }
                 },
+                /* Examing layouts */
                 ["4", "1", "7", x, ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
+                    if chunk.ref_simple.is_some() {
+                        // println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:?}", 
+                        //      &path.clone(),
+                        //      chunk.ref_simple,
+                        //      chunk.ref_data,
+                        //      chunk.data,
+                        //      );
+
+                    }
                     match chunk.ref_simple {
                         Some(16) => {
                             if fmp_file.layouts.contains_key(&x.parse().unwrap()) {
@@ -124,29 +146,23 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 fmp_file.layouts.insert(x.parse().unwrap(), tmp);
                             }
                         },
-                        _ => {}
+                        _ => {
+
+                        }
                     }
                 },
+                /* Examining field definitions for tables */
                 [x, "3", "5", y] => {
                     if x.parse::<usize>().unwrap() >= 128 {
                         if chunk.ctype == ChunkType::PathPush {
                             if !fmp_file.tables.contains_key(&(x.parse::<usize>().unwrap() - 128)) {
                                 fmp_file.tables.insert(x.parse::<usize>().unwrap() - 128,
-                            component::FMComponentTable { 
-                            table_name: String::new(),
-                            created_by_account: String::new(),
-                            create_by_user: String::new(),
-                            fields: HashMap::new() });
+                            component::FMComponentTable::new());
                             }
                             fmp_file.tables.get_mut(&(x.parse::<usize>().unwrap() - 128))
                                 .unwrap().fields
-                                    .insert(y.parse::<usize>().unwrap() as u16, component::FMComponentField { 
-                                        data_type: String::new(),
-                                        field_description: String::new(),
-                                        field_name: String::new(),
-                                        field_type: String::new(),
-                                        created_by_account: String::new(),
-                                        created_by_user: String::new() });
+                                    .insert(y.parse::<usize>().unwrap() as u16, 
+                                            component::FMComponentField::new());
                         } else {
                             let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                             // match chunk.ref_simple.unwrap_or(0) {
@@ -210,16 +226,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     }
 
                 },
+                /* Examining metadata for table */
                 ["3", "16", "5", x] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     if chunk.ctype == ChunkType::PathPush {
                         if !fmp_file.tables.contains_key(&x.parse().unwrap()) {
-                            fmp_file.tables.insert(x.parse::<usize>().unwrap() - 128, component::FMComponentTable { 
-                                table_name: String::new(),
-                                created_by_account: String::new(),
-                                create_by_user: String::new(),
-                                fields: HashMap::new() 
-                            });
+                            fmp_file.tables.insert(x.parse::<usize>().unwrap() - 128, component::FMComponentTable::new());
                         } 
                     } else {
                         match chunk.ref_simple.unwrap_or(0) {
@@ -229,17 +241,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         }
                     }
                 },
-                // [x, ..] if x < &128 => {
-                //     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                //     if chunk.ctype == ChunkType::PathPush {
-                //         println!("NEW PATH FOUND");
-                //     } else {
-                //         println!("Path: {:?}. reference: {:?}, ref_data: {:?}", 
-                //              &path.clone(),
-                //              chunk.ref_simple,
-                //              s);
-                //     }
-                // }
+                /* Examining script code */
                 ["17", "5", x, "4"] => {
                     println!("TOP LEVEL: Path: {:?} :: ", path); 
                     if chunk.ctype == ChunkType::PathPush {
@@ -255,6 +257,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             .insert(n, chunk.data.unwrap().to_vec());
                     }
                 },
+                /* Examining script data */
                 ["17", "5", x, ..] => {
                     if chunk.ctype == ChunkType::PathPop 
                         || chunk.ctype == ChunkType::PathPush {
@@ -316,7 +319,14 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             },
                         }
                     }
+                    println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:?}", 
+                         &path.clone(),
+                         chunk.ref_simple,
+                         chunk.ref_data,
+                         chunk.data,
+                         );
                 },
+                /* Examining script metadata */
                 ["17", "1", x, ..] => {
                     if chunk.ctype == ChunkType::PathPush 
                         || chunk.ctype == ChunkType::PathPop {
