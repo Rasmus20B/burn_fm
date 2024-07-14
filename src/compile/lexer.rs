@@ -19,7 +19,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
             "table_occurence" => Ok(Token::new(TokenType::TableOccurence)),
             "script" => Ok(Token::new(TokenType::Script)),
             "test" => Ok(Token::new(TokenType::Test)),
-            "assertions" => Ok(Token::new(TokenType::AssertionBlock)),
             "end" => Ok(Token::new(TokenType::End)),
             _ => {
                 let n = b.parse::<f64>();

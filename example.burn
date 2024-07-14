@@ -52,15 +52,6 @@ test BasicTest:
       set_variable(x, 2);
     }
   ],
-  assertions:
-    (assert (empty? (Person)) (False)),
-    (assert_eq (Eq Person[0] (Person (
-      firstName: "Kevin",
-      lastName: "Matthews",
-      sex: "male",
-      age: 50,
-      jobid: null
-    )))),
 end test;
 
 

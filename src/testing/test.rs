@@ -390,7 +390,6 @@ impl<'a> TestEnvironment<'a> {
 mod tests {
     use std::path::Path;
     use crate::{compile::compiler::compile_burn, decompile::decompiler::decompile_fmp12_file};
-
     use super::TestEnvironment;
 
     #[test]
@@ -408,16 +407,6 @@ mod tests {
               }
             }
           ],
-          assertions:
-            (assert_eq (empty? (Person)) (False)),
-            (assert_eq (Person[0]) (Person (
-              firstName: \"Kevin\",
-              lastName: \"Matthews\",
-              sex: \"male\",
-              age: 50,
-              jobid: null
-            ))),
-            ()
         end test;";
         let input = Path::new("tests/input/blank.fmp12");
         let mut file = decompile_fmp12_file(&input);
@@ -428,6 +417,7 @@ mod tests {
         te.run_tests();
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap().len(), 10);
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[7], "Kevin");
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[0], "Kevin");
     }
 }
 
