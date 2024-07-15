@@ -90,6 +90,9 @@ impl Parser {
                                             TokenType::Eq => {
                                                 buffer.push_str("==");
                                             },
+                                            TokenType::Neq => {
+                                                buffer.push_str("!=");
+                                            },
                                             TokenType::Plus => {
                                                 buffer.push('+');
                                             },

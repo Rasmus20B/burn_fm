@@ -108,6 +108,25 @@ impl Lexer {
                     ret.push(Token::new(TokenType::SemiColon));
                     Some(ret)
                 }
+                '!' =>  
+                {
+                    let mut ret: Vec<Token> = vec![];
+                    if !buffer.is_empty() {
+                        let n = buffer.parse::<f64>();
+                        if n.is_ok() {
+                          ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
+                        } else {
+                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
+                        }
+                    }
+                    if lex_iter.peek().unwrap().1 != '=' {
+                        ret.push(Token::new(TokenType::Assign));
+                    } else {
+                        lex_iter.next();
+                        ret.push(Token::new(TokenType::Neq));
+                    }
+                    Some(ret)
+                }
                 '=' =>  
                 {
                     let mut ret: Vec<Token> = vec![];

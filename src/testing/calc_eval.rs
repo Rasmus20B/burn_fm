@@ -43,7 +43,7 @@ impl Parser {
 
     pub fn parse_identifier(&mut self, tok: Token) -> Result<Box<Node>, &str> {
         let n = self.next();
-        println!("HERE");
+        // println!("n: {} :: {:?}",n.unwrap().value, n.unwrap().ttype);
         if n.is_none() {
             return Ok(Box::new(Node::Unary { value: self.current().value.clone(), child: None }));
         }
@@ -56,6 +56,13 @@ impl Parser {
                 }))
             }
             TokenType::Eq => {
+                Ok(Box::new(Node::Binary { 
+                    left: Box::new(Node::Unary { value: tok.value, child: None }),
+                    operation: n.unwrap().ttype, 
+                    right: self.parse().expect("Unable to parse.")
+                }))
+            },
+            TokenType::Neq => {
                 Ok(Box::new(Node::Binary { 
                     left: Box::new(Node::Unary { value: tok.value, child: None }),
                     operation: n.unwrap().ttype, 
@@ -73,6 +80,7 @@ impl Parser {
         if n.is_none() {
             return Ok(Box::new(Node::Unary { value: self.current().value.clone(), child: None }));
         }
+
         match n.unwrap().ttype {
             TokenType::Plus => {
                 Ok(Box::new(Node::Binary { 
@@ -82,6 +90,13 @@ impl Parser {
                 }))
             },
             TokenType::Eq => {
+                Ok(Box::new(Node::Binary { 
+                    left: Box::new(Node::Unary { value: tok.value, child: None }),
+                    operation: n.unwrap().ttype, 
+                    right: self.parse().expect("Unable to parse.")
+                }))
+            },
+            TokenType::Neq => {
                 Ok(Box::new(Node::Binary { 
                     left: Box::new(Node::Unary { value: tok.value, child: None }),
                     operation: n.unwrap().ttype, 

@@ -90,7 +90,6 @@ impl<'a> TestEnvironment<'a> {
                     .insert(f.1.field_name.to_string(), vec![]);
             }
             /* Each table is empty, therefore no pointer to a record */
-            println!("found table: {}. {}", table.0, table.1.table_name);
             if table.0 == 1 {
                 self.table_ptr = Some(i);
             }
@@ -105,9 +104,6 @@ impl<'a> TestEnvironment<'a> {
              * 3. Clean the test environment for next test */
             println!("Running test: {}", test.test_name);
             self.load_test(test.clone());
-            for t in &self.tables {
-                println!("{:?}", t.name);
-            }
             while !self.instruction_ptr.is_empty() {
                 self.step();
             }
@@ -148,7 +144,6 @@ impl<'a> TestEnvironment<'a> {
             Instruction::SetVariable => {
                 let name : &str = cur_instruction.switches[0].as_ref();
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[1]);
-                println!("setting var {} to {}", name, val);
                 let tmp = Variable::new(name.to_string(), val.to_string(), false);
                 let handle = &mut self.variables[n_stack].get_mut(name);
                 if handle.is_none() {
@@ -162,11 +157,8 @@ impl<'a> TestEnvironment<'a> {
                 let name : &str = cur_instruction.switches[0].as_ref();
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[1]);
                 let parts : Vec<&str> = name.split("::").collect();
-                println!("Setting field {}::{} to {}", parts[0], parts[1], val);
-
                 let mut table_handle : Option<&mut VMTable> = None;
                 let mut n = 0;
-                println!("GETS HERE");
                 for (i, table) in self.tables.iter_mut().enumerate() {
                     if table.name == parts[0] {
                         table_handle = Some(table);
@@ -181,21 +173,15 @@ impl<'a> TestEnvironment<'a> {
                     return;
                 }
 
-                for t in &self.record_ptrs {
-                    println!("Found ptr: {:?}", t);
-                }
-
                 table_handle.unwrap().records.get_mut(parts[1])
                     .expect("Field does not exist.")[self.record_ptrs[n].unwrap()] = val.to_string();
                 self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::Loop => {
-                println!("We in loop");
                 self.loop_scopes.push(ip_handle.1);
                 self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::EndLoop => {
-                println!("end of the loop, back to the start");
                 self.instruction_ptr[n_stack].1 = self.loop_scopes.last().unwrap() + 1;
                 // self.instruction_ptr[n_stack].1 += 1;
             },
@@ -221,16 +207,13 @@ impl<'a> TestEnvironment<'a> {
                 } else {
                     *handle = Some(handle.unwrap() + 1);
                 }
-                println!("Creating a new {} record", self.tables[self.table_ptr.unwrap()].name);
                 self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::Assert => {
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[0]);
                 if val == "false" {
-                    println!("Assertion failed: {}", val);
-                } else {
-                    println!("Please enter valid assertion. Assertions must equate to Boolean");
-                }
+                    println!("Assertion failed: {}", cur_instruction.switches[0]);
+                } 
                 self.instruction_ptr[n_stack].1 += 1;
             },
             _ => {
@@ -288,6 +271,18 @@ impl<'a> TestEnvironment<'a> {
                         tokens.push(b.unwrap());
                     }
                     tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::Plus)).unwrap());
+                },
+                '!' => {
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        tokens.push(b.unwrap());
+                    }
+                    if *lex_iter.peek().unwrap() == '=' {
+                        tokens.push(Ok::<calc_tokens::Token, String>(
+                                calc_tokens::Token::new(calc_tokens::TokenType::Neq)).unwrap());
+                        lex_iter.next();
+                    }
                 },
                 '=' => {
                     if buffer.len() > 0 {
@@ -379,6 +374,12 @@ impl<'a> TestEnvironment<'a> {
                          rhs_n
                          ).to_string() 
                     },
+                    TokenType::Neq => { 
+                        (lhs_n
+                         != 
+                         rhs_n
+                         ).to_string() 
+                    },
                     _ => { unreachable!()}
                 }
             },
@@ -402,6 +403,7 @@ mod tests {
               loop {
                 new_record_request();
                 exit_loop_if(x == 10);
+                assert(x != 10);
                 set_variable(x, x + 1);
                 set_field(blank::PrimaryKey, \"Kevin\");
               }
