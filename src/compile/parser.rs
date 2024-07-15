@@ -142,7 +142,7 @@ impl Parser {
                         table_occurence.table_occurence_name = parser_iter.next().unwrap().text.clone();
                     }
                     while let Some(mut t) = parser_iter.next() {
-                        println!("{:?}", t.ttype);
+                        // println!("{:?}", t.ttype);
                         match t.ttype {
                             TokenType::Table => {
                                 t = parser_iter.next().unwrap();

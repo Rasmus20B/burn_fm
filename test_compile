@@ -1,17 +1,19 @@
 {
   "name": "",
   "tables": {
-    "1": {
-      "table_name": "Job",
-      "created_by_account": "",
-      "create_by_user": "",
-      "fields": {}
-    },
     "0": {
       "table_name": "Person",
       "created_by_account": "",
       "create_by_user": "",
-      "fields": {}
+      "fields": {},
+      "init": false
+    },
+    "1": {
+      "table_name": "Job",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {},
+      "init": false
     }
   },
   "relationships": {
@@ -68,22 +70,39 @@
             "i",
             "i+1"
           ]
+        },
+        {
+          "opcode": "EndLoop",
+          "index": 0,
+          "switches": []
+        },
+        {
+          "opcode": "ExitScript",
+          "index": 0,
+          "switches": [
+            "i"
+          ]
+        },
+        {
+          "opcode": "EndLoop",
+          "index": 0,
+          "switches": []
         }
       ]
     }
   },
   "table_occurrences": {
-    "0": {
-      "table_occurence_name": "Job",
-      "table_actual": 0,
-      "table_actual_name": "Job",
-      "created_by_account": "",
-      "create_by_user": ""
-    },
     "1": {
       "table_occurence_name": "Person",
       "table_actual": 0,
       "table_actual_name": "Person",
+      "created_by_account": "",
+      "create_by_user": ""
+    },
+    "0": {
+      "table_occurence_name": "Job",
+      "table_actual": 0,
+      "table_actual_name": "Job",
       "created_by_account": "",
       "create_by_user": ""
     }
@@ -109,10 +128,7 @@
       },
       "created_by_account": "",
       "create_by_user": "",
-      "assertions": [
-        "(assert (empty? (Person)) (False))",
-        "(assert_eq (Eq Person[0] (Person (\n      firstName: \"Kevin\",\n      lastName: \"Matthews\",\n      sex: \"male\",\n      age: 50,\n      jobid: null\n    ))))"
-      ]
+      "assertions": []
     }
   ]
 }

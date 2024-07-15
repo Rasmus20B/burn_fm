@@ -109,10 +109,9 @@ impl Parser {
                             },
 
                             TokenType::CloseBracket => {
-
                                 let top = punc_stack.last();
                                 if top.is_none() {
-                                    return Err("Invalid Scope end. Please check that all 'if' or 'loop' instructions are properly resolved.");
+                                    break;
                                 }
                                 let op: Instruction;
                                 match top.unwrap() {

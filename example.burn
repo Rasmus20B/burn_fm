@@ -42,7 +42,7 @@ script: [
       exit_loop_if(i == y);
       set_variable(i, i + 1);
     }
-    exit(i);
+    exit_script(i);
   }
 ]
 

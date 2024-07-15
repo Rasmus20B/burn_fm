@@ -7,14 +7,10 @@ use color_print::cprintln;
 use crate::component::FMComponentScript;
 use crate::component::FMComponentTest;
 use crate::file;
-use crate::component;
 use crate::fm_script_engine::fm_script_engine_instructions::Instruction;
 use crate::testing::calc_eval;
 
-use super::calc_eval::Node;
 use super::calc_tokens;
-use super::calc_tokens::Token;
-use super::calc_tokens::TokenType;
 
 pub struct Variable {
     pub name: String,
@@ -42,7 +38,7 @@ pub struct VMTable {
 }
 
 #[derive(PartialEq, Debug)]
-enum TestState {
+pub enum TestState {
     Pass,
     Fail
 }
@@ -266,9 +262,9 @@ impl<'a> TestEnvironment<'a> {
                 _ => {
                     let n = b.parse::<f64>();
                     if n.is_ok() {
-                        Ok(Token::with_value(calc_tokens::TokenType::NumericLiteral, n.unwrap().to_string()))
+                        Ok(calc_tokens::Token::with_value(calc_tokens::TokenType::NumericLiteral, n.unwrap().to_string()))
                     } else if !b.as_bytes()[0].is_ascii_digit() {
-                        Ok(Token::with_value(calc_tokens::TokenType::Identifier, b.to_string()))
+                        Ok(calc_tokens::Token::with_value(calc_tokens::TokenType::Identifier, b.to_string()))
                     } else {
                         Err("Invalid Identifier".to_string())
                     }
@@ -276,7 +272,7 @@ impl<'a> TestEnvironment<'a> {
             }
         };
 
-        let mut tokens : Vec<Token> = vec![];
+        let mut tokens : Vec<calc_tokens::Token> = vec![];
         let mut lex_iter = calculation.chars().into_iter().peekable();
         let mut buffer = String::new();
         while let Some(c) = &lex_iter.next() {
@@ -346,7 +342,7 @@ impl<'a> TestEnvironment<'a> {
                         buffer.push(*c);
                     }
                     buffer.push(*c);
-                    tokens.push(Token::with_value(TokenType::String, buffer.clone()));
+                    tokens.push(calc_tokens::Token::with_value(calc_tokens::TokenType::String, buffer.clone()));
                 },
                 _ => {
                     buffer.push(*c);
@@ -365,9 +361,9 @@ impl<'a> TestEnvironment<'a> {
         self.evaluate(ast)
     }
 
-    pub fn evaluate(&self, ast: Box<Node>) -> String {
+    pub fn evaluate(&self, ast: Box<calc_eval::Node>) -> String {
         match *ast {
-            Node::Unary { value, child } => {
+            calc_eval::Node::Unary { value, child } => {
                 if child.is_none() {
                     return value;
                 } else {
@@ -375,7 +371,7 @@ impl<'a> TestEnvironment<'a> {
                 }
                 "".to_string()
             },
-            Node::Binary { left, operation, right } => {
+            calc_eval::Node::Binary { left, operation, right } => {
                 let lhs = self.evaluate(left);
                 let rhs = self.evaluate(right);
                 let mut lhs_n = lhs.parse::<f64>();
@@ -397,19 +393,19 @@ impl<'a> TestEnvironment<'a> {
                 }
 
                 match operation {
-                    TokenType::Plus => { 
+                    calc_tokens::TokenType::Plus => { 
                         (lhs_n.clone().unwrap()
                          + 
                          rhs_n.clone().unwrap()
                          ).to_string() 
                     },
-                    TokenType::Eq => { 
+                    calc_tokens::TokenType::Eq => { 
                         (lhs_n
                          == 
                          rhs_n
                          ).to_string() 
                     },
-                    TokenType::Neq => { 
+                    calc_tokens::TokenType::Neq => { 
                         (lhs_n
                          != 
                          rhs_n

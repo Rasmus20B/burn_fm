@@ -16,10 +16,8 @@ pub struct CLI {
 #[derive(Debug, clap::Args)]
 #[group(required = true, multiple = false)]
 pub struct MainOperations {
-    /// Argument1.
     #[clap(short = 'c', conflicts_with="decompile")]
     pub compile: Option<Vec<String>>,
-    /// Argument2.
     #[clap(short = 'd', conflicts_with="compile")]
     pub decompile: Option<Vec<String>>,
 }

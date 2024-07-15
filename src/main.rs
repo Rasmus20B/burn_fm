@@ -34,7 +34,7 @@ fn main() {
     }
 
     if args.op.compile.is_some() {
-        for f in args.op.decompile.unwrap() {
+        for f in args.op.compile.unwrap() {
             let input = Path::new(&f);
             let mut code = File::open(input).expect("Unable to open file.");
             let mut text = String::new();
@@ -49,7 +49,7 @@ fn main() {
             file.tests.extend(tmp.tests);
             let json = serde_json::to_string_pretty(&file).expect("Unable to generate json file");
             write("test_compile", json).expect("Unable to write to file.");
-            if args.no_testing == false {
+            if args.no_testing == false && !file.tests.is_empty() {
                 let mut env = testing::test::TestEnvironment::new(&file);
                 env.generate_test_environment();
                 env.run_tests_with_cleanup();
@@ -74,7 +74,7 @@ fn main() {
             file.scripts.extend(tmp.scripts);
             file.layouts.extend(tmp.layouts);
             file.tests.extend(tmp.tests);
-            if args.no_testing == false {
+            if args.no_testing == false && !file.tests.is_empty() {
                 let mut env = testing::test::TestEnvironment::new(&file);
                 env.generate_test_environment();
                 env.run_tests_with_cleanup();
