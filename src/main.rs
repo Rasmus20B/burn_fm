@@ -33,8 +33,8 @@ fn main() {
         }
     }
 
-    if args.compile.is_some() {
-        for f in args.decompile.unwrap() {
+    if args.op.compile.is_some() {
+        for f in args.op.decompile.unwrap() {
             let input = Path::new(&f);
             let mut code = File::open(input).expect("Unable to open file.");
             let mut text = String::new();
@@ -55,8 +55,8 @@ fn main() {
                 env.run_tests_with_cleanup();
             }
         }
-    } else if args.decompile.is_some() {
-        for f in args.decompile.unwrap() {
+    } else if args.op.decompile.is_some() {
+        for f in args.op.decompile.unwrap() {
             let path = f;
             let input = Path::new(&path);
             let tmp: FmpFile;
