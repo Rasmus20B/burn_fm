@@ -243,7 +243,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 },
                 /* Examining script code */
                 ["17", "5", x, "4"] => {
-                    println!("TOP LEVEL: Path: {:?} :: ", path); 
+                    // println!("TOP LEVEL: Path: {:?} :: ", path); 
                     if chunk.ctype == ChunkType::PathPush {
                         let script = script_segments.get(&x.parse().unwrap());
                         if script.is_none() {
@@ -319,12 +319,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             },
                         }
                     }
-                    println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:?}", 
-                         &path.clone(),
-                         chunk.ref_simple,
-                         chunk.ref_data,
-                         chunk.data,
-                         );
+                    // println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:?}", 
+                         // &path.clone(),
+                         // chunk.ref_simple,
+                         // chunk.ref_data,
+                         // chunk.data,
+                         // );
                 },
                 /* Examining script metadata */
                 ["17", "1", x, ..] => {

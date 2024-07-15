@@ -44,6 +44,9 @@ impl Parser {
                             TokenType::Comma => {
                                 continue;
                             },
+                            TokenType::OpenParen => {
+                                continue;
+                            }
                             TokenType::CloseParen => {
                                 continue;
                             },
@@ -56,7 +59,7 @@ impl Parser {
 
                     /* Parse the instructions inside the script with their options */
                     while let Some(t) = parser_iter.next() {
-                        println!("Found instruction: {:?} : {}", t.ttype, t.value);
+                        // println!("Found instruction: {:?} : {}", t.ttype, t.value);
                         match t.ttype {
                             TokenType::Identifier => {
                                 if let Ok(op) = Instruction::from_str(&t.value) {

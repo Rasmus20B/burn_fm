@@ -73,7 +73,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
         while in_assertion == true {
             if scope == 0 {
                 list.push(Token { ttype: TokenType::Assertion, text: buffer.to_string()});
-                println!("Pushing: {}", buffer.to_string());
                 buffer.clear();
                 while c.is_whitespace() {
                     c = lex_iter.next().unwrap().1;
@@ -84,7 +83,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                     while c.is_whitespace() {
                         c = lex_iter.next().unwrap().1;
                     }
-                    println!("Gets to {}", c);
                     if c == '(' {
                         scope = 1;
                     } else {
@@ -111,7 +109,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                 if !buffer.is_empty() {
                     let out = flush_buffer(b);
                     if out.is_ok() {
-                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
                         ret.push(out.unwrap());
                     buffer.clear();
                     }
@@ -125,7 +122,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                 if !buffer.is_empty() {
                     let out = flush_buffer(b);
                     if out.is_ok() {
-                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
                         ret.push(out.unwrap());
                     }
                     buffer.clear();
@@ -147,7 +143,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                 if !buffer.is_empty() {
                     let out = flush_buffer(b);
                     if out.is_ok() {
-                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
                         ret.push(out.unwrap());
                     }
                     buffer.clear();
@@ -164,7 +159,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                 if !buffer.is_empty() {
                     let out = flush_buffer(b);
                     if out.is_ok() {
-                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
                         ret.push(out.unwrap());
                     }
                     buffer.clear();
@@ -183,7 +177,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                     if !buffer.is_empty() {
                         let out = flush_buffer(b);
                         if out.is_ok() {
-                            println!("Found a {:?}", out.as_ref().unwrap().ttype);
                             ret.push(out.unwrap());
                         }
                         buffer.clear();
@@ -199,7 +192,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                 if !buffer.is_empty() {
                     let out = flush_buffer(b);
                     if out.is_ok() {
-                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
                         ret.push(out.unwrap());
                     }
                     buffer.clear();
@@ -214,7 +206,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                 if !buffer.is_empty() {
                     let out = flush_buffer(b);
                     if out.is_ok() {
-                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
                         ret.push(out.unwrap());
                     }
                     buffer.clear();
@@ -228,7 +219,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                 if !buffer.is_empty() {
                     let out = flush_buffer(b);
                     if out.is_ok() {
-                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
                         ret.push(out.unwrap());
                     }
                     buffer.clear();
@@ -242,7 +232,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                 if !buffer.is_empty() {
                     let out = flush_buffer(b);
                     if out.is_ok() {
-                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
                         ret.push(out.unwrap());
                     }
                     buffer.clear();
@@ -256,7 +245,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                 if !buffer.is_empty() {
                     let out = flush_buffer(b);
                     if out.is_ok() {
-                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
                         ret.push(out.unwrap());
                     }
                     buffer.clear();
@@ -270,7 +258,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                 if !buffer.is_empty() {
                     let out = flush_buffer(b);
                     if out.is_ok() {
-                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
                         ret.push(out.unwrap());
                     }
                     buffer.clear();
@@ -284,7 +271,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                 if !buffer.is_empty() {
                     let out = flush_buffer(b);
                     if out.is_ok() {
-                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
                         ret.push(out.unwrap());
                     }
                     buffer.clear();
@@ -298,7 +284,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
                 if !buffer.is_empty() {
                     let out = flush_buffer(b);
                     if out.is_ok() {
-                        println!("Found a {:?}", out.as_ref().unwrap().ttype);
                         ret.push(out.unwrap());
                     }
                     buffer.clear();
@@ -318,11 +303,6 @@ pub fn tokenize(code: &str) -> Vec<Token> {
             }
             buffer.clear();
         }
-    }
-        
-
-    for l in &list {
-        println!("{:?} : \"{}\"", l.ttype, l.text)
     }
 
     return list;

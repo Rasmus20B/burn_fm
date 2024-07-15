@@ -13,10 +13,6 @@ impl BurnScriptCompiler {
 
         let scripts = parser::Parser::new(tokens).parse().expect("Unable to parse script block.");
 
-        for s in &scripts {
-            println!("{}: {:?}.", s.script_name, s.arguments);
-        }
-
         return scripts;
 
     }

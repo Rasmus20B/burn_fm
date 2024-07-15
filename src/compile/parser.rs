@@ -84,7 +84,6 @@ impl Parser {
                     ret.relationships.insert(ret.tables.len(), relationship);
                 },
                 TokenType::ValueList => {
-                    println!("TopLevel valuelist");
                     let mut value_list = FMComponentValueList::new();
                     if parser_iter.peek().unwrap().ttype != TokenType::Identifier {
                         return Err("Expected identifier after \"value_list\" keyword.".to_string())
@@ -136,7 +135,6 @@ impl Parser {
                     }
                 },
                 TokenType::TableOccurence => {
-                    println!("TopLevel Table Occurence");
                     let mut table_occurence = FMComponentTableOccurence::new();
                     if parser_iter.peek().unwrap().ttype != TokenType::Identifier {
                         return Err("Expected Table name after \"table\" keyword.".to_string())
@@ -180,11 +178,9 @@ impl Parser {
                 },
                 TokenType::Test => {
                     let mut test = FMComponentTest::new();
-                    println!("TopLevel Test, {:?}", parser_iter.peek().unwrap().ttype);
                     if parser_iter.peek().unwrap().ttype != TokenType::Identifier {
                         return Err("Expected identifier after \"test\" keyword.".to_string())
                     } else {
-                        println!("test: {}", parser_iter.peek().unwrap().text);
                         test.test_name = parser_iter.next().unwrap().text.clone();
                     }
 
@@ -198,7 +194,6 @@ impl Parser {
                                     return Err("expected '[' to start script block".to_string());
                                 }
                                 let block = parser_iter.next();
-                                println!("Found a script: {:?}", block.unwrap().text);
                                 let scripts = burn_script::compiler::BurnScriptCompiler::compile_burn_script(&block.unwrap().text);
                                 if scripts.len() > 1 {
                                     return Err("Please ensure that tests only have 1 script defined.".to_string());

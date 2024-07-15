@@ -52,7 +52,7 @@ fn main() {
             if args.no_testing == false {
                 let mut env = testing::test::TestEnvironment::new(&file);
                 env.generate_test_environment();
-                env.run_tests();
+                env.run_tests_with_cleanup();
             }
         }
     } else if args.decompile.is_some() {
@@ -77,7 +77,7 @@ fn main() {
             if args.no_testing == false {
                 let mut env = testing::test::TestEnvironment::new(&file);
                 env.generate_test_environment();
-                env.run_tests();
+                env.run_tests_with_cleanup();
             }
 
         }

@@ -2,6 +2,8 @@ use std::collections::HashMap;
 use std::io;
 use std::io::Write;
 
+use color_print::cprintln;
+
 use crate::component::FMComponentScript;
 use crate::component::FMComponentTest;
 use crate::file;
@@ -39,6 +41,12 @@ pub struct VMTable {
     pub records: HashMap<String, Vec<String>>,
 }
 
+#[derive(PartialEq, Debug)]
+enum TestState {
+    Pass,
+    Fail
+}
+
 type Record = usize;
 
 pub struct TestEnvironment<'a> {
@@ -57,6 +65,7 @@ pub struct TestEnvironment<'a> {
     pub current_test: Option<FMComponentTest>, 
     pub table_ptr: Option<usize>,
     pub loop_scopes: Vec<usize>,
+    pub test_state: TestState,
 }
 impl<'a> TestEnvironment<'a> {
     pub fn new(file: &'a file::FmpFile) -> Self {
@@ -69,6 +78,7 @@ impl<'a> TestEnvironment<'a> {
             current_test: None,
             table_ptr: None,
             loop_scopes: vec![],
+            test_state: TestState::Pass,
         }
     }
 
@@ -82,10 +92,10 @@ impl<'a> TestEnvironment<'a> {
                 records: HashMap::new(),
             };
             self.tables.push(vmtable_tmp);
-            println!("Pushing Table \"{}\" to test environment", table.1.table_name);
-            println!("Table has \"{}\" fields", table.1.fields.len());
+            // println!("Pushing Table \"{}\" to test environment", table.1.table_name);
+            // println!("Table has \"{}\" fields", table.1.fields.len());
             for f in &table.1.fields {
-                println!("Pushing field: \"{}::{}\" to test environemnt", table.1.table_name, f.1.field_name);
+                // println!("Pushing field: \"{}::{}\" to test environemnt", table.1.table_name, f.1.field_name);
                 self.tables.last_mut().unwrap().records
                     .insert(f.1.field_name.to_string(), vec![]);
             }
@@ -97,7 +107,6 @@ impl<'a> TestEnvironment<'a> {
     }
 
     pub fn run_tests(&mut self) {
-        println!("Running test:");
         for test in &self.file_handle.tests {
             /* 1. Run the script 
              * 2. Check Assertions defined in test component
@@ -107,7 +116,34 @@ impl<'a> TestEnvironment<'a> {
             while !self.instruction_ptr.is_empty() {
                 self.step();
             }
-            println!("Finished running test: {}", self.current_test.as_ref().unwrap().test_name);
+            if self.test_state == TestState::Pass {
+                cprintln!("Test {} outcome: <green>Success</green>", self.current_test.as_ref().unwrap().test_name);
+            } else if self.test_state == TestState::Fail {
+                cprintln!("Test {} outcome: <red>Fail</red>", self.current_test.as_ref().unwrap().test_name);
+            }
+
+        }
+    }
+    pub fn run_tests_with_cleanup(&mut self) {
+        for test in &self.file_handle.tests {
+            /* 1. Run the script 
+             * 2. Check Assertions defined in test component
+             * 3. Clean the test environment for next test */
+            println!("Running test: {}", test.test_name);
+            self.load_test(test.clone());
+            while !self.instruction_ptr.is_empty() {
+                self.step();
+            }
+            if self.test_state == TestState::Pass {
+                cprintln!("Test {} outcome: <green>Success</green>", self.current_test.as_ref().unwrap().test_name);
+            } else if self.test_state == TestState::Fail {
+                cprintln!("Test {} outcome: <red>Fail</red>", self.current_test.as_ref().unwrap().test_name);
+            }
+
+            for t in &mut self.tables {
+                t.records.clear();
+            }
+
         }
     }
 
@@ -134,7 +170,6 @@ impl<'a> TestEnvironment<'a> {
         
         if ip_handle.1 > script_handle.instructions.len() - 1{
             println!("Popping script: {}", ip_handle.0);
-            println!("Script was {} lines long.", script_handle.instructions.len());
             self.instruction_ptr.pop();
             return;
         }
@@ -212,7 +247,8 @@ impl<'a> TestEnvironment<'a> {
             Instruction::Assert => {
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[0]);
                 if val == "false" {
-                    println!("Assertion failed: {}", cur_instruction.switches[0]);
+                    cprintln!("<red>Assertion failed<red>: {}", cur_instruction.switches[0]);
+                    self.test_state = TestState::Fail;
                 } 
                 self.instruction_ptr[n_stack].1 += 1;
             },
@@ -310,7 +346,6 @@ impl<'a> TestEnvironment<'a> {
                         buffer.push(*c);
                     }
                     buffer.push(*c);
-                    println!("Buffer: {}", buffer);
                     tokens.push(Token::with_value(TokenType::String, buffer.clone()));
                 },
                 _ => {
