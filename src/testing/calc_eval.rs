@@ -48,27 +48,16 @@ impl Parser {
             return Ok(Box::new(Node::Unary { value: self.current().value.clone(), child: None }));
         }
         match n.unwrap().ttype {
-            TokenType::Plus => {
-                Ok(Box::new(Node::Binary { 
-                    left: Box::new(Node::Unary { value: tok.value, child: None }),
-                    operation: n.unwrap().ttype, 
-                    right: self.parse().expect("Unable to parse.")
-                }))
-            }
-            TokenType::Eq => {
+            TokenType::Eq | TokenType::Neq | TokenType::Gt 
+                | TokenType::Gtq | TokenType::Lt | TokenType::Ltq 
+                | TokenType::Plus | TokenType::Minus | TokenType::Multiply
+                | TokenType::Divide | TokenType::Ampersand => {
                 Ok(Box::new(Node::Binary { 
                     left: Box::new(Node::Unary { value: tok.value, child: None }),
                     operation: n.unwrap().ttype, 
                     right: self.parse().expect("Unable to parse.")
                 }))
             },
-            TokenType::Neq => {
-                Ok(Box::new(Node::Binary { 
-                    left: Box::new(Node::Unary { value: tok.value, child: None }),
-                    operation: n.unwrap().ttype, 
-                    right: self.parse().expect("Unable to parse.")
-                }))
-            }
             _ => {
                 Err("Invalid expression")
             }
@@ -82,27 +71,16 @@ impl Parser {
         }
 
         match n.unwrap().ttype {
-            TokenType::Plus => {
+            TokenType::Eq | TokenType::Neq | TokenType::Gt 
+                | TokenType::Gtq | TokenType::Lt | TokenType::Ltq 
+                | TokenType::Plus | TokenType::Minus | TokenType::Multiply
+                | TokenType::Divide | TokenType::Ampersand => {
                 Ok(Box::new(Node::Binary { 
                     left: Box::new(Node::Unary { value: tok.value, child: None }),
                     operation: n.unwrap().ttype, 
                     right: self.parse().expect("Unable to parse.")
                 }))
             },
-            TokenType::Eq => {
-                Ok(Box::new(Node::Binary { 
-                    left: Box::new(Node::Unary { value: tok.value, child: None }),
-                    operation: n.unwrap().ttype, 
-                    right: self.parse().expect("Unable to parse.")
-                }))
-            },
-            TokenType::Neq => {
-                Ok(Box::new(Node::Binary { 
-                    left: Box::new(Node::Unary { value: tok.value, child: None }),
-                    operation: n.unwrap().ttype, 
-                    right: self.parse().expect("Unable to parse.")
-                }))
-            }
             _ => {
                 Err("Invalid expression")
             }
