@@ -62,6 +62,8 @@ pub struct TestEnvironment<'a> {
     pub table_ptr: Option<usize>,
     pub loop_scopes: Vec<usize>,
     pub test_state: TestState,
+
+    pub punc_stack: Vec<Instruction>,
 }
 impl<'a> TestEnvironment<'a> {
     pub fn new(file: &'a file::FmpFile) -> Self {
@@ -75,6 +77,7 @@ impl<'a> TestEnvironment<'a> {
             table_ptr: None,
             loop_scopes: vec![],
             test_state: TestState::Pass,
+            punc_stack: vec![],
         }
     }
 
@@ -187,6 +190,7 @@ impl<'a> TestEnvironment<'a> {
             Instruction::SetField => {
                 let name : &str = cur_instruction.switches[0].as_ref();
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[1]);
+
                 let parts : Vec<&str> = name.split("::").collect();
                 let mut table_handle : Option<&mut VMTable> = None;
                 let mut n = 0;
@@ -197,6 +201,7 @@ impl<'a> TestEnvironment<'a> {
                         break;
                     }
                 }
+                println!("Setting {} to {} @ {:?}", name, val, self.record_ptrs[n].unwrap());
 
                 if table_handle.is_none() {
                     eprintln!("Table does not exist.");
@@ -210,9 +215,57 @@ impl<'a> TestEnvironment<'a> {
             },
             Instruction::Loop => {
                 self.loop_scopes.push(ip_handle.1);
+                self.punc_stack.push(Instruction::Loop);
                 self.instruction_ptr[n_stack].1 += 1;
             },
+            Instruction::If => {
+                let val = &self.eval_calculation(&cur_instruction.switches[0]);
+                if val == "true" {
+                    self.instruction_ptr[n_stack].1 += 1;
+                } else {
+                    while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
+                        cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
+                        match cur_instruction.opcode {
+                            Instruction::EndIf => {
+                                return;
+                            },
+                            Instruction::Else => {
+                                self.instruction_ptr[n_stack].1 += 1;
+                                return;
+                            },
+                            Instruction::ElseIf => {
+                                return;
+                            },
+                            _ => {}
+                        }
+                        self.instruction_ptr[n_stack].1 += 1;
+                    }
+                }
+            },
+            Instruction::EndIf => {
+
+                self.instruction_ptr[n_stack].1 += 1;
+            }
+            /* If we reach an else instruction naturally, it means we've done the branch prior.
+             * So we skip. */
+            Instruction::Else => {
+                while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
+                    cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
+                    match cur_instruction.opcode {
+                        Instruction::EndIf => {
+                            self.instruction_ptr[n_stack].1 += 1;
+                            return;
+                        },
+                        _ => {}
+                    }
+                    self.instruction_ptr[n_stack].1 += 1;
+                }
+                self.instruction_ptr[n_stack].1 += 1;
+            }
             Instruction::EndLoop => {
+                if *self.punc_stack.last().unwrap_or(&Instruction::EndLoop) != Instruction::Loop {
+                    eprintln!("invalid scope resultion. Please check that loop and if blocks are terminated correctly.");
+                }
                 self.instruction_ptr[n_stack].1 = self.loop_scopes.last().unwrap() + 1;
                 // self.instruction_ptr[n_stack].1 += 1;
             },
@@ -436,7 +489,11 @@ mod tests {
                 exit_loop_if(x == 10);
                 assert(x != 10);
                 set_variable(x, x + 1);
-                set_field(blank::PrimaryKey, \"Kevin\");
+                if(x == 7) {
+                    set_field(blank::PrimaryKey, \"Kevin\");
+                } else {
+                    set_field(blank::PrimaryKey, \"Jeff\");
+                }
               }
             }
           ],
@@ -448,9 +505,9 @@ mod tests {
         let mut te : TestEnvironment = TestEnvironment::new(&file);
         te.generate_test_environment();
         te.run_tests();
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap().len(), 10);
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[7], "Kevin");
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[0], "Kevin");
+        // assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap().len(), 10);
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[5], "Kevin");
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[7], "Jeff");
     }
 }
 

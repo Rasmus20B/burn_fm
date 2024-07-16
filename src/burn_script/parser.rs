@@ -63,6 +63,7 @@ impl Parser {
                         match t.ttype {
                             TokenType::Identifier => {
                                 if let Ok(op) = Instruction::from_str(&t.value) {
+                                    println!("identifer: {:?}", t.value);
                                     let mut step = ScriptStep {
                                         opcode: op,
                                         index: 0,
@@ -77,6 +78,9 @@ impl Parser {
                                             TokenType::SemiColon => {
                                                 break;
                                             },
+                                            TokenType::OpenBracket => {
+                                                break;
+                                            }
                                             TokenType::OpenParen => {
                                                 continue;
                                             },
@@ -113,6 +117,13 @@ impl Parser {
                                 if top.is_none() {
                                     break;
                                 }
+
+                                match parser_iter.peek().unwrap().ttype {
+                                    TokenType::Else => {
+                                        continue;
+                                    }
+                                    _ => {}
+                                }
                                 let op: Instruction;
                                 match top.unwrap() {
                                     Instruction::If => {
@@ -122,17 +133,17 @@ impl Parser {
                                         op = Instruction::EndLoop;
                                     },
                                     _ => {
-                                        return Err("Unknown scope signifier.");
+                                        return Err("Invalid scope signifier.");
                                     }
-
                                 }
+                                punc_stack.pop();
                                 let step = ScriptStep {
                                     opcode: op,
                                     index: 0,
                                     switches: vec![],
                                 };
                                 tmp.instructions.push(step);
-                            }
+                            },
                             TokenType::Loop => {
                                 let check = parser_iter.next();
                                 if check.unwrap().ttype != TokenType::OpenBracket {
@@ -146,6 +157,56 @@ impl Parser {
                                 };
                                 tmp.instructions.push(step);
                                 punc_stack.push(Instruction::Loop);
+                            },
+                            TokenType::If => {
+                                let mut step = ScriptStep {
+                                    opcode: Instruction::If,
+                                    index: 0,
+                                    switches: vec![]
+                                };
+                                let mut buf = "".to_string();
+                                while let Some(n) = parser_iter.next() {
+                                    match n.ttype {
+                                        TokenType::CloseParen => {
+                                            step.switches.push(buf.clone());
+                                            break;
+                                        },
+                                        TokenType::Identifier | TokenType::NumericLiteral => {
+                                            buf.push_str(&n.value);
+                                        }
+                                        TokenType::OpenParen => {
+                                            continue;
+                                        }
+                                        TokenType::Eq => {
+                                            buf.push_str("==");
+                                        },
+                                        TokenType::Neq => {
+                                            buf.push_str("!=");
+                                        },
+                                        TokenType::Plus => {
+                                            buf.push('+');
+                                        },
+                                        _ => {
+                                            buf.push_str(&t.value);
+                                        },
+                                    }
+                                    
+                                }
+                                tmp.instructions.push(step);
+                                punc_stack.push(Instruction::If);
+                            },
+                            TokenType::Else => {
+                                let check = parser_iter.next();
+                                if check.unwrap().ttype != TokenType::OpenBracket {
+                                    eprintln!("Expected '{{' after loop.");
+                                    break;
+                                }
+                                let step = ScriptStep {
+                                    opcode: Instruction::Else,
+                                    index: 0,
+                                    switches: vec![]
+                                };
+                                tmp.instructions.push(step);
                             }
                             _ => { eprintln!("Invalid token in script"); }
                         }
@@ -177,6 +238,11 @@ mod tests {
             loop {
                 exit_loop_if(i == y);
                 set_variable(i, i + 1);
+                if(i == 7) {
+                    set_variable(x, 20);
+                } else {
+                    set_variable(x, 50);
+                }
             }
             exit_script(i);
         }";
@@ -204,6 +270,26 @@ mod tests {
                          switches: vec!["i".to_string(), "i+1".to_string()],
                          index: 0,
             },
+            ScriptStep { opcode: Instruction::If,
+                         switches: vec!["i==7".to_string()],
+                         index: 0,
+            },
+            ScriptStep { opcode: Instruction::SetVariable,
+                         switches: vec!["x".to_string(), "20".to_string()],
+                         index: 0,
+            },
+            ScriptStep { opcode: Instruction::Else,
+                         switches: vec![],
+                         index: 0,
+            },
+            ScriptStep { opcode: Instruction::SetVariable,
+                         switches: vec!["x".to_string(), "50".to_string()],
+                         index: 0,
+            },
+            ScriptStep { opcode: Instruction::EndIf,
+                         switches: vec![],
+                         index: 0,
+            },
             ScriptStep { opcode: Instruction::EndLoop,
                          switches: vec![],
                          index: 0,
@@ -213,6 +299,7 @@ mod tests {
                          index: 0,
             },
         ];
+        println!("{:?}", handle.instructions);
         for (i, step) in steps_actual.iter().enumerate() {
             assert_eq!(*step, handle.instructions[i]);
         }

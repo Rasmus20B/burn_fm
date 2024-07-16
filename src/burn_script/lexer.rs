@@ -14,8 +14,27 @@ impl Lexer {
     pub fn get_tokens(&self) -> Vec<Token> {
         let mut result = vec![];
         let mut buffer = String::new();
-        let mut lex_iter = self.code.chars().into_iter().enumerate().peekable();
-        while let Some((idx, c)) = &lex_iter.next() {
+        let mut lex_iter = self.code.chars().into_iter().peekable();
+
+        let flush_buffer = |b: &str| {
+            match b {
+                "define" => Token::new(TokenType::Define),
+                "let" => Token::new(TokenType::Let),
+                "loop" => Token::new(TokenType::Loop),
+                "if" => Token::new(TokenType::If),
+                "elif" => Token::new(TokenType::Elif),
+                "else" => Token::new(TokenType::Else),
+                _ => {
+                    let n = b.parse::<f64>();
+                    if n.is_ok() {
+                        Token::with_value(TokenType::NumericLiteral, b)
+                    } else {
+                        Token::with_value(TokenType::Identifier, b)
+                    }
+                }
+            }
+        };
+        while let Some(c) = &lex_iter.next() {
             if buffer.is_empty() && c.is_whitespace() {
                 continue;
             }
@@ -25,23 +44,21 @@ impl Lexer {
                 x if x.is_whitespace() =>  
                 {
                     let mut ret: Vec<Token> = vec![];
-                    if !buffer.is_empty() {
-                        match b {
-                            "define" => { ret.push(Token::new(TokenType::Define)); }
-                            "let" => { ret.push(Token::new(TokenType::Let)); }
-                            "loop" => { ret.push(Token::new(TokenType::Loop)); }
-                            _ => {
-                                ret.push(Token::with_value(TokenType::Identifier, &buffer));
-                            }
-                        }
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
                     }
                     Some(ret)
                 },
                 '(' =>
                 {
                     let mut ret: Vec<Token> = vec![];
-                    if !buffer.is_empty() {
-                        ret.push(Token::with_value(TokenType::Identifier, &buffer));
+                    
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
                     }
                     ret.push(Token::new(TokenType::OpenParen));
                     Some(ret)
@@ -49,8 +66,10 @@ impl Lexer {
                 '{' =>
                 {
                     let mut ret: Vec<Token> = vec![];
-                    if !buffer.is_empty() {
-                        ret.push(Token::with_value(TokenType::Identifier, &buffer));
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
                     }
                     ret.push(Token::new(TokenType::OpenBracket));
                     Some(ret)
@@ -58,8 +77,10 @@ impl Lexer {
                 '}' =>
                 {
                     let mut ret: Vec<Token> = vec![];
-                    if !buffer.is_empty() {
-                        ret.push(Token::with_value(TokenType::Identifier, &buffer));
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
                     }
                     ret.push(Token::new(TokenType::CloseBracket));
                     Some(ret)
@@ -67,13 +88,10 @@ impl Lexer {
                 ')' =>
                 {
                     let mut ret: Vec<Token> = vec![];
-                    if !buffer.is_empty() {
-                        let n = buffer.parse::<f64>();
-                        if n.is_ok() {
-                            ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
-                        } else {
-                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
-                        }
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
                     }
                     ret.push(Token::new(TokenType::CloseParen));
                     Some(ret)
@@ -83,13 +101,10 @@ impl Lexer {
 
                     let mut ret: Vec<Token> = vec![];
 
-                    if !buffer.is_empty() {
-                        let n = buffer.parse::<f64>();
-                        if n.is_ok() {
-                            ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
-                        } else {
-                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
-                        }
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
                     }
                     ret.push(Token::new(TokenType::Comma));
                     Some(ret)
@@ -97,13 +112,10 @@ impl Lexer {
                 ';' =>
                 {
                     let mut ret: Vec<Token> = vec![];
-                    if !buffer.is_empty() {
-                        let n = buffer.parse::<f64>();
-                        if n.is_ok() {
-                          ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
-                        } else {
-                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
-                        }
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
                     }
                     ret.push(Token::new(TokenType::SemiColon));
                     Some(ret)
@@ -111,15 +123,12 @@ impl Lexer {
                 '!' =>  
                 {
                     let mut ret: Vec<Token> = vec![];
-                    if !buffer.is_empty() {
-                        let n = buffer.parse::<f64>();
-                        if n.is_ok() {
-                          ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
-                        } else {
-                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
-                        }
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
                     }
-                    if lex_iter.peek().unwrap().1 != '=' {
+                    if *lex_iter.peek().unwrap() != '=' {
                         ret.push(Token::new(TokenType::Assign));
                     } else {
                         lex_iter.next();
@@ -130,15 +139,12 @@ impl Lexer {
                 '=' =>  
                 {
                     let mut ret: Vec<Token> = vec![];
-                    if !buffer.is_empty() {
-                        let n = buffer.parse::<f64>();
-                        if n.is_ok() {
-                          ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
-                        } else {
-                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
-                        }
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
                     }
-                    if lex_iter.peek().unwrap().1 != '=' {
+                    if *lex_iter.peek().unwrap() != '=' {
                         ret.push(Token::new(TokenType::Assign));
                     } else {
                         lex_iter.next();
@@ -149,13 +155,10 @@ impl Lexer {
                 '+' =>
                 {
                     let mut ret: Vec<Token> = vec![];
-                    if !buffer.is_empty() {
-                        let n = buffer.parse::<f64>();
-                        if n.is_ok() {
-                          ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
-                        } else {
-                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
-                        }
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
                     }
                     ret.push(Token::new(TokenType::Plus));
                     Some(ret)
@@ -163,13 +166,10 @@ impl Lexer {
                 '-' =>
                 {
                     let mut ret: Vec<Token> = vec![];
-                    if !buffer.is_empty() {
-                        let n = buffer.parse::<f64>();
-                        if n.is_ok() {
-                          ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
-                        } else {
-                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
-                        }
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
                     }
                     ret.push(Token::new(TokenType::Minus));
                     Some(ret)
@@ -177,13 +177,10 @@ impl Lexer {
                 '*' =>
                 {
                     let mut ret: Vec<Token> = vec![];
-                    if !buffer.is_empty() {
-                        let n = buffer.parse::<f64>();
-                        if n.is_ok() {
-                          ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
-                        } else {
-                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
-                        }
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
                     }
                     ret.push(Token::new(TokenType::Multiply));
                     Some(ret)
@@ -191,13 +188,10 @@ impl Lexer {
                 '/' =>
                 {
                     let mut ret: Vec<Token> = vec![];
-                    if !buffer.is_empty() {
-                        let n = buffer.parse::<f64>();
-                        if n.is_ok() {
-                          ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
-                        } else {
-                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
-                        }
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
                     }
                     ret.push(Token::new(TokenType::Divide));
                     Some(ret)
@@ -205,13 +199,10 @@ impl Lexer {
                 '"' => 
                 {
                     let mut ret: Vec<Token> = vec![];
-                    if !buffer.is_empty() {
-                        let n = buffer.parse::<f64>();
-                        if n.is_ok() {
-                          ret.push(Token::with_value(TokenType::NumericLiteral, &buffer))
-                        } else {
-                            ret.push(Token::with_value(TokenType::Identifier, &buffer))
-                        }
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
                     }
                     Some(ret)
 

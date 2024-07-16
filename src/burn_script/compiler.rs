@@ -7,6 +7,9 @@ pub struct BurnScriptCompiler {
 
 }
 
+// TODO: Implement 'if', 'else if', 'end if', script steps.
+// TODO: Implement 'perform_script' script step. Keep track of scope.
+
 impl BurnScriptCompiler {
     pub fn compile_burn_script(code: &str) -> Vec<FMComponentScript> {
         let tokens = lexer::Lexer::new(code.to_string()).get_tokens();

@@ -200,13 +200,15 @@ use serde::{Deserialize, Serialize};
 
 impl FromStr for Instruction {
     type Err = ();
-
     fn from_str(input: &str) -> Result<Instruction, Self::Err> {
         match input {
             "perform_script" => Ok(Instruction::PerformScript),
             "set_field" => Ok(Instruction::SetField),
             "set_variable" => Ok(Instruction::SetVariable),
             "loop" => Ok(Instruction::Loop),
+            "if" => Ok(Instruction::If),
+            "elif" => Ok(Instruction::ElseIf),
+            "else" => Ok(Instruction::Else),
             "exit_loop_if" => Ok(Instruction::ExitLoopIf),
             "new_record_request" => Ok(Instruction::NewRecordRequest),
             "exit_script" => Ok(Instruction::ExitScript),
@@ -214,7 +216,6 @@ impl FromStr for Instruction {
             _ => Err(()),
         }
     }
-
 }
 
 pub static INSTRUCTIONMAP : [Option<Instruction>; 255] = [
