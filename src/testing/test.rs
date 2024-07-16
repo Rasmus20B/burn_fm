@@ -285,7 +285,7 @@ impl<'a> TestEnvironment<'a> {
                 }
             }
             Instruction::EndIf => {
-
+                self.branch_taken = false;
                 self.instruction_ptr[n_stack].1 += 1;
             }
             /* If we reach an else instruction naturally, it means we've done the branch prior.
@@ -566,7 +566,13 @@ mod tests {
         te.generate_test_environment();
         te.run_tests();
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap().len(), 10);
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[0], "\"Jeff Keighly\"");
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[1], "\"alvin Presley\"");
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[2], "\"Jeff Keighly\"");
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[3], "\"Jeff Keighly\"");
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[4], "\"Jeff Keighly\"");
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[5], "\"Jeff Keighly\"");
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[6], "\"Jeff Keighly\"");
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[7], "\"Kevin\"");
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[8], "\"Jeff Keighly\"");
     }

@@ -119,12 +119,18 @@ impl Parser {
                                 if top.is_none() {
                                     break;
                                 }
-
-                                match parser_iter.peek().unwrap().ttype {
-                                    TokenType::Else => {
-                                        continue;
+                                
+                                let n = parser_iter.peek();
+                                if n.is_some() {
+                                    match n.unwrap().ttype {
+                                        TokenType::Else => {
+                                            continue;
+                                        }
+                                        TokenType::Elif => {
+                                            continue;
+                                        }
+                                        _ => {}
                                     }
-                                    _ => {}
                                 }
                                 let op: Instruction;
                                 match top.unwrap() {
