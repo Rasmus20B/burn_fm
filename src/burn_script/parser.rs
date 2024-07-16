@@ -118,7 +118,6 @@ impl Parser {
                                 if top.is_none() {
                                     break;
                                 }
-                                
                                 let n = parser_iter.peek();
                                 if n.is_some() {
                                     match n.unwrap().ttype {
@@ -143,6 +142,7 @@ impl Parser {
                                         return Err("Invalid scope signifier.");
                                     }
                                 }
+                                println!("{:?}", punc_stack);
                                 punc_stack.pop();
                                 let step = ScriptStep {
                                     opcode: op,
@@ -202,7 +202,6 @@ impl Parser {
                                     }
                                 }
                                 tmp.instructions.push(step);
-                                punc_stack.push(Instruction::If);
                             },
                             TokenType::If => {
                                 let mut step = ScriptStep {

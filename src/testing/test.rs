@@ -10,6 +10,7 @@ use crate::testing::calc_eval;
 
 use super::calc_tokens;
 
+#[derive(Debug)]
 pub struct Variable {
     pub name: String,
     pub value: String,
@@ -24,10 +25,6 @@ impl Variable {
             global: g,
         }
     } 
-
-    pub fn set(&mut self, val: String) {
-        self.value = val;
-    }
 }
 
 pub struct VMTable {
@@ -105,6 +102,7 @@ impl<'a> TestEnvironment<'a> {
         }
     }
 
+    #[allow(unused)]
     pub fn run_tests(&mut self) {
         for test in &self.file_handle.tests {
             /* 1. Run the script 
@@ -165,7 +163,6 @@ impl<'a> TestEnvironment<'a> {
         } else {
             script_handle = &self.current_test.as_ref().unwrap().script;
         }
-
         
         if ip_handle.1 > script_handle.instructions.len() - 1{
             println!("Popping script: {}", ip_handle.0);
@@ -174,6 +171,7 @@ impl<'a> TestEnvironment<'a> {
         }
 
         let mut cur_instruction = &script_handle.instructions[ip_handle.1];
+        println!("ins {}: {:?}", ip_handle.1, cur_instruction);
         match &cur_instruction.opcode {
             Instruction::SetVariable => {
                 let name : &str = cur_instruction.switches[0].as_ref();
@@ -230,7 +228,7 @@ impl<'a> TestEnvironment<'a> {
                                 return;
                             },
                             Instruction::Else => {
-                                self.instruction_ptr[n_stack].1 += 1;
+                                // self.instruction_ptr[n_stack].1 += 1;
                                 return;
                             },
                             Instruction::ElseIf => {
@@ -254,7 +252,6 @@ impl<'a> TestEnvironment<'a> {
                             _ => {self.instruction_ptr[n_stack].1 += 1;}
                         }
                     }
-                    return;
                 }
                 let val = &self.eval_calculation(&cur_instruction.switches[0]);
                 if val == "true" {
@@ -269,38 +266,34 @@ impl<'a> TestEnvironment<'a> {
                                 return;
                             },
                             Instruction::Else => {
-                                self.instruction_ptr[n_stack].1 += 1;
                                 return;
                             },
                             Instruction::ElseIf => {
                                 return;
                             },
-                            _ => {}
+                            _ => {self.instruction_ptr[n_stack].1 += 1;}
                         }
-                        self.instruction_ptr[n_stack].1 += 1;
                     }
                 }
             }
-            Instruction::EndIf => {
-                self.branch_taken = false;
-                self.instruction_ptr[n_stack].1 += 1;
-            }
-            /* If we reach an else instruction naturally, it means we've done the branch prior.
-             * So we skip. */
             Instruction::Else => {
                 if self.branch_taken == true {
                     while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
                         cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
                         match cur_instruction.opcode {
                             Instruction::EndIf => {
-                                self.instruction_ptr[n_stack].1 += 1;
+                                self.branch_taken = false;
                                 return;
                             },
-                            _ => {}
+                            _ => {self.instruction_ptr[n_stack].1 += 1;}
                         }
-                        self.instruction_ptr[n_stack].1 += 1;
                     }
                 }
+                self.instruction_ptr[n_stack].1 += 1;
+            }
+
+            Instruction::EndIf => {
+                self.branch_taken = false;
                 self.instruction_ptr[n_stack].1 += 1;
             }
             Instruction::EndLoop => {
@@ -547,6 +540,8 @@ mod tests {
                     set_field(blank::PrimaryKey, \"Kevin\");
                 } elif(x == 1) {
                     set_field(blank::PrimaryKey, \"alvin\" & \" Presley\");
+                } elif(x == 2) {
+                    set_field(blank::PrimaryKey, \"NAHHH\");
                 } else {
                     set_field(blank::PrimaryKey, \"Jeff\" & \" Keighly\");
                 }
@@ -565,7 +560,7 @@ mod tests {
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap().len(), 10);
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[0], "\"Jeff Keighly\"");
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[1], "\"alvin Presley\"");
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[2], "\"Jeff Keighly\"");
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[2], "\"NAHHH\"");
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[3], "\"Jeff Keighly\"");
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[4], "\"Jeff Keighly\"");
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[5], "\"Jeff Keighly\"");
@@ -574,5 +569,4 @@ mod tests {
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[8], "\"Jeff Keighly\"");
     }
 }
-
 
