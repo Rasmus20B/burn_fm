@@ -64,6 +64,7 @@ pub struct TestEnvironment<'a> {
     pub test_state: TestState,
 
     pub punc_stack: Vec<Instruction>,
+    pub branch_taken: bool,
 }
 impl<'a> TestEnvironment<'a> {
     pub fn new(file: &'a file::FmpFile) -> Self {
@@ -78,6 +79,7 @@ impl<'a> TestEnvironment<'a> {
             loop_scopes: vec![],
             test_state: TestState::Pass,
             punc_stack: vec![],
+            branch_taken: false,
         }
     }
 
@@ -157,7 +159,7 @@ impl<'a> TestEnvironment<'a> {
 
         assert!(self.current_test.is_some());
         let mut ip_handle: (String, usize);
-        let mut script_handle: &FMComponentScript;
+        let script_handle: &FMComponentScript;
         let n_stack = self.instruction_ptr.len() - 1;
         ip_handle = self.instruction_ptr[n_stack].clone();
         if self.instruction_ptr.len() > 1 {
@@ -174,6 +176,7 @@ impl<'a> TestEnvironment<'a> {
         }
 
         let mut cur_instruction = &script_handle.instructions[ip_handle.1];
+        println!("{:?}", cur_instruction);
         match &cur_instruction.opcode {
             Instruction::SetVariable => {
                 let name : &str = cur_instruction.switches[0].as_ref();
@@ -201,7 +204,6 @@ impl<'a> TestEnvironment<'a> {
                         break;
                     }
                 }
-                println!("Setting {} to {} @ {:?}", name, val, self.record_ptrs[n].unwrap());
 
                 if table_handle.is_none() {
                     eprintln!("Table does not exist.");
@@ -222,6 +224,7 @@ impl<'a> TestEnvironment<'a> {
                 let val = &self.eval_calculation(&cur_instruction.switches[0]);
                 if val == "true" {
                     self.instruction_ptr[n_stack].1 += 1;
+                    self.branch_taken = true;
                 } else {
                     while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
                         cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
@@ -242,6 +245,45 @@ impl<'a> TestEnvironment<'a> {
                     }
                 }
             },
+            Instruction::ElseIf => {
+                if self.branch_taken == true {
+                    while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
+                        cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
+                        match cur_instruction.opcode {
+                            Instruction::EndIf => {
+                                self.branch_taken = false;
+                                return;
+                            },
+                            _ => {self.instruction_ptr[n_stack].1 += 1;}
+                        }
+                    }
+                    return;
+                }
+                let val = &self.eval_calculation(&cur_instruction.switches[0]);
+                if val == "true" {
+                    self.instruction_ptr[n_stack].1 += 1;
+                    self.branch_taken = true;
+                } else {
+                    self.instruction_ptr[n_stack].1 += 1;
+                    while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
+                        cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
+                        match cur_instruction.opcode {
+                            Instruction::EndIf => {
+                                return;
+                            },
+                            Instruction::Else => {
+                                self.instruction_ptr[n_stack].1 += 1;
+                                return;
+                            },
+                            Instruction::ElseIf => {
+                                return;
+                            },
+                            _ => {}
+                        }
+                        self.instruction_ptr[n_stack].1 += 1;
+                    }
+                }
+            }
             Instruction::EndIf => {
 
                 self.instruction_ptr[n_stack].1 += 1;
@@ -249,16 +291,18 @@ impl<'a> TestEnvironment<'a> {
             /* If we reach an else instruction naturally, it means we've done the branch prior.
              * So we skip. */
             Instruction::Else => {
-                while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
-                    cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
-                    match cur_instruction.opcode {
-                        Instruction::EndIf => {
-                            self.instruction_ptr[n_stack].1 += 1;
-                            return;
-                        },
-                        _ => {}
+                if self.branch_taken == true {
+                    while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
+                        cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
+                        match cur_instruction.opcode {
+                            Instruction::EndIf => {
+                                self.instruction_ptr[n_stack].1 += 1;
+                                return;
+                            },
+                            _ => {}
+                        }
+                        self.instruction_ptr[n_stack].1 += 1;
                     }
-                    self.instruction_ptr[n_stack].1 += 1;
                 }
                 self.instruction_ptr[n_stack].1 += 1;
             }
@@ -474,10 +518,8 @@ impl<'a> TestEnvironment<'a> {
                          ).to_string() 
                     },
                     calc_tokens::TokenType::Ampersand => { 
-                        println!("Does get here though");
                         let lhs = lhs.replace('"', "");
                         let rhs = rhs.replace('"', "");
-                        println!("{lhs}, {:?}, {rhs}", operation);
                         format!("\"{lhs}{rhs}\"")
                     },
                     _ => { unreachable!()}
@@ -506,6 +548,8 @@ mod tests {
                 assert(x != 10);
                 if(x == 7) {
                     set_field(blank::PrimaryKey, \"Kevin\");
+                } elif(x == 1) {
+                    set_field(blank::PrimaryKey, \"alvin\" & \" Presley\");
                 } else {
                     set_field(blank::PrimaryKey, \"Jeff\" & \" Keighly\");
                 }
@@ -522,6 +566,7 @@ mod tests {
         te.generate_test_environment();
         te.run_tests();
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap().len(), 10);
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[1], "\"alvin Presley\"");
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[7], "\"Kevin\"");
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[8], "\"Jeff Keighly\"");
     }

@@ -160,6 +160,45 @@ impl Parser {
                                 tmp.instructions.push(step);
                                 punc_stack.push(Instruction::Loop);
                             },
+                            TokenType::Elif => {
+                                let mut step = ScriptStep {
+                                    opcode: Instruction::ElseIf,
+                                    index: 0,
+                                    switches: vec![]
+                                };
+                                let mut buf = "".to_string();
+                                while let Some(n) = parser_iter.next() {
+                                    match n.ttype {
+                                        TokenType::CloseParen => {
+                                            step.switches.push(buf.clone());
+                                            break;
+                                        },
+                                        TokenType::Identifier | TokenType::NumericLiteral => {
+                                            buf.push_str(&n.value);
+                                        }
+                                        TokenType::OpenParen => {
+                                            continue;
+                                        }
+                                        TokenType::Eq => {
+                                            buf.push_str("==");
+                                        },
+                                        TokenType::Neq => {
+                                            buf.push_str("!=");
+                                        },
+                                        TokenType::Plus => {
+                                            buf.push('+');
+                                        },
+                                        TokenType::Ampersand => {
+                                            buf.push('&');
+                                        },
+                                        _ => {
+                                            buf.push_str(&t.value);
+                                        },
+                                    }
+                                }
+                                tmp.instructions.push(step);
+                                punc_stack.push(Instruction::If);
+                            },
                             TokenType::If => {
                                 let mut step = ScriptStep {
                                     opcode: Instruction::If,
@@ -212,7 +251,7 @@ impl Parser {
                                     switches: vec![]
                                 };
                                 tmp.instructions.push(step);
-                            }
+                            },
                             _ => { eprintln!("Invalid token in script: {:?}", t); }
                         }
                     }
