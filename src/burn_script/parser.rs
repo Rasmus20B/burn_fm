@@ -142,7 +142,6 @@ impl Parser {
                                         return Err("Invalid scope signifier.");
                                     }
                                 }
-                                println!("{:?}", punc_stack);
                                 punc_stack.pop();
                                 let step = ScriptStep {
                                     opcode: op,
@@ -150,6 +149,9 @@ impl Parser {
                                     switches: vec![],
                                 };
                                 tmp.instructions.push(step);
+                            },
+                            TokenType::OpenBracket => {
+
                             },
                             TokenType::Loop => {
                                 let check = parser_iter.next();

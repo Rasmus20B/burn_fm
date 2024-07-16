@@ -171,7 +171,7 @@ impl<'a> TestEnvironment<'a> {
         }
 
         let mut cur_instruction = &script_handle.instructions[ip_handle.1];
-        println!("ins {}: {:?}", ip_handle.1, cur_instruction);
+        // println!("ins {}: {:?}", ip_handle.1, cur_instruction);
         match &cur_instruction.opcode {
             Instruction::SetVariable => {
                 let name : &str = cur_instruction.switches[0].as_ref();
