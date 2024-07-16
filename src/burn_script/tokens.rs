@@ -15,6 +15,7 @@ pub enum TokenType {
     Minus,
     Multiply,
     Divide,
+    Ampersand,
     Loop,
     If,
     Elif,

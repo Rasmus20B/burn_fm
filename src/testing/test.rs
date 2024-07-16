@@ -357,6 +357,14 @@ impl<'a> TestEnvironment<'a> {
                     }
                     tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::Plus)).unwrap());
                 },
+                '&' => {
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        tokens.push(b.unwrap());
+                    }
+                    tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::Ampersand)).unwrap());
+                },
                 '!' => {
                     if buffer.len() > 0 {
                         let b = flush_buffer(buffer.as_str());
@@ -387,6 +395,7 @@ impl<'a> TestEnvironment<'a> {
                         buffer.clear();
                         tokens.push(b.unwrap());
                     }
+                    buffer.push(*c);
                     while let Some(c) = &lex_iter.next() {
                         if *c == '"' {
                             buffer.push(*c);
@@ -394,8 +403,8 @@ impl<'a> TestEnvironment<'a> {
                         }
                         buffer.push(*c);
                     }
-                    buffer.push(*c);
                     tokens.push(calc_tokens::Token::with_value(calc_tokens::TokenType::String, buffer.clone()));
+                    buffer.clear();
                 },
                 _ => {
                     buffer.push(*c);
@@ -425,23 +434,23 @@ impl<'a> TestEnvironment<'a> {
                 "".to_string()
             },
             calc_eval::Node::Binary { left, operation, right } => {
-                let lhs = self.evaluate(left);
-                let rhs = self.evaluate(right);
+                let lhs = &self.evaluate(left);
+                let rhs = &self.evaluate(right);
                 let mut lhs_n = lhs.parse::<f64>();
                 let mut rhs_n = rhs.parse::<f64>();
                 let scope = self.instruction_ptr.len() - 1;
                 if lhs_n.is_err() {
                     lhs_n = Ok(self.variables[scope]
-                               .get(&lhs)
-                               .unwrap_or(&Variable::new(lhs, "0.0".to_string(), false))
+                               .get(lhs)
+                               .unwrap_or(&Variable::new(lhs.to_string(), "0.0".to_string(), false))
                                     .value.parse::<f64>().expect("unable to parse variable value as number"));
                         // .get(&lhs).expect("Variable not in scope").value
                         // .clone().parse::<f64>().unwrap_or(0.0));
                 }
                 if rhs_n.is_err() {
                     rhs_n = Ok(self.variables[scope]
-                               .get(&rhs)
-                               .unwrap_or(&Variable::new(rhs, "0.0".to_string(), false))
+                               .get(rhs)
+                               .unwrap_or(&Variable::new(rhs.to_string(), "0.0".to_string(), false))
                                     .value.parse::<f64>().expect("unable to parse variable value as number"));
                 }
 
@@ -463,6 +472,13 @@ impl<'a> TestEnvironment<'a> {
                          != 
                          rhs_n
                          ).to_string() 
+                    },
+                    calc_tokens::TokenType::Ampersand => { 
+                        println!("Does get here though");
+                        let lhs = lhs.replace('"', "");
+                        let rhs = rhs.replace('"', "");
+                        println!("{lhs}, {:?}, {rhs}", operation);
+                        format!("\"{lhs}{rhs}\"")
                     },
                     _ => { unreachable!()}
                 }
@@ -491,7 +507,7 @@ mod tests {
                 if(x == 7) {
                     set_field(blank::PrimaryKey, \"Kevin\");
                 } else {
-                    set_field(blank::PrimaryKey, \"Jeff\");
+                    set_field(blank::PrimaryKey, \"Jeff\" & \" Keighly\");
                 }
                 set_variable(x, x + 1);
               }
@@ -506,8 +522,8 @@ mod tests {
         te.generate_test_environment();
         te.run_tests();
         assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap().len(), 10);
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[7], "Kevin");
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[8], "Jeff");
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[7], "\"Kevin\"");
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[8], "\"Jeff Keighly\"");
     }
 }
 

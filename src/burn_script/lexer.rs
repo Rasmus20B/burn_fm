@@ -196,6 +196,17 @@ impl Lexer {
                     ret.push(Token::new(TokenType::Divide));
                     Some(ret)
                 },
+                '&' =>
+                {
+                    let mut ret: Vec<Token> = vec![];
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
+                    }
+                    ret.push(Token::new(TokenType::Ampersand));
+                    Some(ret)
+                },
                 '"' => 
                 {
                     let mut ret: Vec<Token> = vec![];
@@ -204,6 +215,22 @@ impl Lexer {
                         buffer.clear();
                         ret.push(b);
                     }
+
+                    let mut buf = String::new();
+                    buf.push('"');
+
+                    while let Some(n) = lex_iter.next() {
+                        match n {
+                            '"' => {
+                                buf.push('"');
+                                break;
+                            },
+                            _ => {
+                                buf.push(n);
+                            }
+                        }
+                    }
+                    ret.push(Token::with_value(TokenType::String, &buf));
                     Some(ret)
 
                 }

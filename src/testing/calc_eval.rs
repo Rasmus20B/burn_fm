@@ -43,7 +43,6 @@ impl Parser {
 
     pub fn parse_identifier(&mut self, tok: Token) -> Result<Box<Node>, &str> {
         let n = self.next();
-        // println!("n: {} :: {:?}",n.unwrap().value, n.unwrap().ttype);
         if n.is_none() {
             return Ok(Box::new(Node::Unary { value: self.current().value.clone(), child: None }));
         }
@@ -90,11 +89,11 @@ impl Parser {
     fn parse_string(&mut self, tok: Token) -> Result<Box<Node>, &str> {
         let n = self.next();
         if n.is_none() {
-            return Ok(Box::new(Node::Unary { value: tok.value, child: None }));
+            return Ok(Box::new(Node::Unary { value: format!("{}", tok.value), child: None }));
         }
         match n.unwrap().ttype {
             calc_tokens::TokenType::Ampersand => {
-                Ok(Box::new(Node::Binary { left: Box::new(Node::Unary { value: tok.value, child: None } ), 
+                Ok(Box::new(Node::Binary { left: Box::new(Node::Unary { value: format!("{}", tok.value), child: None } ), 
                     operation: n.unwrap().ttype, 
                     right: self.parse().expect("unable to parse") }))
             }
@@ -116,7 +115,7 @@ impl Parser {
                 Ok(self.parse_numeric(cur).expect("Unable to parse numeric literal"))
             },
             calc_tokens::TokenType::String => {
-                Ok(self.parse_string(cur).expect("Unable to parse numeric literal"))
+                Ok(self.parse_string(cur).expect("Unable to parse String literal"))
             },
             _ => {
                 Err("Unable to parse calculation")
@@ -152,6 +151,24 @@ mod tests {
             }
             _ => {}
 
+        }
+    }
+    #[test]
+    fn string_concat() {
+        let tokens: Vec<Token> = vec![
+            Token::with_value(TokenType::String, "FileMaker".to_string()),
+            Token::new(TokenType::Ampersand),
+            Token::with_value(TokenType::String, " Testing".to_string()),
+        ];
+        let mut parser = Parser::new(tokens);
+        let ast = parser.parse().expect("Unable to parse tokens");
+        match *ast {
+            Node::Binary { ref left, ref operation, ref right } => {
+                assert_eq!(*left, Box::new(Node::Unary { value: "FileMaker".to_string(), child: None }));
+                assert_eq!(*operation, TokenType::Ampersand);
+                assert_eq!(*right, Box::new(Node::Unary { value: " Testing".to_string(), child: None }));
+            }
+            _ => { unreachable!() }
         }
     }
 }

@@ -71,7 +71,7 @@ impl Parser {
                                     let mut buffer = String::new();
                                     while let Some(t) = parser_iter.next() {
                                         match t.ttype {
-                                            TokenType::Identifier | TokenType::NumericLiteral => {
+                                            TokenType::Identifier | TokenType::NumericLiteral | TokenType::String => {
                                                 buffer.push_str(&t.value);
                                             }
                                             TokenType::SemiColon => {
@@ -101,6 +101,9 @@ impl Parser {
                                             },
                                             TokenType::Plus => {
                                                 buffer.push('+');
+                                            },
+                                            TokenType::Ampersand => {
+                                                buffer.push('&');
                                             },
                                             _ => { eprintln!("Unexpected Token."); }
                                         }
@@ -185,6 +188,9 @@ impl Parser {
                                         TokenType::Plus => {
                                             buf.push('+');
                                         },
+                                        TokenType::Ampersand => {
+                                            buf.push('&');
+                                        },
                                         _ => {
                                             buf.push_str(&t.value);
                                         },
@@ -207,10 +213,9 @@ impl Parser {
                                 };
                                 tmp.instructions.push(step);
                             }
-                            _ => { eprintln!("Invalid token in script"); }
+                            _ => { eprintln!("Invalid token in script: {:?}", t); }
                         }
                     }
-                    
                     scripts.push(tmp);
                 },
                 _ => {
@@ -240,7 +245,7 @@ mod tests {
                 if(i == 7) {
                     set_variable(x, 20);
                 } else {
-                    set_variable(x, 50);
+                    set_variable(x, \"Jeff\" & \" Keighly\");
                 }
             }
             exit_script(i);
@@ -282,7 +287,7 @@ mod tests {
                          index: 0,
             },
             ScriptStep { opcode: Instruction::SetVariable,
-                         switches: vec!["x".to_string(), "50".to_string()],
+                         switches: vec!["x".to_string(), "\"Jeff\"&\" Keighly\"".to_string()],
                          index: 0,
             },
             ScriptStep { opcode: Instruction::EndIf,
@@ -298,7 +303,6 @@ mod tests {
                          index: 0,
             },
         ];
-        println!("{:?}", handle.instructions);
         for (i, step) in steps_actual.iter().enumerate() {
             assert_eq!(*step, handle.instructions[i]);
         }
