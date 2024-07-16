@@ -483,17 +483,17 @@ mod tests {
         test BasicTest:
           script: [
             define blank_test() {
-              set_variable(x, 1);
+              set_variable(x, 0);
               loop {
                 new_record_request();
-                exit_loop_if(x == 10);
+                exit_loop_if(x == 9);
                 assert(x != 10);
-                set_variable(x, x + 1);
                 if(x == 7) {
                     set_field(blank::PrimaryKey, \"Kevin\");
                 } else {
                     set_field(blank::PrimaryKey, \"Jeff\");
                 }
+                set_variable(x, x + 1);
               }
             }
           ],
@@ -505,9 +505,9 @@ mod tests {
         let mut te : TestEnvironment = TestEnvironment::new(&file);
         te.generate_test_environment();
         te.run_tests();
-        // assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap().len(), 10);
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[5], "Kevin");
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[7], "Jeff");
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap().len(), 10);
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[7], "Kevin");
+        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[8], "Jeff");
     }
 }
 

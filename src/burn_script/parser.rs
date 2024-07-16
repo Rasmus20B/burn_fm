@@ -63,7 +63,6 @@ impl Parser {
                         match t.ttype {
                             TokenType::Identifier => {
                                 if let Ok(op) = Instruction::from_str(&t.value) {
-                                    println!("identifer: {:?}", t.value);
                                     let mut step = ScriptStep {
                                         opcode: op,
                                         index: 0,
