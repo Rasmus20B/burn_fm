@@ -1,10 +1,9 @@
-use std::{collections::HashMap, str::FromStr};
+use std::{str::FromStr};
 
-use clap::parser;
 
 use crate::{component::FMComponentScript, fm_script_engine::fm_script_engine_instructions::{Instruction, ScriptStep}};
 
-use super::tokens::{self, Token, TokenType};
+use super::tokens::{Token, TokenType};
 
 
 #[derive(Debug, PartialEq)]

@@ -1,5 +1,5 @@
 
-use crate::{burn_script, compile::token::*, component::{FMComponentRelationship, FMComponentScript, FMComponentTable, FMComponentTableOccurence, FMComponentTest, FMComponentValueList}, file::FmpFile, fm_script_engine::fm_script_engine_instructions::ScriptStep};
+use crate::{burn_script, compile::token::*, component::{FMComponentRelationship, FMComponentScript, FMComponentTable, FMComponentTableOccurence, FMComponentTest, FMComponentValueList}, file::FmpFile};
 
 pub struct Parser {
     tokens: Vec<Token>,
@@ -112,7 +112,7 @@ impl Parser {
                     ret.value_lists.insert(ret.value_lists.len(), value_list);
                 },
                 TokenType::Script => {
-                    let mut scripts: Vec<FMComponentScript> = vec![];
+                    let scripts: Vec<FMComponentScript> = vec![];
                     if parser_iter.peek().unwrap().ttype != TokenType::Colon {
                         return Err("Expected Colon after top level declaration script keyword.".to_string());
                     }

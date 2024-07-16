@@ -1,12 +1,8 @@
-use std::collections::HashMap;
 
-use crate::{component::FMComponentScript, fm_script_engine::fm_script_engine_instructions::Instruction};
+use crate::{component::FMComponentScript};
 use super::{lexer, parser};
 
-pub struct BurnScriptCompiler {
-
-}
-
+pub struct BurnScriptCompiler {}
 // TODO: Implement 'perform_script' script step. Keep track of scope.
 
 impl BurnScriptCompiler {

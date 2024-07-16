@@ -15,12 +15,12 @@ const SECTOR_SIZE : usize = 4096;
 
 pub fn decompile_fmp12_file_with_header(path: &Path) -> FmpFile {
     let mut file = File::open(path).expect("unable to open file.");
-    let mut fmp_file = FmpFile::new();
+    let fmp_file = FmpFile::new();
     let mut buffer = Vec::<u8>::new();
     file.read_to_end(&mut buffer).expect("Unable to read file.");
 
-    let mut offset = SECTOR_SIZE;
-    let mut sectors = Vec::<sector::Sector>::new();
+    let offset = SECTOR_SIZE;
+    let sectors = Vec::<sector::Sector>::new();
 
     println!("Found: {:?}", &buffer[0..4095]);
     let first = sector::get_sector(&buffer[offset..]);

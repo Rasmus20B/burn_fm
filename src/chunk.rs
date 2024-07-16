@@ -52,7 +52,7 @@ pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec
     let mut ref_simple: Option<u16> = None;
     let mut delayed = false;
     
-    let mut table_idx = 0;
+    let table_idx = 0;
 
     if (chunk_code & 0xC0) == 0xC0 {
         chunk_code &= 0x3F;

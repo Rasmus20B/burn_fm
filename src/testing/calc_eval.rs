@@ -1,6 +1,5 @@
-use std::{iter::Peekable, sync::mpsc::Iter};
 
-use super::{calc_tokens::{self, Token, TokenType}, test::Variable};
+use super::{calc_tokens::{self, Token, TokenType}};
 
 #[derive(Debug, PartialEq)]
 pub enum Node {
@@ -128,7 +127,7 @@ impl Parser {
 
 #[cfg(test)]
 mod tests {
-    use std::{any::Any, ops::Deref};
+    
 
     use crate::testing::{calc_tokens::{Token, TokenType}};
 

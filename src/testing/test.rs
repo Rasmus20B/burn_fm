@@ -1,6 +1,4 @@
 use std::collections::HashMap;
-use std::io;
-use std::io::Write;
 
 use color_print::cprintln;
 
@@ -329,7 +327,7 @@ impl<'a> TestEnvironment<'a> {
                 for (name, f) in &mut self.tables[self.table_ptr.unwrap()].records {
                     f.push(String::new());
                 }
-                let mut handle = &mut self.record_ptrs[self.table_ptr.unwrap()];
+                let handle = &mut self.record_ptrs[self.table_ptr.unwrap()];
                 if handle.is_none() {
                     *handle = Some(0);
                 } else {
