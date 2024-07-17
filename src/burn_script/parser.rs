@@ -150,9 +150,7 @@ impl Parser {
                                 };
                                 tmp.instructions.push(step);
                             },
-                            TokenType::OpenBracket => {
-
-                            },
+                            TokenType::OpenBracket => {},
                             TokenType::Loop => {
                                 let check = parser_iter.next();
                                 if check.unwrap().ttype != TokenType::OpenBracket {

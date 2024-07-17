@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use color_print::cprintln;
-
 use crate::component::FMComponentScript;
 use crate::component::FMComponentTest;
 use crate::file;
@@ -128,7 +127,7 @@ impl<'a> TestEnvironment<'a> {
              * 3. Clean the test environment for next test */
             println!("Running test: {}", test.test_name);
             self.load_test(test.clone());
-            while !self.instruction_ptr.is_empty() {
+            while self.test_state == TestState::Pass && !self.instruction_ptr.is_empty() {
                 self.step();
             }
             if self.test_state == TestState::Pass {
@@ -136,11 +135,9 @@ impl<'a> TestEnvironment<'a> {
             } else if self.test_state == TestState::Fail {
                 cprintln!("Test {} outcome: <red>Fail</red>", self.current_test.as_ref().unwrap().test_name);
             }
-
             for t in &mut self.tables {
                 t.records.clear();
             }
-
         }
     }
 
@@ -173,6 +170,26 @@ impl<'a> TestEnvironment<'a> {
         let mut cur_instruction = &script_handle.instructions[ip_handle.1];
         // println!("ins {}: {:?}", ip_handle.1, cur_instruction);
         match &cur_instruction.opcode {
+            Instruction::PerformScript => {
+                let mut script_name = String::new();
+                match cur_instruction.switches[0].as_str() {
+                    "byName" => {
+                        script_name = cur_instruction.switches[1].clone();
+                    },
+                    "byCalc" => {
+                        script_name = self.eval_calculation(&cur_instruction.switches[1]);
+                    },
+                    _ => unreachable!()
+                }
+                self.variables.push(HashMap::new());
+
+                for s in &self.file_handle.scripts {
+                    if s.1.script_name == script_name {
+                        self.instruction_ptr.push((script_name.clone(), 0));
+                    }
+                }
+
+            },
             Instruction::SetVariable => {
                 let name : &str = cur_instruction.switches[0].as_ref();
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[1]);
