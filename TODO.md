@@ -9,7 +9,7 @@
 ## Virtual Machine
 ### Features
 - [ ] Implement find mode
-= [ ] Implement perform script
+- [ ] Implement perform script
 - [ ] Add layout navigation
 
 ## Top Level Burn Compiler
