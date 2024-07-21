@@ -25,3 +25,12 @@ pub fn fm_string_decrypt(bytes: &[u8]) -> String {
         Err(e) => "value not utf-8.".to_string()
     }
 }
+#[cfg(test)]
+mod tests {
+    use crate::encoding_util::*;
+    #[test]
+    fn int_testing() {
+        let n = [126, 34];
+        assert_eq!(get_path_int(&n), 90);
+    }
+}

@@ -115,8 +115,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         }
                     }
                 },
-                /* Examing layouts */
-                ["4", "1", "7", x, ..] => {
+                ["4", "5", ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     if chunk.ref_simple.is_some() {
                         // println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:?}", 
@@ -125,8 +124,11 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         //      chunk.ref_data,
                         //      chunk.data,
                         //      );
-
                     }
+                },
+                /* Examing layouts */
+                ["4", "1", "7", x, ..] => {
+                    let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match chunk.ref_simple {
                         Some(16) => {
                             if fmp_file.layouts.contains_key(&x.parse().unwrap()) {
@@ -252,6 +254,16 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     }
                 },
                 /* Examining script data */
+                ["17", "5", "2", "5", "268", "129", "5"] => {
+                    if chunk.ref_simple.unwrap_or(0).to_string() == "5" {
+                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
+                             &path.clone(),
+                             chunk.ref_simple,
+                             chunk.ref_data,
+                             chunk.data,
+                             );
+                    }
+                },
                 ["17", "5", x, ..] => {
                     if chunk.ctype == ChunkType::PathPop 
                         || chunk.ctype == ChunkType::PathPush {
@@ -313,12 +325,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             },
                         }
                     }
-                    // println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:?}", 
-                         // &path.clone(),
-                         // chunk.ref_simple,
-                         // chunk.ref_data,
-                         // chunk.data,
-                         // );
+
                 },
                 /* Examining script metadata */
                 ["17", "1", x, ..] => {
@@ -326,8 +333,9 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         || chunk.ctype == ChunkType::PathPop {
                         continue;
                     }
+
                     
-                    else if chunk.ctype == ChunkType::RefSimple {
+                    if chunk.ctype == ChunkType::RefSimple {
                         match chunk.ref_simple {
                             Some(16) => {
                                 let handle = fmp_file.scripts.get_mut(&x.parse().unwrap());

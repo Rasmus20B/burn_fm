@@ -168,6 +168,14 @@
 - [3].[17].[5].[0].[251] => Simple Data. typically 5 Bytes.
 - (252) => ???
 
+# Calculation Engine
+
+Calculations are stored in a kind of bytecode, with basic operators ('+', '-', etc) being encoded as ints.
+
+- '+' :: 0x25
+- '-' :: 0x26
+- '\*' :: 0x27
+- '/' :: 0x28
 
 # Scripts
 
@@ -188,6 +196,9 @@ the file value to append to the path above.
 
 ### [17].[5].[script].[4]
 - Used when script exceeds size limitations. replaces key of 4 in script directory ([17].[5].[script]).
+
+### [17].[5].[script].[5]
+- Store information about each script step. Each script step being a number after the 5, and treated as it's own directory.
 
 ### List of Instructions
 #### 1. Perform Script
@@ -323,6 +334,8 @@ the file value to append to the path above.
 #### 139. Convert File
 #### 140. Open Manage Data Sources
 #### 141. Set Variable
+    - Stores variable name to be set @ [17].[5].[scriptnumber].[5].[instructionnumber].[128]::1
+    - stores new value calculation @ [17].[5].[scriptnumber].[5].[instructionnumber].[129].[5]::5
 #### 142. Install Menu Set
 #### 143. Save Records as Excel
 #### 144. Save Records as PDF
