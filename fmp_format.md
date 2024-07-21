@@ -197,7 +197,7 @@ the file value to append to the path above.
 ### [17].[5].[script].[4]
 - Used when script exceeds size limitations. replaces key of 4 in script directory ([17].[5].[script]).
 
-### [17].[5].[script].[5]
+### [17].[5].[script].[5]
 - Store information about each script step. Each script step being a number after the 5, and treated as it's own directory.
 
 ### List of Instructions
