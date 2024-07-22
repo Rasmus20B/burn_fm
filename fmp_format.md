@@ -181,18 +181,22 @@ Calculations are stored in a kind of bytecode, with basic operators ('+', '-', e
 
 ## Scripting Structure
 
+- 4 will usually denote the actual top-level script code.
+
+### Script code
+- Each step is stored as a 24 byte subarray, most commonly starting with '2, 1'. 
+- Bytes 3 and 4 are used to index the script step. This 'index' can be used in the script step 'data' directory specified below.
+- **Important**: When script runs into space constraints, simple key ref does not suffice. Segments of the array are stored at **Path** [17].[5].[script].[4], rather than key-value.
+
+
 ### [17].[1].[7].[script]
 - This path contains a small amount of metadata for the scripts, most notably their names located at key 16.
 
 ### [17].[5].[script]::4 
 - This path stores the instructions from the script, some metadata, as well as
 the file value to append to the path above.
-- Each step is stored as a 24 byte subarray, most commonly starting with '2, 1'. 
-- The 3rd byte of each subarray can be used to index the "instruction directory"
-- **Important**: When script runs into space constraits, simple key ref does not suffice. Segments of the array are stored at **Path** [17].[5].[script].[4], rather than key-value.
 
-
-- Script attributes should be parsed in order of appearance in file format. If the script content appears first, store it's id ith the content, with a blank name field and other options. Then when we find the name in the metadata directory, just look for the corresponding script and fill in the name.
+- Script attributes should be parsed in order of appearance in file format. If the script content appears first, store it's id with the content, with a blank name field and other options. Then when we find the name in the metadata directory, just look for the corresponding script and fill in the name.
 
 ### [17].[5].[script].[4]
 - Used when script exceeds size limitations. replaces key of 4 in script directory ([17].[5].[script]).

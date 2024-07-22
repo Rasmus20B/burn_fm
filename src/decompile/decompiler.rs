@@ -256,12 +256,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 /* Examining script data */
                 ["17", "5", "2", "5", "268", "129", "5"] => {
                     if chunk.ref_simple.unwrap_or(0).to_string() == "5" {
-                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
-                             &path.clone(),
-                             chunk.ref_simple,
-                             chunk.ref_data,
-                             chunk.data,
-                             );
+                        // println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
+                        //      &path.clone(),
+                        //      chunk.ref_simple,
+                        //      chunk.ref_data,
+                        //      chunk.data,
+                             // );
                     }
                 },
                 ["17", "5", x, ..] => {
@@ -269,6 +269,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         || chunk.ctype == ChunkType::PathPush {
                         continue;
                     }
+                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:?}", 
+                             &path.clone(),
+                             chunk.ref_simple,
+                             chunk.ref_data,
+                             chunk.data,
+                             );
                     if chunk.segment_idx == Some(4) {
                             let instrs = chunk.data.unwrap().chunks(28);
                             for (i, ins) in instrs.enumerate() {
@@ -277,7 +283,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 if oc.is_some() {
                                     let tmp = ScriptStep {
                                         opcode: oc.clone().unwrap(),
-                                        index: 0,
+                                        index: crate::encoding_util::get_path_int(&[ins[3], ins[4]]),
                                         switches: Vec::new(),
                                     };
                                     fmp_file.scripts
