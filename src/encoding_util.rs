@@ -30,7 +30,6 @@ mod tests {
     use crate::encoding_util::*;
     #[test]
     fn int_testing() {
-        let n = [128, 138];
-        assert_eq!(get_path_int(&n), 266);
+        assert_eq!(get_path_int(&[128, 138]), 266);
     }
 }

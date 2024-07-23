@@ -9,7 +9,7 @@ use crate::file::FmpFile;
 use crate::decompile::sector;
 
 use crate::chunk::{get_chunk_from_code, ChunkType};
-use crate::encoding_util::fm_string_decrypt;
+use crate::encoding_util::{fm_string_decrypt, get_path_int};
 
 const SECTOR_SIZE : usize = 4096;
 
@@ -255,13 +255,27 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 },
                 /* Examining script data */
                 ["17", "5", "2", "5", "268", "129", "5"] => {
-                    if chunk.ref_simple.unwrap_or(0).to_string() == "5" {
-                        // println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
-                        //      &path.clone(),
-                        //      chunk.ref_simple,
-                        //      chunk.ref_data,
-                        //      chunk.data,
-                             // );
+                    let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
+                    match chunk.ref_simple.unwrap_or(0).to_string().as_str() {
+                        "1" => {
+                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
+                             &path.clone(),
+                             chunk.ref_simple,
+                             chunk.ref_data,
+                             s,
+                             );
+                        },
+                        "5" => {
+                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
+                             &path.clone(),
+                             chunk.ref_simple,
+                             chunk.ref_data,
+                             chunk.data,
+                             );
+                        }
+                        _ => {
+
+                        }
                     }
                 },
                 ["17", "5", x, ..] => {
@@ -269,7 +283,8 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         || chunk.ctype == ChunkType::PathPush {
                         continue;
                     }
-                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:?}", 
+
+                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
                              &path.clone(),
                              chunk.ref_simple,
                              chunk.ref_data,
@@ -283,7 +298,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 if oc.is_some() {
                                     let tmp = ScriptStep {
                                         opcode: oc.clone().unwrap(),
-                                        index: crate::encoding_util::get_path_int(&[ins[3], ins[4]]),
+                                        index: crate::encoding_util::get_path_int(&[ins[2], ins[3]]),
                                         switches: Vec::new(),
                                     };
                                     fmp_file.scripts
@@ -307,7 +322,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                     if oc.is_some() {
                                         let tmp = ScriptStep {
                                             opcode: oc.clone().unwrap(),
-                                            index: 0,
+                                            index: crate::encoding_util::get_path_int(&[ins[2], ins[3]]),
                                             switches: Vec::new(),
                                         };
                                         fmp_file.scripts
@@ -398,7 +413,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
             if op.is_some() {
                 let tmp = ScriptStep {
                     opcode: op.clone().unwrap(),
-                    index: instr[2] as usize,
+                    index: crate::encoding_util::get_path_int(&[instr[2], instr[3]]),
                     switches: vec![],
                 };
                 fmp_file.scripts.get_mut(&script).unwrap()
