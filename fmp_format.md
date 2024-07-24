@@ -148,7 +148,7 @@
 - 128 = Display a validation error message,
 
 ### 25:
-- byte 25 simply states how many repeitiions the field has
+- byte 25 simply states how many repetitions the field has
 
 # Relationships
 
@@ -172,20 +172,19 @@
 
 Calculations are stored in a kind of bytecode, with basic operators ('+', '-', etc) being encoded as ints.
 
-
 ## Operators 
 
 - '+' :: 0x25
 - '-' :: 0x26
 - '\*' :: 0x27
 - '/' :: 0x28
+- '&' :: 0x50
 
 ## How to decode numbers 
 Numbers start with a 0x10. The 9th byte will be the first byte of the number
 
 ## How to decode variables
-Variables start with the delimited of '0x1a, 0x2, 0x7e, variable name'.
-
+Variables start with '0x1a', followed by the size of the variable name string.
 
 # Scripts
 

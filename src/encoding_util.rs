@@ -32,4 +32,11 @@ mod tests {
     fn int_testing() {
         assert_eq!(get_path_int(&[128, 138]), 266);
     }
+
+    #[test]
+    fn string_testing() {
+        assert_eq!(fm_string_decrypt(&[0x7e, 0x22]), "$x");
+        assert_eq!(fm_string_decrypt(&[0x7e, 0x23]), "$y");
+    }
 }
+

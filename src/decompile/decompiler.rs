@@ -13,6 +13,55 @@ use crate::encoding_util::{fm_string_decrypt, get_path_int};
 
 const SECTOR_SIZE : usize = 4096;
 
+
+fn decompile_calculation(bytecode: &[u8]) -> String {
+
+    let mut it = bytecode.iter().peekable();
+    let mut result = String::new();
+
+    while let Some(c) = it.next() {
+        match c {
+            0x10 => {
+                /* decode number */
+            },
+            0x1a => {
+                /* decode variable */
+                let n = it.next();
+                let mut name_arr = String::new();
+                for i in 1..=*n.unwrap() as usize {
+                    name_arr.push(*it.next().unwrap() as char);
+                }
+                let name = fm_string_decrypt(name_arr.as_bytes());
+                result.push_str(&name);
+            },
+            0x25 => {
+                result.push('+');
+            }
+            0x26 => {
+                result.push('-');
+            }
+            0x27 => {
+                result.push('*');
+            }
+            0x28 => {
+                result.push('/');
+            }
+            _ => {
+
+            }
+        }
+
+    }
+
+    println!("Found calculation: {}", result);
+
+
+    return result;
+
+
+
+}
+
 pub fn decompile_fmp12_file_with_header(path: &Path) -> FmpFile {
     let mut file = File::open(path).expect("unable to open file.");
     let mut buffer = Vec::<u8>::new();
@@ -253,17 +302,22 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             .insert(n, chunk.data.unwrap().to_vec());
                     }
                 },
+                ["17", "5", "2", "5", "268", "128"] => {
+                    let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
+                    match chunk.ref_simple.unwrap_or(0).to_string().as_str() {
+                        "1" => {
+                            println!("Found variable: {}", s);
+                        },
+                        _ => {
+                        }
+                    }
+                },
                 /* Examining script data */
                 ["17", "5", "2", "5", "268", "129", "5"] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match chunk.ref_simple.unwrap_or(0).to_string().as_str() {
                         "1" => {
-                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
-                             &path.clone(),
-                             chunk.ref_simple,
-                             chunk.ref_data,
-                             s,
-                             );
+                            println!("Found variable: {}", s);
                         },
                         "5" => {
                         println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
@@ -272,6 +326,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                              chunk.ref_data,
                              chunk.data,
                              );
+                            decompile_calculation(chunk.data.unwrap());
                         }
                         _ => {
 
@@ -284,12 +339,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         continue;
                     }
 
-                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
-                             &path.clone(),
-                             chunk.ref_simple,
-                             chunk.ref_data,
-                             chunk.data,
-                             );
+                    println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
+                         &path.clone(),
+                         chunk.ref_simple,
+                         chunk.ref_data,
+                         chunk.data,
+                         );
                     if chunk.segment_idx == Some(4) {
                             let instrs = chunk.data.unwrap().chunks(28);
                             for (i, ins) in instrs.enumerate() {
@@ -303,7 +358,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                     };
                                     fmp_file.scripts
                                         .get_mut(&x.parse().unwrap()).unwrap().instructions.push(tmp);
-                                }
+                                    }
                                 }
                             }
                     } else {
@@ -354,7 +409,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         || chunk.ctype == ChunkType::PathPop {
                         continue;
                     }
-
                     
                     if chunk.ctype == ChunkType::RefSimple {
                         match chunk.ref_simple {
