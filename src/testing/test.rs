@@ -167,7 +167,7 @@ impl<'a> TestEnvironment<'a> {
             return;
         }
 
-        let mut cur_instruction = &script_handle.instructions[ip_handle.1];
+        let mut cur_instruction = &script_handle.instructions[&ip_handle.1];
         // println!("ins {}: {:?}", ip_handle.1, cur_instruction);
         match &cur_instruction.opcode {
             Instruction::PerformScript => {
@@ -239,7 +239,7 @@ impl<'a> TestEnvironment<'a> {
                     self.branch_taken = true;
                 } else {
                     while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
-                        cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
+                        cur_instruction = &script_handle.instructions[&self.instruction_ptr[n_stack].1];
                         match cur_instruction.opcode {
                             Instruction::EndIf => {
                                 return;
@@ -260,7 +260,7 @@ impl<'a> TestEnvironment<'a> {
             Instruction::ElseIf => {
                 if self.branch_taken == true {
                     while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
-                        cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
+                        cur_instruction = &script_handle.instructions[&self.instruction_ptr[n_stack].1];
                         match cur_instruction.opcode {
                             Instruction::EndIf => {
                                 self.branch_taken = false;
@@ -277,7 +277,7 @@ impl<'a> TestEnvironment<'a> {
                 } else {
                     self.instruction_ptr[n_stack].1 += 1;
                     while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
-                        cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
+                        cur_instruction = &script_handle.instructions[&self.instruction_ptr[n_stack].1];
                         match cur_instruction.opcode {
                             Instruction::EndIf => {
                                 return;
@@ -296,7 +296,7 @@ impl<'a> TestEnvironment<'a> {
             Instruction::Else => {
                 if self.branch_taken == true {
                     while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
-                        cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
+                        cur_instruction = &script_handle.instructions[&self.instruction_ptr[n_stack].1];
                         match cur_instruction.opcode {
                             Instruction::EndIf => {
                                 self.branch_taken = false;
@@ -324,7 +324,7 @@ impl<'a> TestEnvironment<'a> {
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[0]);
                 if val == "true" {
                     while cur_instruction.opcode != Instruction::EndLoop {
-                        cur_instruction = &script_handle.instructions[ip_handle.1];
+                        cur_instruction = &script_handle.instructions[&ip_handle.1];
                         ip_handle.1 += 1;
                     }
                     self.instruction_ptr[n_stack].1 = ip_handle.1 + 1; 

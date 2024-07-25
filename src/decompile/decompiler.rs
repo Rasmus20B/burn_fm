@@ -3,7 +3,7 @@ use std::io::Read;
 use std::path::Path;
 use std::collections::{BTreeMap, HashMap};
 
-use crate::fm_script_engine::fm_script_engine_instructions::{ScriptStep, INSTRUCTIONMAP};
+use crate::fm_script_engine::fm_script_engine_instructions::{ScriptStep, INSTRUCTIONMAP, Instruction};
 use crate::{component, metadata_constants};
 use crate::file::FmpFile;
 use crate::decompile::sector;
@@ -23,6 +23,13 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
         match c {
             0x10 => {
                 /* decode number */
+                for i in 0..19 {
+                    let cur = it.next();
+                    if i == 8 {
+                        result.push_str(&cur.unwrap().to_string());
+                    }
+                }
+
             },
             0x1a => {
                 /* decode variable */
@@ -302,35 +309,62 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             .insert(n, chunk.data.unwrap().to_vec());
                     }
                 },
-                ["17", "5", "2", "5", "268", "128"] => {
+                ["17", "5", script, "5", step, "128"] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match chunk.ref_simple.unwrap_or(0).to_string().as_str() {
                         "1" => {
                             println!("Found variable: {}", s);
+                            // let script = &mut fmp_file.scripts.get_mut(&x.parse().unwrap()).unwrap().clone();
+                            let instrs = &mut fmp_file.scripts.get_mut(&script.parse().unwrap()).unwrap().instructions;
+                            // let mut step = &mut fmp_file.scripts.get_mut(&x.parse().unwrap()).unwrap()
+                            //     .instructions.get_mut(&y.parse().unwrap());
+
+                            println!("Searching for {step}. instructions for script {script} == {}", instrs.len());
+                            if instrs.get(&step.parse().unwrap()).is_none() {
+                                instrs.get_mut(&step.parse().unwrap()).unwrap()
+                                    .switches.insert(step.parse().unwrap(), String::new());
+                            }
+
+                            match instrs.get(&step.parse().unwrap()).unwrap().opcode {
+                                Instruction::SetVariable => {
+                                    instrs.get_mut(&step.parse().unwrap()).unwrap().switches.push(s);
+                                },
+                                _ => {
+
+                                }
+                            }
+
+                            for i in &mut *instrs {
+                                println!("{:?}", i);
+                            }
+
                         },
                         _ => {
                         }
                     }
                 },
                 /* Examining script data */
-                ["17", "5", "2", "5", "268", "129", "5"] => {
+                ["17", "5", script, "5", step, "129", "5"] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match chunk.ref_simple.unwrap_or(0).to_string().as_str() {
-                        "1" => {
-                            println!("Found variable: {}", s);
-                        },
                         "5" => {
                         println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
                              &path.clone(),
                              chunk.ref_simple,
                              chunk.ref_data,
                              chunk.data,
-                             );
-                            decompile_calculation(chunk.data.unwrap());
-                        }
+                            );
+                            let calc = decompile_calculation(chunk.data.unwrap());
+                            fmp_file.scripts.get_mut(&script.parse().unwrap()).unwrap()
+                                .instructions.get_mut(&step.parse().unwrap()).unwrap().switches.push(calc);
+                        },
                         _ => {
 
                         }
+                    }
+                    let instrs = &mut fmp_file.scripts.get_mut(&script.parse().unwrap()).unwrap().instructions;
+                    for i in instrs {
+                        println!("{:?}", i);
                     }
                 },
                 ["17", "5", x, ..] => {
@@ -351,13 +385,15 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 if ins.len() >= 21 {
                                 let oc = &INSTRUCTIONMAP[ins[21] as usize];
                                 if oc.is_some() {
+                                    let n = crate::encoding_util::get_path_int(&[ins[2], ins[3]]);
                                     let tmp = ScriptStep {
                                         opcode: oc.clone().unwrap(),
-                                        index: crate::encoding_util::get_path_int(&[ins[2], ins[3]]),
+                                        index: n,
                                         switches: Vec::new(),
                                     };
-                                    fmp_file.scripts
-                                        .get_mut(&x.parse().unwrap()).unwrap().instructions.push(tmp);
+                                    let handle = &mut fmp_file.scripts
+                                        .get_mut(&x.parse().unwrap()).unwrap().instructions;
+                                        handle.insert(n, tmp);
                                     }
                                 }
                             }
@@ -375,14 +411,18 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                         //      ins[21]);
                                     let oc = &INSTRUCTIONMAP[ins[21] as usize];
                                     if oc.is_some() {
+                                        let n = crate::encoding_util::get_path_int(&[ins[2], ins[3]]);
                                         let tmp = ScriptStep {
                                             opcode: oc.clone().unwrap(),
-                                            index: crate::encoding_util::get_path_int(&[ins[2], ins[3]]),
+                                            index: n,
                                             switches: Vec::new(),
                                         };
-                                        fmp_file.scripts
-                                            .get_mut(&x.parse().unwrap()).unwrap().instructions.push(tmp);
-                                    }
+
+                                        println!("Adding idx: {}", tmp.index);
+                                        let handle = &mut fmp_file.scripts
+                                            .get_mut(&x.parse().unwrap()).unwrap().instructions;
+                                            handle.insert(n, tmp);
+                                        }
                                     }
                                 }
                             },
@@ -417,7 +457,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 if handle.is_none() {
                                     let tmp = component::FMComponentScript {
                                         script_name: fm_string_decrypt(chunk.data.unwrap()),
-                                        instructions: Vec::new(),
+                                        instructions: HashMap::new(),
                                         create_by_user: String::new(),
                                         arguments: Vec::new(),
                                         created_by_account: String::new(),
@@ -470,8 +510,8 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     index: crate::encoding_util::get_path_int(&[instr[2], instr[3]]),
                     switches: vec![],
                 };
-                fmp_file.scripts.get_mut(&script).unwrap()
-                    .instructions.push(tmp);
+                let handle = fmp_file.scripts.get_mut(&script).unwrap();
+                handle.instructions.insert(handle.instructions.len(), tmp);
             }
         }
     }

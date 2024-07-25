@@ -65,6 +65,7 @@ fn main() {
             } else {
                 tmp = decompile_fmp12_file(&input);
             }
+
             let json = serde_json::to_string_pretty(&tmp).expect("Unable to generate json file");
             write("test_decompile", json).expect("Unable to write to file.");
             file.tables.extend(tmp.tables);

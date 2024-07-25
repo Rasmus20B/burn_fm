@@ -12,7 +12,6 @@ pub struct Parser {
 }
 
 impl Parser {
-
     pub fn new(toks: Vec<Token>) -> Self {
         Self {
             tokens: toks,
@@ -107,7 +106,7 @@ impl Parser {
                                             _ => { eprintln!("Unexpected Token."); }
                                         }
                                     }
-                                    tmp.instructions.push(step);
+                                    tmp.instructions.insert(tmp.instructions.len(), step);
                                 } else {
                                     eprintln!("Invalid script step: {}", t.value);
                                 }
@@ -148,7 +147,7 @@ impl Parser {
                                     index: 0,
                                     switches: vec![],
                                 };
-                                tmp.instructions.push(step);
+                                tmp.instructions.insert(tmp.instructions.len() - 1, step);
                             },
                             TokenType::OpenBracket => {},
                             TokenType::Loop => {
@@ -162,7 +161,7 @@ impl Parser {
                                     index: 0,
                                     switches: vec![],
                                 };
-                                tmp.instructions.push(step);
+                                tmp.instructions.insert(tmp.instructions.len() - 1, step);
                                 punc_stack.push(Instruction::Loop);
                             },
                             TokenType::Elif => {
@@ -201,7 +200,7 @@ impl Parser {
                                         },
                                     }
                                 }
-                                tmp.instructions.push(step);
+                                tmp.instructions.insert(tmp.instructions.len() - 1, step);
                             },
                             TokenType::If => {
                                 let mut step = ScriptStep {
@@ -240,7 +239,7 @@ impl Parser {
                                     }
                                     
                                 }
-                                tmp.instructions.push(step);
+                                tmp.instructions.insert(tmp.instructions.len() - 1, step);
                                 punc_stack.push(Instruction::If);
                             },
                             TokenType::Else => {
@@ -254,7 +253,7 @@ impl Parser {
                                     index: 0,
                                     switches: vec![]
                                 };
-                                tmp.instructions.push(step);
+                                tmp.instructions.insert(tmp.instructions.len() - 1, step);
                             },
                             _ => { eprintln!("Invalid token in script: {:?}", t); }
                         }
@@ -347,7 +346,7 @@ mod tests {
             },
         ];
         for (i, step) in steps_actual.iter().enumerate() {
-            assert_eq!(*step, handle.instructions[i]);
+            assert_eq!(*step, handle.instructions.get(&i).unwrap().clone());
         }
     }
 }
