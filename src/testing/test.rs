@@ -167,8 +167,10 @@ impl<'a> TestEnvironment<'a> {
             return;
         }
 
+
         let mut cur_instruction = &script_handle.instructions[&ip_handle.1];
-        // println!("ins {}: {:?}", ip_handle.1, cur_instruction);
+        println!("ins {}: {:?}", ip_handle.1, cur_instruction);
+        // println!("WE ARE IN HERE BRUH");
         match &cur_instruction.opcode {
             Instruction::PerformScript => {
                 let mut script_name = String::new();

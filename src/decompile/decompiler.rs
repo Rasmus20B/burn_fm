@@ -29,7 +29,6 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
                         result.push_str(&cur.unwrap().to_string());
                     }
                 }
-
             },
             0x1a => {
                 /* decode variable */

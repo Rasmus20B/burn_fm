@@ -147,7 +147,7 @@ impl Parser {
                                     index: 0,
                                     switches: vec![],
                                 };
-                                tmp.instructions.insert(tmp.instructions.len() - 1, step);
+                                tmp.instructions.insert(tmp.instructions.len(), step);
                             },
                             TokenType::OpenBracket => {},
                             TokenType::Loop => {
@@ -161,7 +161,7 @@ impl Parser {
                                     index: 0,
                                     switches: vec![],
                                 };
-                                tmp.instructions.insert(tmp.instructions.len() - 1, step);
+                                tmp.instructions.insert(tmp.instructions.len(), step);
                                 punc_stack.push(Instruction::Loop);
                             },
                             TokenType::Elif => {
@@ -200,7 +200,7 @@ impl Parser {
                                         },
                                     }
                                 }
-                                tmp.instructions.insert(tmp.instructions.len() - 1, step);
+                                tmp.instructions.insert(tmp.instructions.len(), step);
                             },
                             TokenType::If => {
                                 let mut step = ScriptStep {
@@ -239,7 +239,7 @@ impl Parser {
                                     }
                                     
                                 }
-                                tmp.instructions.insert(tmp.instructions.len() - 1, step);
+                                tmp.instructions.insert(tmp.instructions.len(), step);
                                 punc_stack.push(Instruction::If);
                             },
                             TokenType::Else => {
@@ -253,7 +253,7 @@ impl Parser {
                                     index: 0,
                                     switches: vec![]
                                 };
-                                tmp.instructions.insert(tmp.instructions.len() - 1, step);
+                                tmp.instructions.insert(tmp.instructions.len(), step);
                             },
                             _ => { eprintln!("Invalid token in script: {:?}", t); }
                         }
