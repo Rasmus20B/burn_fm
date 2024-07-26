@@ -4,7 +4,7 @@ use std::path::Path;
 use std::collections::{BTreeMap, HashMap};
 
 use crate::fm_script_engine::fm_script_engine_instructions::{ScriptStep, INSTRUCTIONMAP, Instruction};
-use crate::{component, metadata_constants};
+use crate::{component, decompile, metadata_constants};
 use crate::file::FmpFile;
 use crate::decompile::sector;
 
@@ -306,6 +306,46 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         script_segments.get_mut(&x.parse().unwrap())
                             .unwrap()
                             .insert(n, chunk.data.unwrap().to_vec());
+                    }
+                },
+                ["17", "5", script, "5", step, "128", "5"] => {
+                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
+                             &path.clone(),
+                             chunk.ref_simple,
+                             chunk.ref_data,
+                             chunk.data,
+                            );
+                    let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
+                    match chunk.ref_simple.unwrap_or(0).to_string().as_str() {
+                        "5" => {
+                            let instrs = &mut fmp_file.scripts.get_mut(&script.parse().unwrap()).unwrap().instructions;
+
+                            println!("Searching for {step}. instructions for script {script} == {}", instrs.len());
+                            if instrs.get(&step.parse().unwrap()).is_none() {
+                                instrs.get_mut(&step.parse().unwrap()).unwrap()
+                                    .switches.insert(step.parse().unwrap(), String::new());
+                            }
+
+                            match instrs.get(&step.parse().unwrap()).unwrap().opcode {
+                                Instruction::SetVariable => {
+                                    instrs.get_mut(&step.parse().unwrap()).unwrap().switches.push(s);
+                                },
+                                Instruction::ExitScript => {
+                                    let bytecode = decompile_calculation(chunk.data.unwrap());
+                                    instrs.get_mut(&step.parse().unwrap()).unwrap().switches.push(bytecode);
+                                },
+                                _ => {
+
+                                }
+                            }
+
+                            for i in &mut *instrs {
+                                println!("{:?}", i);
+                            }
+
+                        },
+                        _ => {
+                        }
                     }
                 },
                 ["17", "5", script, "5", step, "128"] => {
