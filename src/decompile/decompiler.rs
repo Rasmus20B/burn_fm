@@ -17,12 +17,19 @@ const SECTOR_SIZE : usize = 4096;
 fn decompile_calculation(bytecode: &[u8]) -> String {
 
 
+    println!("Bytecode we sedn: {:x?}",  bytecode);
 
     let mut it = bytecode.iter().peekable();
     let mut result = String::new();
 
     while let Some(c) = it.next() {
         match c {
+            0x4 => {
+                result.push('(');
+            }
+            0x5 => {
+                result.push(')');
+            }
             0x10 => {
                 /* decode number */
                 for i in 0..19 {
@@ -32,6 +39,7 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
                     }
                 }
             },
+            /* Processing String */
             0x13 => {
                 let n = it.next();
                 let mut s = String::new();
@@ -67,8 +75,29 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
             0x28 => {
                 result.push('/');
             },
+            0x41 => {
+                result.push('<');
+            }
+            0x43 => {
+                result.push_str("<=");
+            }
+            0x44 => {
+                result.push_str("==");
+            }
+            0x46 => {
+                result.push_str("!=");
+            }
+            0x47 => {
+                result.push_str(">=");
+            }
+            0x49 => {
+                result.push('>');
+            }
             0x50 => {
                 result.push('&');
+            }
+            0xC => {
+                result.push(' ');
             }
             _ => {
 
