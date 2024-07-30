@@ -39,8 +39,8 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
                     }
                 }
             },
-            /* Processing String */
             0x13 => {
+                /* Processing String */
                 let n = it.next();
                 let mut s = String::new();
                 for i in 1..=*n.unwrap() as usize {
@@ -107,12 +107,7 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
     }
 
     println!("Found calculation: {}", result);
-
-
     return result;
-
-
-
 }
 
 pub fn decompile_fmp12_file_with_header(path: &Path) -> FmpFile {
@@ -356,18 +351,18 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     }
                 },
                 ["17", "5", script, "5", step, "128", "5"] => {
-                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
-                             &path.clone(),
-                             chunk.ref_simple,
-                             chunk.ref_data,
-                             chunk.data,
-                            );
+                        // println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
+                        //      &path.clone(),
+                        //      chunk.ref_simple,
+                        //      chunk.ref_data,
+                        //      chunk.data,
+                        //     );
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match chunk.ref_simple.unwrap_or(0).to_string().as_str() {
                         "5" => {
                             let instrs = &mut fmp_file.scripts.get_mut(&script.parse().unwrap()).unwrap().instructions;
 
-                            println!("Searching for {step}. instructions for script {script} == {}", instrs.len());
+                            // println!("Searching for {step}. instructions for script {script} == {}", instrs.len());
                             if instrs.get(&step.parse().unwrap()).is_none() {
                                 instrs.get_mut(&step.parse().unwrap()).unwrap()
                                     .switches.insert(step.parse().unwrap(), String::new());
@@ -387,7 +382,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             }
 
                             for i in &mut *instrs {
-                                println!("{:?}", i);
+                                // println!("{:?}", i);
                             }
 
                         },
@@ -399,13 +394,13 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match chunk.ref_simple.unwrap_or(0).to_string().as_str() {
                         "1" => {
-                            println!("Found variable: {}", s);
+                            // println!("Found variable: {}", s);
                             // let script = &mut fmp_file.scripts.get_mut(&x.parse().unwrap()).unwrap().clone();
                             let instrs = &mut fmp_file.scripts.get_mut(&script.parse().unwrap()).unwrap().instructions;
                             // let mut step = &mut fmp_file.scripts.get_mut(&x.parse().unwrap()).unwrap()
                             //     .instructions.get_mut(&y.parse().unwrap());
 
-                            println!("Searching for {step}. instructions for script {script} == {}", instrs.len());
+                            // println!("Searching for {step}. instructions for script {script} == {}", instrs.len());
                             if instrs.get(&step.parse().unwrap()).is_none() {
                                 instrs.get_mut(&step.parse().unwrap()).unwrap()
                                     .switches.insert(step.parse().unwrap(), String::new());
@@ -420,9 +415,9 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 }
                             }
 
-                            for i in &mut *instrs {
-                                println!("{:?}", i);
-                            }
+                            // for i in &mut *instrs {
+                            //     println!("{:?}", i);
+                            // }
 
                         },
                         _ => {
@@ -434,12 +429,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match chunk.ref_simple.unwrap_or(0).to_string().as_str() {
                         "5" => {
-                        println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
-                             &path.clone(),
-                             chunk.ref_simple,
-                             chunk.ref_data,
-                             chunk.data,
-                            );
+                        // println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
+                        //      &path.clone(),
+                        //      chunk.ref_simple,
+                        //      chunk.ref_data,
+                        //      chunk.data,
+                        //     );
                             let calc = decompile_calculation(chunk.data.unwrap());
                             fmp_file.scripts.get_mut(&script.parse().unwrap()).unwrap()
                                 .instructions.get_mut(&step.parse().unwrap()).unwrap().switches.push(calc);
@@ -449,9 +444,9 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         }
                     }
                     let instrs = &mut fmp_file.scripts.get_mut(&script.parse().unwrap()).unwrap().instructions;
-                    for i in instrs {
-                        println!("{:?}", i);
-                    }
+                    // for i in instrs {
+                    //     println!("{:?}", i);
+                    // }
                 },
                 ["17", "5", x, ..] => {
                     if chunk.ctype == ChunkType::PathPop 
@@ -459,12 +454,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         continue;
                     }
 
-                    println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
-                         &path.clone(),
-                         chunk.ref_simple,
-                         chunk.ref_data,
-                         chunk.data,
-                         );
+                    // println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
+                    //      &path.clone(),
+                    //      chunk.ref_simple,
+                    //      chunk.ref_data,
+                    //      chunk.data,
+                    //      );
                     if chunk.segment_idx == Some(4) {
                             let instrs = chunk.data.unwrap().chunks(28);
                             for (i, ins) in instrs.enumerate() {
