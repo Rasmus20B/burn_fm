@@ -16,6 +16,8 @@ const SECTOR_SIZE : usize = 4096;
 
 fn decompile_calculation(bytecode: &[u8]) -> String {
 
+
+
     let mut it = bytecode.iter().peekable();
     let mut result = String::new();
 
@@ -30,6 +32,19 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
                     }
                 }
             },
+            0x13 => {
+                let n = it.next();
+                let mut s = String::new();
+                for i in 1..=*n.unwrap() as usize {
+                    s.push(*it.next().unwrap() as char);
+                }
+                let mut text = String::new();
+                text.push('"');
+                text.push_str(&fm_string_decrypt(s.as_bytes()));
+                text.push('"');
+
+                result.push_str(&text);
+            }
             0x1a => {
                 /* decode variable */
                 let n = it.next();
@@ -51,6 +66,9 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
             }
             0x28 => {
                 result.push('/');
+            },
+            0x50 => {
+                result.push('&');
             }
             _ => {
 

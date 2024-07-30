@@ -3,3 +3,6 @@
 2024-06-28 14:56:40.337 +0100	blank.fmp12	8432	Page 69 marked free but not in free list
 2024-06-28 14:56:40.337 +0100	blank.fmp12	0	Reset maximum block sequence number to 37791
 2024-06-28 14:56:40.337 +0100	blank.fmp12	0	*** Completed consistency check, checked 69 block(s)
+2024-07-30 14:29:37.021 +0200	blank.fmp12	0	*** Started consistency check of improperly closed file, total of 67 block(s) to check
+2024-07-30 14:29:37.022 +0200	blank.fmp12	0	Reset maximum block sequence number to 41644
+2024-07-30 14:29:37.023 +0200	blank.fmp12	0	*** Completed consistency check, checked 67 block(s)
