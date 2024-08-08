@@ -13,11 +13,8 @@ use crate::encoding_util::{fm_string_decrypt, get_path_int};
 
 const SECTOR_SIZE : usize = 4096;
 
-
 fn decompile_calculation(bytecode: &[u8]) -> String {
-
-
-    println!("Bytecode we sedn: {:x?}",  bytecode);
+    // println!("Bytecode we sedn: {:x?}",  bytecode);
 
     let mut it = bytecode.iter().peekable();
     let mut result = String::new();
@@ -106,7 +103,7 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
 
     }
 
-    println!("Found calculation: {}", result);
+    // println!("Found calculation: {}", result);
     return result;
 }
 
@@ -384,7 +381,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             for i in &mut *instrs {
                                 // println!("{:?}", i);
                             }
-
                         },
                         _ => {
                         }
@@ -429,12 +425,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match chunk.ref_simple.unwrap_or(0).to_string().as_str() {
                         "5" => {
-                        // println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
-                        //      &path.clone(),
-                        //      chunk.ref_simple,
-                        //      chunk.ref_data,
-                        //      chunk.data,
-                        //     );
                             let calc = decompile_calculation(chunk.data.unwrap());
                             fmp_file.scripts.get_mut(&script.parse().unwrap()).unwrap()
                                 .instructions.get_mut(&step.parse().unwrap()).unwrap().switches.push(calc);
@@ -454,23 +444,35 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         continue;
                     }
 
-                    // println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
-                    //      &path.clone(),
-                    //      chunk.ref_simple,
-                    //      chunk.ref_data,
-                    //      chunk.data,
-                    //      );
+                    if(chunk.ref_simple == Some(4)) {
+                    println!("THIS ONE Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:?}", 
+                         &path.clone(),
+                         chunk.ref_simple,
+                         chunk.ref_data,
+                         chunk.data,
+                         );
+                    }
+
                     if chunk.segment_idx == Some(4) {
                             let instrs = chunk.data.unwrap().chunks(28);
                             for (i, ins) in instrs.enumerate() {
                                 if ins.len() >= 21 {
                                 let oc = &INSTRUCTIONMAP[ins[21] as usize];
                                 if oc.is_some() {
+                                    let mut switch: Vec<String> = vec![];
+                                    match oc {
+                                        Some(Instruction::PerformScript) => {
+                                            switch.push(
+                                                fmp_file.scripts.get(&(ins[8] as usize)).unwrap().script_name.clone()
+                                            );
+                                        },
+                                        _ => {}
+                                    }
                                     let n = crate::encoding_util::get_path_int(&[ins[2], ins[3]]);
                                     let tmp = ScriptStep {
                                         opcode: oc.clone().unwrap(),
                                         index: n,
-                                        switches: Vec::new(),
+                                        switches: switch,
                                     };
                                     let handle = &mut fmp_file.scripts
                                         .get_mut(&x.parse().unwrap()).unwrap().instructions;
@@ -481,8 +483,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     } else {
                         let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                         match &chunk.ref_simple {
-                            // Some(2) => {
-                            // }
                             Some(4) => {
                                 let instrs = chunk.data.unwrap().chunks(28);
                                 for ins in instrs {
@@ -492,14 +492,23 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                         //      ins[21]);
                                     let oc = &INSTRUCTIONMAP[ins[21] as usize];
                                     if oc.is_some() {
+                                        let mut switch: Vec<String> = vec![];
+                                        match oc {
+                                            Some(Instruction::PerformScript) => {
+                                                switch.push(
+                                                    fmp_file.scripts.get(&(ins[8] as usize)).unwrap().script_name.clone()
+                                                );
+                                            },
+                                            _ => {}
+                                        }
                                         let n = crate::encoding_util::get_path_int(&[ins[2], ins[3]]);
                                         let tmp = ScriptStep {
                                             opcode: oc.clone().unwrap(),
                                             index: n,
-                                            switches: Vec::new(),
+                                            switches: switch,
                                         };
 
-                                        println!("Adding idx: {}", tmp.index);
+                                        // println!("Adding idx: {}", tmp.index);
                                         let handle = &mut fmp_file.scripts
                                             .get_mut(&x.parse().unwrap()).unwrap().instructions;
                                             handle.insert(n, tmp);
@@ -586,14 +595,23 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
             }
             let op = &INSTRUCTIONMAP[instr[21] as usize];
             if op.is_some() {
+                let mut switch: Vec<String> = vec![];
+                match op {
+                    Some(Instruction::PerformScript) => {
+                        switch.push(fmp_file.scripts.get(&(instr[8] as usize)).unwrap().script_name.clone());
+                    },
+                    _ => {}
+                }
                 let tmp = ScriptStep {
                     opcode: op.clone().unwrap(),
                     index: crate::encoding_util::get_path_int(&[instr[2], instr[3]]),
-                    switches: vec![],
+                    switches: switch,
                 };
                 let handle = fmp_file.scripts.get_mut(&script).unwrap();
+                println!("{:?}", tmp);
                 handle.instructions.insert(handle.instructions.len(), tmp);
             }
+
         }
     }
     return fmp_file;

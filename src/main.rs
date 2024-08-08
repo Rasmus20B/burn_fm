@@ -1,3 +1,4 @@
+#![allow(unused)]
 use std::{fs::{write, File}, io::Read, path::Path};
 use clap::Parser;
 use compile::compiler::compile_burn;
