@@ -1,3 +1,4 @@
+use std::borrow::BorrowMut;
 use std::collections::HashMap;
 
 use color_print::cprintln;
@@ -152,45 +153,49 @@ impl<'a> TestEnvironment<'a> {
 
         assert!(self.current_test.is_some());
         let mut ip_handle: (String, usize);
-        let script_handle: &FMComponentScript;
+        let mut script_handle = &FMComponentScript::new();
         let n_stack = self.instruction_ptr.len() - 1;
         ip_handle = self.instruction_ptr[n_stack].clone();
+        let s_name = self.instruction_ptr[n_stack].0.clone();
         if self.instruction_ptr.len() > 1 {
-            script_handle = self.file_handle.scripts.get(&ip_handle.1).unwrap();
+            for s in &self.file_handle.scripts {
+                println!("examining: {}", s.1.script_name);
+                if s.1.script_name == s_name {
+                    script_handle = s.1;
+                    break;
+                }
+            }
         } else {
             script_handle = &self.current_test.as_ref().unwrap().script;
         }
         
-        if ip_handle.1 > script_handle.instructions.len() - 1{
-            println!("Popping script: {}", ip_handle.0);
-            self.instruction_ptr.pop();
-            return;
+        if script_handle.instructions.is_empty() ||
+            ip_handle.1 > script_handle.instructions.len() - 1{
+                println!("Popping script: {}", ip_handle.0);
+                self.instruction_ptr.pop();
+                return;
         }
 
 
         let mut cur_instruction = &script_handle.instructions[&ip_handle.1];
-        // println!("ins {}: {:?}", ip_handle.1, cur_instruction);
+        println!("ins {}: {:?}", ip_handle.1, cur_instruction);
         // println!("WE ARE IN HERE BRUH");
         match &cur_instruction.opcode {
             Instruction::PerformScript => {
-                let mut script_name = String::new();
-                match cur_instruction.switches[0].as_str() {
-                    "byName" => {
-                        script_name = cur_instruction.switches[1].clone();
-                    },
-                    "byCalc" => {
-                        script_name = self.eval_calculation(&cur_instruction.switches[1]);
-                    },
-                    _ => unreachable!()
-                }
+                let script_name = self.eval_calculation(&cur_instruction.switches[0])
+                    .strip_suffix('"').unwrap()
+                    .strip_prefix('"').unwrap().to_string();
+                println!("Calling script: {}", script_name);
                 self.variables.push(HashMap::new());
 
                 for s in &self.file_handle.scripts {
                     if s.1.script_name == script_name {
+                        self.instruction_ptr[n_stack].1 += 1;
                         self.instruction_ptr.push((script_name.clone(), 0));
+                        println!("calling {}", script_name);
+                        break;
                     }
                 }
-
             },
             Instruction::SetVariable => {
                 let name : &str = cur_instruction.switches[0].as_ref();

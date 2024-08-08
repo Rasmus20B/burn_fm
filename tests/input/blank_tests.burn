@@ -2,6 +2,7 @@ test BasicTest:
   script: [
     define blank_test() {
       set_variable(x, 1);
+      perform_script("New Script");
       loop {
         new_record_request();
         exit_loop_if(x == 10);
