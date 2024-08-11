@@ -107,7 +107,7 @@ impl FMComponentScript {
             created_by_account: String::new(),
             create_by_user: String::new(),
             arguments: vec![],
-            instructions: HashMap::new() 
+            instructions: HashMap::new()
         }
     }
 }

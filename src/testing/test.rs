@@ -351,6 +351,10 @@ impl<'a> TestEnvironment<'a> {
                 }
                 self.instruction_ptr[n_stack].1 += 1;
             },
+            Instruction::ShowCustomDialog => {
+                println!("{}", &self.eval_calculation(&cur_instruction.switches[0]));
+                self.instruction_ptr[n_stack].1 += 1;
+            }
             Instruction::Assert => {
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[0]);
                 if val == "false" {
