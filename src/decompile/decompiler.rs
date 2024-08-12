@@ -346,12 +346,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     }
                 },
                 ["17", "5", script, "5", step, "128", "5"] => {
-                        // println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
-                        //      &path.clone(),
-                        //      chunk.ref_simple,
-                        //      chunk.ref_data,
-                        //      chunk.data,
-                        //     );
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     match chunk.ref_simple.unwrap_or(0).to_string().as_str() {
                         "5" => {
@@ -387,6 +381,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 ["17", "5", script, "5", step, "128"] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                     println!("step type: {:?}", fmp_file.scripts.get(&script.parse().unwrap()).unwrap());
+                    println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
+                         &path.clone(),
+                         chunk.ref_simple,
+                         chunk.ref_data,
+                         chunk.data,
+                        );
                     match chunk.ref_simple.unwrap_or(0).to_string().as_str() {
                         "1" => {
                             println!("Found variable: {}", s);
@@ -446,6 +446,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         || chunk.ctype == ChunkType::PathPush {
                         continue;
                     }
+                    println!("Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:x?}", 
+                         &path.clone(),
+                         chunk.ref_simple,
+                         chunk.ref_data,
+                         chunk.data,
+                        );
 
                     if(chunk.ref_simple == Some(4)) {
                     println!("THIS ONE Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:?}", 
@@ -577,6 +583,8 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         //      chunk.ref_data);
                     // }
                 },
+                ["17", ..] => {
+                }
                 _ => { 
                 }
             }

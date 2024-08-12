@@ -1,5 +1,6 @@
 use std::borrow::BorrowMut;
 use std::collections::HashMap;
+use std::ops::Deref;
 
 use color_print::cprintln;
 use crate::component::FMComponentScript;
@@ -170,15 +171,20 @@ impl<'a> TestEnvironment<'a> {
         }
         
         if script_handle.instructions.is_empty() ||
-            ip_handle.1 > script_handle.instructions.len() - 1{
+            ip_handle.1 > script_handle.instructions
+                .clone().into_iter().map(|x| x.0).max().unwrap() {
                 println!("Popping script: {}", ip_handle.0);
                 self.instruction_ptr.pop();
                 return;
         }
 
 
+        println!("ins {} of {}. Script: {}", ip_handle.1, &script_handle.instructions.len(), &script_handle.script_name);
+        // for i in &script_handle.instructions {
+        //     println!("{}: {:?}", i.0, i.1);
+        // }
         let mut cur_instruction = &script_handle.instructions[&ip_handle.1];
-        println!("ins {}: {:?}", ip_handle.1, cur_instruction);
+        // println!("ins {}: {:?}", ip_handle.1, cur_instruction);
         // println!("WE ARE IN HERE BRUH");
         match &cur_instruction.opcode {
             Instruction::PerformScript => {
@@ -191,7 +197,7 @@ impl<'a> TestEnvironment<'a> {
                 for s in &self.file_handle.scripts {
                     if s.1.script_name == script_name {
                         self.instruction_ptr[n_stack].1 += 1;
-                        self.instruction_ptr.push((script_name.clone(), 0));
+                        self.instruction_ptr.push((script_name.clone(), *s.1.instructions.keys().take(1).collect::<Vec<_>>()[0]));
                         println!("calling {}", script_name);
                         break;
                     }

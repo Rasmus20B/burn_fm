@@ -32,6 +32,7 @@ mod tests {
     #[test]
     fn path_int_testing() {
         assert_eq!(get_path_int(&[1]), 1);
+        assert_eq!(get_path_int(&[]), 0);
     }
 
     #[test]
@@ -45,6 +46,7 @@ mod tests {
     fn string_testing() {
         assert_eq!(fm_string_decrypt(&[0x7e, 0x22]), "$x");
         assert_eq!(fm_string_decrypt(&[0x7e, 0x23]), "$y");
+        assert_eq!(fm_string_decrypt(&[0x19, 0x3b, 0x34, 0x39, 0x3f, 0x36]), "Cancel");
         assert_eq!(fm_string_decrypt(&[0x32, 0x3f, 0x36, 0x36, 0x35]), "hello");
         assert_eq!(fm_string_decrypt(&[]), "");
     }
