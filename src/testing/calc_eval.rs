@@ -1,5 +1,5 @@
 
-use super::{calc_tokens::{self, Token, TokenType}};
+use super::calc_tokens::{self, Token, TokenType};
 
 #[derive(Debug, PartialEq)]
 pub enum Node {
@@ -41,10 +41,12 @@ impl Parser {
     }
 
     pub fn parse_identifier(&mut self, tok: Token) -> Result<Box<Node>, &str> {
+        // println!("n: {:?}", tok);
         let n = self.next();
         if n.is_none() {
             return Ok(Box::new(Node::Unary { value: self.current().value.clone(), child: None }));
         }
+        // println!("after: {:?}", n);
         match n.unwrap().ttype {
             TokenType::Eq | TokenType::Neq | TokenType::Gt 
                 | TokenType::Gtq | TokenType::Lt | TokenType::Ltq 
@@ -92,9 +94,18 @@ impl Parser {
         }
         match n.unwrap().ttype {
             calc_tokens::TokenType::Ampersand => {
-                Ok(Box::new(Node::Binary { left: Box::new(Node::Unary { value: format!("{}", tok.value), child: None } ), 
+                Ok(Box::new(Node::Binary { 
+                    left: Box::new(Node::Unary { value: format!("{}", tok.value), child: None } ), 
                     operation: n.unwrap().ttype, 
-                    right: self.parse().expect("unable to parse") }))
+                    right: self.parse().expect("unable to parse") 
+                }))
+            },
+            calc_tokens::TokenType::Eq => {
+                Ok(Box::new(Node::Binary { 
+                    left: Box::new(Node::Unary { value: format!("{}", tok.value), child: None } ), 
+                    operation: n.unwrap().ttype,
+                    right: self.parse().expect("Uable to parse")
+                }))
             }
             _ => { Err("Unable to perform specified binary operation on string.") }
         }
@@ -127,10 +138,7 @@ impl Parser {
 
 #[cfg(test)]
 mod tests {
-    
-
-    use crate::testing::{calc_tokens::{Token, TokenType}};
-
+    use crate::testing::calc_tokens::{Token, TokenType};
     use super::{Node, Parser};
 
     #[test]

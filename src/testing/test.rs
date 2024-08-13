@@ -39,6 +39,19 @@ pub enum TestState {
     Fail
 }
 
+#[derive(PartialEq, Debug)]
+enum OperandType {
+    Number,
+    Text,
+    FieldName,
+}
+
+#[derive(PartialEq, Debug)]
+struct Operand<'a> {
+    value: &'a str,
+    otype: OperandType
+}
+
 type Record = usize;
 
 pub struct TestEnvironment<'a> {
@@ -179,7 +192,10 @@ impl<'a> TestEnvironment<'a> {
         }
 
 
-        println!("ins {} of {}. Script: {}", ip_handle.1, &script_handle.instructions.len(), &script_handle.script_name);
+        // println!("ins {} of {}. Script: {}",
+        //     ip_handle.1,
+        //     &script_handle.instructions.len(),
+        //     &script_handle.script_name);
         // for i in &script_handle.instructions {
         //     println!("{}: {:?}", i.0, i.1);
         // }
@@ -363,6 +379,7 @@ impl<'a> TestEnvironment<'a> {
             }
             Instruction::Assert => {
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[0]);
+                // println!("Eval: {} :: {}", cur_instruction.switches[0], val);
                 if val == "false" {
                     cprintln!("<red>Assertion failed<red>: {}", cur_instruction.switches[0]);
                     self.test_state = TestState::Fail;
@@ -474,6 +491,23 @@ impl<'a> TestEnvironment<'a> {
                     tokens.push(calc_tokens::Token::with_value(calc_tokens::TokenType::String, buffer.clone()));
                     buffer.clear();
                 },
+                ':' => {
+                    buffer.push(*c);
+                    if buffer.is_empty() || *lex_iter.peek().unwrap_or(&'?') != ':' { 
+                        eprintln!("invalid ':' found.");
+                        buffer.push(*c);
+                    }
+                    lex_iter.next();
+                    buffer.push(*c);
+                    while let Some(c) = &lex_iter.next() {
+                        buffer.push(*c);
+                        if !lex_iter.peek().unwrap().is_alphanumeric() {
+                            break;
+                        }
+                    }
+                    tokens.push(calc_tokens::Token::with_value(calc_tokens::TokenType::Identifier, buffer.clone()));
+                    buffer.clear();
+                }
                 _ => {
                     buffer.push(*c);
                 }
@@ -491,59 +525,133 @@ impl<'a> TestEnvironment<'a> {
         self.evaluate(ast)
     }
 
+    fn get_operand_val(&'a self, val: &'a str) -> Operand {
+        let r = val.parse::<i64>();
+        if r.is_ok() {
+            return Operand {
+                otype: OperandType::Number,
+                value: val
+            }
+        }
+
+        if val.starts_with("\"") && val.ends_with("\"") {
+            return Operand {
+                otype: OperandType::Text,
+                value: val
+            }
+        }
+
+        let fieldname = val.split("::").collect::<Vec<&str>>();
+        if fieldname.len() == 2 {
+            let ts = &self.tables.iter()
+                .filter(|x| x.name == fieldname[0])
+                .collect::<Vec<_>>();
+            if ts.is_empty() { 
+                eprintln!("Unknown table: {}", fieldname[0]); 
+                return Operand {
+                    otype: OperandType::Text,
+                    value: val
+                }
+            }
+            let t_ptr = ts[0];
+
+            let f_ptr = t_ptr.records.keys()
+                .zip(0..t_ptr.records.keys().len())
+                .filter(|x| x.0 == fieldname[1])
+                .collect::<Vec<_>>();
+
+
+            let mut n = 0;
+            let mut table_handle : Option<&VMTable> = None;
+            for (i, table) in self.tables.iter().enumerate() {
+                if table.name == fieldname[0] {
+                    table_handle = Some(table);
+                    n = i;
+                    break;
+                }
+            }
+
+            if table_handle.is_none() {
+                eprintln!("Table does not exist.");
+                return Operand {
+                    otype: OperandType::Text,
+                    value: ""
+                };
+            }
+
+            // println!("{:?} -> {:?}", 
+            //     fieldname[1], 
+            //     &table_handle.unwrap().records.get(fieldname[1]).unwrap()[self.record_ptrs[n].unwrap()]);
+            return self.get_operand_val(&table_handle.unwrap().records.get(fieldname[1]).unwrap()[self.record_ptrs[n].unwrap()]);
+        } else {
+
+            let scope = self.instruction_ptr.len() - 1;
+            let var_val = self.variables[scope]
+                .get(val);
+
+            if var_val.is_none() {
+                eprintln!("Unknown variable: {}", val); 
+                return Operand {
+                    otype: OperandType::Text,
+                    value: ""
+                }
+            }
+            return self.get_operand_val(&var_val.unwrap().value);
+        }
+
+        return Operand {
+            otype: OperandType::Text,
+            value: ""
+        }
+
+    }
+
     pub fn evaluate(&self, ast: Box<calc_eval::Node>) -> String {
+
         match *ast {
             calc_eval::Node::Unary { value, child } => {
                 if child.is_none() {
                     return value;
                 } else {
-                    
                 }
                 "".to_string()
             },
             calc_eval::Node::Binary { left, operation, right } => {
-                let lhs = &self.evaluate(left);
-                let rhs = &self.evaluate(right);
-                let mut lhs_n = lhs.parse::<f64>();
-                let mut rhs_n = rhs.parse::<f64>();
-                let scope = self.instruction_ptr.len() - 1;
-                if lhs_n.is_err() {
-                    lhs_n = Ok(self.variables[scope]
-                               .get(lhs)
-                               .unwrap_or(&Variable::new(lhs.to_string(), "0.0".to_string(), false))
-                                    .value.parse::<f64>().expect("unable to parse variable value as number"));
-                        // .get(&lhs).expect("Variable not in scope").value
-                        // .clone().parse::<f64>().unwrap_or(0.0));
-                }
-                if rhs_n.is_err() {
-                    rhs_n = Ok(self.variables[scope]
-                               .get(rhs)
-                               .unwrap_or(&Variable::new(rhs.to_string(), "0.0".to_string(), false))
-                                    .value.parse::<f64>().expect("unable to parse variable value as number"));
-                }
+
+                let lhs_wrap = &self.evaluate(left);
+                let rhs_wrap = &self.evaluate(right);
+                let lhs = self.get_operand_val(lhs_wrap);
+                let rhs = self.get_operand_val(rhs_wrap);
+
 
                 match operation {
                     calc_tokens::TokenType::Plus => { 
-                        (lhs_n.clone().unwrap()
+                        if lhs.otype != OperandType::Number
+                            || rhs.otype != OperandType::Number {
+                                eprintln!("Unable to add non-number types.");
+                                return "undefined".to_string();
+                        }
+                        (lhs.value.parse::<f64>().unwrap()
                          + 
-                         rhs_n.clone().unwrap()
+                         rhs.value.parse::<f64>().unwrap()
                          ).to_string() 
                     },
                     calc_tokens::TokenType::Eq => { 
-                        (lhs_n
+                        // println!("lhs: {:?}, rhs: {:?} == {:?}", lhs, rhs, lhs == rhs);
+                        (lhs.value
                          == 
-                         rhs_n
+                         rhs.value
                          ).to_string() 
                     },
                     calc_tokens::TokenType::Neq => { 
-                        (lhs_n
+                        (lhs.value
                          != 
-                         rhs_n
+                         rhs.value
                          ).to_string() 
                     },
                     calc_tokens::TokenType::Ampersand => { 
-                        let lhs = lhs.replace('"', "");
-                        let rhs = rhs.replace('"', "");
+                        let lhs = lhs.value.replace('"', "");
+                        let rhs = rhs.value.replace('"', "");
                         format!("\"{lhs}{rhs}\"")
                     },
                     _ => { unreachable!()}

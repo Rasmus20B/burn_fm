@@ -5,8 +5,10 @@ test BasicTest:
       perform_script("New Script");
       loop {
         new_record_request();
+        set_field(blank::PrimaryKey, "Kevin");
         exit_loop_if(x == 10);
         set_variable(x, x + 1);
+        assert(blank::PrimaryKey == "Kevin");
       }
     }
   ],
