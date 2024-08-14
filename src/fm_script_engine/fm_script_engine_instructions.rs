@@ -212,6 +212,7 @@ impl FromStr for Instruction {
             "exit_loop_if" => Ok(Instruction::ExitLoopIf),
             "new_record_request" => Ok(Instruction::NewRecordRequest),
             "exit_script" => Ok(Instruction::ExitScript),
+            "show_custom_dialog" => Ok(Instruction::ShowCustomDialog),
             "assert" => Ok(Instruction::Assert),
             _ => Err(()),
         }

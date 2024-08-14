@@ -10,6 +10,7 @@ test BasicTest:
         set_variable(x, x + 1);
         assert(blank::PrimaryKey == "Kevin");
       }
+      show_custom_dialog(x);
     }
   ],
 end test;

@@ -6,19 +6,19 @@
       "created_by_account": "",
       "create_by_user": "",
       "fields": {
+        "3": {
+          "data_type": "",
+          "field_description": "Account name of the user who created each record",
+          "field_name": "CreatedBy",
+          "field_type": "[[Z^ZZZOZZ[[ZZZVZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
         "2": {
           "data_type": "",
           "field_description": "Date and time each record was created",
           "field_name": "CreationTimestamp",
           "field_type": "[_ZXZZZZZZ[[ZZzVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
-        "5": {
-          "data_type": "",
-          "field_description": "Account name of the user who last modified each record",
-          "field_name": "ModifiedBy",
-          "field_type": "[[ZSZZZOZZ[[ZZZVZZZ[ZZZZZ[",
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },
@@ -38,11 +38,11 @@
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },
-        "3": {
+        "5": {
           "data_type": "",
-          "field_description": "Account name of the user who created each record",
-          "field_name": "CreatedBy",
-          "field_type": "[[Z^ZZZOZZ[[ZZZVZZZ[ZZZZZ[",
+          "field_description": "Account name of the user who last modified each record",
+          "field_name": "ModifiedBy",
+          "field_type": "[[ZSZZZOZZ[[ZZZVZZZ[ZZZZZ[",
           "created_by_account": "admin",
           "created_by_user": "Admin"
         }
@@ -54,30 +54,6 @@
       "created_by_account": "",
       "create_by_user": "",
       "fields": {
-        "2": {
-          "data_type": "",
-          "field_description": "Date and time each record was created",
-          "field_name": "CreationTimestamp",
-          "field_type": "[_ZXZZZZZZ[[ZZzVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
-        "4": {
-          "data_type": "",
-          "field_description": "Date and time each record was last modified",
-          "field_name": "ModificationTimestamp",
-          "field_type": "[_Z]ZZZZZZ[[ZZzVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
-        "3": {
-          "data_type": "",
-          "field_description": "Account name of the user who created each record",
-          "field_name": "CreatedBy",
-          "field_type": "[[Z^ZZZOZZ[[ZZZVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
         "5": {
           "data_type": "",
           "field_description": "Account name of the user who last modified each record",
@@ -93,6 +69,30 @@
           "field_type": "value not utf-8.",
           "created_by_account": "admin",
           "created_by_user": "Admin"
+        },
+        "2": {
+          "data_type": "",
+          "field_description": "Date and time each record was created",
+          "field_name": "CreationTimestamp",
+          "field_type": "[_ZXZZZZZZ[[ZZzVZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "Account name of the user who created each record",
+          "field_name": "CreatedBy",
+          "field_type": "[[Z^ZZZOZZ[[ZZZVZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "Date and time each record was last modified",
+          "field_name": "ModificationTimestamp",
+          "field_type": "[_Z]ZZZZZZ[[ZZzVZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
         }
       },
       "init": false
@@ -102,11 +102,35 @@
       "created_by_account": "",
       "create_by_user": "",
       "fields": {
+        "5": {
+          "data_type": "",
+          "field_description": "Account name of the user who last modified each record",
+          "field_name": "ModifiedBy",
+          "field_type": "[[ZSZZZOZZ[[ZZZVZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
+        "3": {
+          "data_type": "",
+          "field_description": "Account name of the user who created each record",
+          "field_name": "CreatedBy",
+          "field_type": "[[Z^ZZZOZZ[[ZZZVZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
         "7": {
           "data_type": "",
           "field_description": "",
           "field_name": "email",
           "field_type": "[[ZZZZZOZZZZZZZZZZZ[ZZZZZ[",
+          "created_by_account": "admin",
+          "created_by_user": "Admin"
+        },
+        "4": {
+          "data_type": "",
+          "field_description": "Date and time each record was last modified",
+          "field_name": "ModificationTimestamp",
+          "field_type": "[_Z]ZZZZZZ[[ZZzVZZZ[ZZZZZ[",
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },
@@ -126,30 +150,6 @@
           "created_by_account": "admin",
           "created_by_user": "Admin"
         },
-        "5": {
-          "data_type": "",
-          "field_description": "Account name of the user who last modified each record",
-          "field_name": "ModifiedBy",
-          "field_type": "[[ZSZZZOZZ[[ZZZVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
-        "3": {
-          "data_type": "",
-          "field_description": "Account name of the user who created each record",
-          "field_name": "CreatedBy",
-          "field_type": "[[Z^ZZZOZZ[[ZZZVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
-        "4": {
-          "data_type": "",
-          "field_description": "Date and time each record was last modified",
-          "field_name": "ModificationTimestamp",
-          "field_type": "[_Z]ZZZZZZ[[ZZzVZZZ[ZZZZZ[",
-          "created_by_account": "admin",
-          "created_by_user": "Admin"
-        },
         "2": {
           "data_type": "",
           "field_description": "",
@@ -163,8 +163,36 @@
     }
   },
   "relationships": {
+    "1": {
+      "table1": 2,
+      "table1_name": "",
+      "table2": 1,
+      "table2_name": "",
+      "comparison": 0
+    },
     "0": {
       "table1": 1,
+      "table1_name": "",
+      "table2": 2,
+      "table2_name": "",
+      "comparison": 0
+    },
+    "7": {
+      "table1": 5,
+      "table1_name": "",
+      "table2": 4,
+      "table2_name": "",
+      "comparison": 0
+    },
+    "3": {
+      "table1": 2,
+      "table1_name": "",
+      "table2": 4,
+      "table2_name": "",
+      "comparison": 0
+    },
+    "5": {
+      "table1": 4,
       "table1_name": "",
       "table2": 2,
       "table2_name": "",
@@ -177,13 +205,6 @@
       "table2_name": "",
       "comparison": 0
     },
-    "5": {
-      "table1": 4,
-      "table1_name": "",
-      "table2": 2,
-      "table2_name": "",
-      "comparison": 0
-    },
     "2": {
       "table1": 2,
       "table1_name": "",
@@ -191,31 +212,10 @@
       "table2_name": "",
       "comparison": 0
     },
-    "3": {
-      "table1": 2,
-      "table1_name": "",
-      "table2": 4,
-      "table2_name": "",
-      "comparison": 0
-    },
     "6": {
       "table1": 4,
       "table1_name": "",
       "table2": 5,
-      "table2_name": "",
-      "comparison": 0
-    },
-    "7": {
-      "table1": 5,
-      "table1_name": "",
-      "table2": 4,
-      "table2_name": "",
-      "comparison": 0
-    },
-    "1": {
-      "table1": 2,
-      "table1_name": "",
-      "table2": 1,
       "table2_name": "",
       "comparison": 0
     }
@@ -226,8 +226,8 @@
       "created_by_account": "",
       "create_by_user": ""
     },
-    "3": {
-      "layout_name": "second table",
+    "1": {
+      "layout_name": "blank",
       "created_by_account": "",
       "create_by_user": ""
     },
@@ -236,14 +236,29 @@
       "created_by_account": "",
       "create_by_user": ""
     },
-    "1": {
-      "layout_name": "blank",
+    "3": {
+      "layout_name": "second table",
       "created_by_account": "",
       "create_by_user": ""
     }
   },
   "value_lists": {},
   "scripts": {
+    "3": {
+      "script_name": "new script though",
+      "created_by_account": "",
+      "create_by_user": "",
+      "arguments": [],
+      "instructions": {
+        "3": {
+          "opcode": "PerformScript",
+          "index": 3,
+          "switches": [
+            "New Script"
+          ]
+        }
+      }
+    },
     "4": {
       "script_name": "New Script",
       "created_by_account": "",
@@ -273,24 +288,12 @@
             "(20)"
           ]
         },
-        "274": {
+        "271": {
           "opcode": "SetVariable",
-          "index": 274,
+          "index": 271,
           "switches": [
-            "$c",
-            "(40)"
-          ]
-        },
-        "266": {
-          "opcode": "BlankLineComment",
-          "index": 266,
-          "switches": []
-        },
-        "275": {
-          "opcode": "PerformScript",
-          "index": 275,
-          "switches": [
-            "New Script"
+            "$y",
+            "40"
           ]
         },
         "272": {
@@ -298,14 +301,6 @@
           "index": 272,
           "switches": [
             "($x==$y)"
-          ]
-        },
-        "271": {
-          "opcode": "SetVariable",
-          "index": 271,
-          "switches": [
-            "$y",
-            "40"
           ]
         },
         "273": {
@@ -316,6 +311,13 @@
             "(20)"
           ]
         },
+        "275": {
+          "opcode": "PerformScript",
+          "index": 275,
+          "switches": [
+            "New Script"
+          ]
+        },
         "267": {
           "opcode": "SetVariable",
           "index": 267,
@@ -323,36 +325,34 @@
             "$x",
             "90"
           ]
-        }
-      }
-    },
-    "3": {
-      "script_name": "new script though",
-      "created_by_account": "",
-      "create_by_user": "",
-      "arguments": [],
-      "instructions": {
-        "3": {
-          "opcode": "PerformScript",
-          "index": 3,
+        },
+        "266": {
+          "opcode": "BlankLineComment",
+          "index": 266,
+          "switches": []
+        },
+        "274": {
+          "opcode": "SetVariable",
+          "index": 274,
           "switches": [
-            "New Script"
+            "$c",
+            "(40)"
           ]
         }
       }
     }
   },
   "table_occurrences": {
-    "2": {
-      "table_occurence_name": "blank 2",
-      "table_actual": 1,
+    "6": {
+      "table_occurence_name": "third table",
+      "table_actual": 3,
       "table_actual_name": "",
       "created_by_account": "",
       "create_by_user": ""
     },
-    "6": {
-      "table_occurence_name": "third table",
-      "table_actual": 3,
+    "1": {
+      "table_occurence_name": "blank",
+      "table_actual": 1,
       "table_actual_name": "",
       "created_by_account": "",
       "create_by_user": ""
@@ -371,8 +371,8 @@
       "created_by_account": "",
       "create_by_user": ""
     },
-    "1": {
-      "table_occurence_name": "blank",
+    "2": {
+      "table_occurence_name": "blank 2",
       "table_actual": 1,
       "table_actual_name": "",
       "created_by_account": "",

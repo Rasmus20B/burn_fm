@@ -7,6 +7,7 @@ use crate::component::FMComponentScript;
 use crate::component::FMComponentTest;
 use crate::file;
 use crate::fm_script_engine::fm_script_engine_instructions::Instruction;
+use crate::fm_script_engine::fm_script_engine_instructions::ScriptStep;
 use crate::testing::calc_eval;
 
 use super::calc_tokens;
@@ -164,7 +165,6 @@ impl<'a> TestEnvironment<'a> {
     }
 
     pub fn step(&mut self) {
-
         assert!(self.current_test.is_some());
         let mut ip_handle: (String, usize);
         let mut script_handle = &FMComponentScript::new();
@@ -173,7 +173,6 @@ impl<'a> TestEnvironment<'a> {
         let s_name = self.instruction_ptr[n_stack].0.clone();
         if self.instruction_ptr.len() > 1 {
             for s in &self.file_handle.scripts {
-                println!("examining: {}", s.1.script_name);
                 if s.1.script_name == s_name {
                     script_handle = s.1;
                     break;
@@ -182,7 +181,7 @@ impl<'a> TestEnvironment<'a> {
         } else {
             script_handle = &self.current_test.as_ref().unwrap().script;
         }
-        
+
         if script_handle.instructions.is_empty() ||
             ip_handle.1 > script_handle.instructions
                 .clone().into_iter().map(|x| x.0).max().unwrap() {
@@ -191,23 +190,12 @@ impl<'a> TestEnvironment<'a> {
                 return;
         }
 
-
-        // println!("ins {} of {}. Script: {}",
-        //     ip_handle.1,
-        //     &script_handle.instructions.len(),
-        //     &script_handle.script_name);
-        // for i in &script_handle.instructions {
-        //     println!("{}: {:?}", i.0, i.1);
-        // }
         let mut cur_instruction = &script_handle.instructions[&ip_handle.1];
-        // println!("ins {}: {:?}", ip_handle.1, cur_instruction);
-        // println!("WE ARE IN HERE BRUH");
         match &cur_instruction.opcode {
             Instruction::PerformScript => {
                 let script_name = self.eval_calculation(&cur_instruction.switches[0])
                     .strip_suffix('"').unwrap()
                     .strip_prefix('"').unwrap().to_string();
-                println!("Calling script: {}", script_name);
                 self.variables.push(HashMap::new());
 
                 for s in &self.file_handle.scripts {
@@ -274,7 +262,6 @@ impl<'a> TestEnvironment<'a> {
                                 return;
                             },
                             Instruction::Else => {
-                                // self.instruction_ptr[n_stack].1 += 1;
                                 return;
                             },
                             Instruction::ElseIf => {
@@ -347,7 +334,6 @@ impl<'a> TestEnvironment<'a> {
                     eprintln!("invalid scope resultion. Please check that loop and if blocks are terminated correctly.");
                 }
                 self.instruction_ptr[n_stack].1 = self.loop_scopes.last().unwrap() + 1;
-                // self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::ExitLoopIf => {
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[0]);
@@ -356,7 +342,7 @@ impl<'a> TestEnvironment<'a> {
                         cur_instruction = &script_handle.instructions[&ip_handle.1];
                         ip_handle.1 += 1;
                     }
-                    self.instruction_ptr[n_stack].1 = ip_handle.1 + 1; 
+                    self.instruction_ptr[n_stack].1 = ip_handle.1; 
                 } else {
                     self.instruction_ptr[n_stack].1 += 1;
                 }
@@ -376,10 +362,9 @@ impl<'a> TestEnvironment<'a> {
             Instruction::ShowCustomDialog => {
                 println!("{}", &self.eval_calculation(&cur_instruction.switches[0]));
                 self.instruction_ptr[n_stack].1 += 1;
-            }
+            },
             Instruction::Assert => {
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[0]);
-                // println!("Eval: {} :: {}", cur_instruction.switches[0], val);
                 if val == "false" {
                     cprintln!("<red>Assertion failed<red>: {}", cur_instruction.switches[0]);
                     self.test_state = TestState::Fail;
@@ -507,7 +492,7 @@ impl<'a> TestEnvironment<'a> {
                     }
                     tokens.push(calc_tokens::Token::with_value(calc_tokens::TokenType::Identifier, buffer.clone()));
                     buffer.clear();
-                }
+                },
                 _ => {
                     buffer.push(*c);
                 }
@@ -520,7 +505,6 @@ impl<'a> TestEnvironment<'a> {
             tokens.push(b.unwrap());
         }
         /* Once we have our tokens, parse them into a binary expression. */
-        
         let ast = calc_eval::Parser::new(tokens).parse().expect("unable to parse tokens.");
         self.evaluate(ast)
     }
@@ -584,7 +568,6 @@ impl<'a> TestEnvironment<'a> {
             //     &table_handle.unwrap().records.get(fieldname[1]).unwrap()[self.record_ptrs[n].unwrap()]);
             return self.get_operand_val(&table_handle.unwrap().records.get(fieldname[1]).unwrap()[self.record_ptrs[n].unwrap()]);
         } else {
-
             let scope = self.instruction_ptr.len() - 1;
             let var_val = self.variables[scope]
                 .get(val);
@@ -611,13 +594,13 @@ impl<'a> TestEnvironment<'a> {
         match *ast {
             calc_eval::Node::Unary { value, child } => {
                 if child.is_none() {
-                    return value;
+                    return self.get_operand_val(value.as_str())
+                        .value.to_string();
                 } else {
                 }
                 "".to_string()
             },
             calc_eval::Node::Binary { left, operation, right } => {
-
                 let lhs_wrap = &self.evaluate(left);
                 let rhs_wrap = &self.evaluate(right);
                 let lhs = self.get_operand_val(lhs_wrap);
