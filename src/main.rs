@@ -41,6 +41,10 @@ fn main() {
             let mut text = String::new();
             code.read_to_string(&mut text).expect("Unable to parse file to string");
             let tmp = compile::compiler::compile_burn(&text);
+            file.name = input.file_name().unwrap()
+                .to_str().unwrap().to_string()
+                .strip_suffix(".burn").unwrap().to_string();
+
             file.tables.extend(tmp.tables);
             file.relationships.extend(tmp.relationships);
             file.value_lists.extend(tmp.value_lists);
@@ -55,6 +59,8 @@ fn main() {
                 env.generate_test_environment();
                 env.run_tests_with_cleanup();
             }
+            let assembly = compile::assembler::assemble_fmp12(&file);
+            write(format!("{}.fmp12", file.name), assembly).expect("unable to write to file.");
         }
     } else if args.op.decompile.is_some() {
         for f in args.op.decompile.unwrap() {

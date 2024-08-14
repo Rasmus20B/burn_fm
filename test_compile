@@ -1,0 +1,129 @@
+{
+  "name": "example",
+  "tables": {
+    "0": {
+      "table_name": "Person",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {},
+      "init": false
+    },
+    "1": {
+      "table_name": "Job",
+      "created_by_account": "",
+      "create_by_user": "",
+      "fields": {},
+      "init": false
+    }
+  },
+  "relationships": {
+    "2": {
+      "table1": 0,
+      "table1_name": "Person",
+      "table2": 0,
+      "table2_name": "Job",
+      "comparison": 0
+    }
+  },
+  "layouts": {},
+  "value_lists": {
+    "0": {
+      "list_name": "male_female",
+      "created_by_account": "",
+      "create_by_user": ""
+    }
+  },
+  "scripts": {
+    "0": {
+      "script_name": "basic_script",
+      "created_by_account": "",
+      "create_by_user": "",
+      "arguments": [
+        "x",
+        "y"
+      ],
+      "instructions": {
+        "3": {
+          "opcode": "SetVariable",
+          "index": 0,
+          "switches": [
+            "i",
+            "i+1"
+          ]
+        },
+        "4": {
+          "opcode": "EndLoop",
+          "index": 0,
+          "switches": []
+        },
+        "1": {
+          "opcode": "Loop",
+          "index": 0,
+          "switches": []
+        },
+        "2": {
+          "opcode": "ExitLoopIf",
+          "index": 0,
+          "switches": [
+            "i==y"
+          ]
+        },
+        "5": {
+          "opcode": "ExitScript",
+          "index": 0,
+          "switches": [
+            "i"
+          ]
+        },
+        "0": {
+          "opcode": "SetVariable",
+          "index": 0,
+          "switches": [
+            "i",
+            "x"
+          ]
+        }
+      }
+    }
+  },
+  "table_occurrences": {
+    "1": {
+      "table_occurence_name": "Person",
+      "table_actual": 0,
+      "table_actual_name": "Person",
+      "created_by_account": "",
+      "create_by_user": ""
+    },
+    "0": {
+      "table_occurence_name": "Job",
+      "table_actual": 0,
+      "table_actual_name": "Job",
+      "created_by_account": "",
+      "create_by_user": ""
+    }
+  },
+  "tests": [
+    {
+      "test_name": "BasicTest",
+      "script": {
+        "script_name": "test",
+        "created_by_account": "",
+        "create_by_user": "",
+        "arguments": [],
+        "instructions": {
+          "0": {
+            "opcode": "SetVariable",
+            "index": 0,
+            "switches": [
+              "x",
+              "2"
+            ]
+          }
+        }
+      },
+      "created_by_account": "",
+      "create_by_user": "",
+      "assertions": []
+    }
+  ]
+}

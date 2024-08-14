@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::fs::{File, write};
 use std::io::Read;
 use std::path::Path;
 use std::collections::{BTreeMap, HashMap};
@@ -110,7 +110,9 @@ pub fn decompile_fmp12_file_with_header(path: &Path) -> FmpFile {
     let mut buffer = Vec::<u8>::new();
     file.read_to_end(&mut buffer).expect("Unable to read file.");
 
-    println!("Found: {:?}", &buffer[0..4095]);
+    // println!("Found: {:x?}", &buffer[4096..8192]);
+    write("header.log", buffer);
+    // return FmpFile::new();
     decompile_fmp12_file(path)
 }
 
@@ -142,6 +144,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
 
 
     while idx != 0 {
+        println!("looking @ sector {}", idx);
         let start = idx * SECTOR_SIZE;
         let bound = start + SECTOR_SIZE;
         offset = start;
@@ -517,7 +520,8 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                             switches: switch,
                                         };
 
-                                        println!("Adding idx: {}", tmp.index);
+                                        println!("Adding idx: {} for script {}. Exists? {:?}", tmp.index, x.parse::<u64>().unwrap(),
+                                            fmp_file.scripts.get(&x.parse().unwrap()));
                                         let handle = &mut fmp_file.scripts
                                             .get_mut(&x.parse().unwrap()).unwrap().instructions;
                                             handle.insert(n, tmp);
@@ -543,17 +547,21 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
 
                 },
                 /* Examining script metadata */
-                ["17", "1", x, ..] => {
+                ["17", "1", x, y, ..] => {
                     if chunk.ctype == ChunkType::PathPush 
                         || chunk.ctype == ChunkType::PathPop {
                         continue;
                     }
-                    
+
+                    println!("Path: {:?}", path);
+
                     if chunk.ctype == ChunkType::RefSimple {
                         match chunk.ref_simple {
                             Some(16) => {
-                                let handle = fmp_file.scripts.get_mut(&x.parse().unwrap());
+                                println!("Found script {}: {}", y.parse::<u64>().unwrap(), fm_string_decrypt(chunk.data.unwrap()));
+                                let handle = fmp_file.scripts.get_mut(&y.parse().unwrap());
                                 if handle.is_none() {
+                                    println!("Pushing the script.");
                                     let tmp = component::FMComponentScript {
                                         script_name: fm_string_decrypt(chunk.data.unwrap()),
                                         instructions: HashMap::new(),
@@ -561,7 +569,8 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                         arguments: Vec::new(),
                                         created_by_account: String::new(),
                                     };
-                                    fmp_file.scripts.insert(path.last().unwrap().parse().unwrap(), tmp);
+                                    let res = fmp_file.scripts.insert(y.parse().unwrap(), tmp);
+                                    println!("Was it already there? {:?}, what's the size now? {}", res, fmp_file.scripts.len());
                                 } else {
                                     handle.unwrap().script_name = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
                                 }
