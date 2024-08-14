@@ -151,6 +151,38 @@ impl Lexer {
                         ret.push(Token::new(TokenType::Eq));
                     }
                     Some(ret)
+                },
+                '>' =>  
+                {
+                    let mut ret: Vec<Token> = vec![];
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
+                    }
+                    if *lex_iter.peek().unwrap() == '=' {
+                        ret.push(Token::new(TokenType::Geq));
+                    } else {
+                        lex_iter.next();
+                        ret.push(Token::new(TokenType::Gt));
+                    }
+                    Some(ret)
+                }
+                '<' =>  
+                {
+                    let mut ret: Vec<Token> = vec![];
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        ret.push(b);
+                    }
+                    if *lex_iter.peek().unwrap() == '=' {
+                        ret.push(Token::new(TokenType::Leq));
+                    } else {
+                        lex_iter.next();
+                        ret.push(Token::new(TokenType::Lt));
+                    }
+                    Some(ret)
                 }
                 '+' =>
                 {

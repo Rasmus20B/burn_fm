@@ -41,12 +41,10 @@ impl Parser {
     }
 
     pub fn parse_identifier(&mut self, tok: Token) -> Result<Box<Node>, &str> {
-        // println!("n: {:?}", tok);
         let n = self.next();
         if n.is_none() {
             return Ok(Box::new(Node::Unary { value: self.current().value.clone(), child: None }));
         }
-        // println!("after: {:?}", n);
         match n.unwrap().ttype {
             TokenType::Eq | TokenType::Neq | TokenType::Gt 
                 | TokenType::Gtq | TokenType::Lt | TokenType::Ltq 

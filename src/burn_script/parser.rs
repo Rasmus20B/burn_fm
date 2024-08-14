@@ -97,6 +97,18 @@ impl Parser {
                                             TokenType::Neq => {
                                                 buffer.push_str("!=");
                                             },
+                                            TokenType::Lt => {
+                                                buffer.push_str("<");
+                                            },
+                                            TokenType::Leq => {
+                                                buffer.push_str("<=");
+                                            },
+                                            TokenType::Gt => {
+                                                buffer.push_str(">");
+                                            },
+                                            TokenType::Geq => {
+                                                buffer.push_str(">=");
+                                            },
                                             TokenType::Plus => {
                                                 buffer.push('+');
                                             },
@@ -189,6 +201,18 @@ impl Parser {
                                         TokenType::Neq => {
                                             buf.push_str("!=");
                                         },
+                                        TokenType::Lt => {
+                                            buf.push_str("<");
+                                        },
+                                        TokenType::Leq => {
+                                            buf.push_str("<=");
+                                        },
+                                        TokenType::Gt => {
+                                            buf.push_str(">");
+                                        },
+                                        TokenType::Geq => {
+                                            buf.push_str(">=");
+                                        },
                                         TokenType::Plus => {
                                             buf.push('+');
                                         },
@@ -226,6 +250,18 @@ impl Parser {
                                         },
                                         TokenType::Neq => {
                                             buf.push_str("!=");
+                                        },
+                                        TokenType::Lt => {
+                                            buf.push_str("<");
+                                        },
+                                        TokenType::Leq => {
+                                            buf.push_str("<=");
+                                        },
+                                        TokenType::Gt => {
+                                            buf.push_str(">");
+                                        },
+                                        TokenType::Geq => {
+                                            buf.push_str(">=");
                                         },
                                         TokenType::Plus => {
                                             buf.push('+');

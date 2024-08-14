@@ -456,9 +456,36 @@ impl<'a> TestEnvironment<'a> {
                     if *lex_iter.peek().unwrap() == '=' {
                         tokens.push(Ok::<calc_tokens::Token, String>(
                                 calc_tokens::Token::new(calc_tokens::TokenType::Eq)).unwrap());
-                        lex_iter.next();
                     }
                 },
+                '<' => {
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        tokens.push(b.unwrap());
+                    }
+                    if *lex_iter.peek().unwrap() == '=' {
+                        tokens.push(Ok::<calc_tokens::Token, String>(
+                                calc_tokens::Token::new(calc_tokens::TokenType::Ltq)).unwrap());
+                    } else {
+                        tokens.push(Ok::<calc_tokens::Token, String>(
+                                calc_tokens::Token::new(calc_tokens::TokenType::Lt)).unwrap());
+                    }
+                },
+                '>' => {
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        tokens.push(b.unwrap());
+                    }
+                    if *lex_iter.peek().unwrap() == '=' {
+                        tokens.push(Ok::<calc_tokens::Token, String>(
+                                calc_tokens::Token::new(calc_tokens::TokenType::Gtq)).unwrap());
+                    } else {
+                        tokens.push(Ok::<calc_tokens::Token, String>(
+                                calc_tokens::Token::new(calc_tokens::TokenType::Gt)).unwrap());
+                    }
+                }
                 '"' => {
                     if buffer.len() > 0 {
                         let b = flush_buffer(buffer.as_str());
@@ -631,6 +658,30 @@ impl<'a> TestEnvironment<'a> {
                          != 
                          rhs.value
                          ).to_string() 
+                    },
+                    calc_tokens::TokenType::Lt => {
+                        (lhs.value.parse::<f64>().unwrap()
+                         <
+                         rhs.value.parse::<f64>().unwrap())
+                         .to_string()
+                    },
+                    calc_tokens::TokenType::Ltq => {
+                        (lhs.value.parse::<f64>().unwrap()
+                         <=
+                         rhs.value.parse::<f64>().unwrap())
+                         .to_string()
+                    },
+                    calc_tokens::TokenType::Gt => {
+                        (lhs.value.parse::<f64>().unwrap()
+                         >
+                         rhs.value.parse::<f64>().unwrap())
+                         .to_string()
+                    },
+                    calc_tokens::TokenType::Gtq => {
+                        (lhs.value.parse::<f64>().unwrap()
+                         >=
+                         rhs.value.parse::<f64>().unwrap())
+                         .to_string()
                     },
                     calc_tokens::TokenType::Ampersand => { 
                         let lhs = lhs.value.replace('"', "");
