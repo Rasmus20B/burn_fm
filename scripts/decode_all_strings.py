@@ -12,9 +12,6 @@ def decode_file(path):
             for p in parts:
                 pairs.append(p.split(':'))
 
-            # for p in pairs:
-            #     print(p)
-
             if pairs[1][1] == "Some(16)":
                 text = pairs[2][1].lstrip('[').rstrip(']')
                 n = [int(x) for x in text.split(',')]
