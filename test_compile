@@ -1,15 +1,15 @@
 {
   "name": "example",
   "tables": {
-    "0": {
-      "table_name": "Person",
+    "1": {
+      "table_name": "Job",
       "created_by_account": "",
       "create_by_user": "",
       "fields": {},
       "init": false
     },
-    "1": {
-      "table_name": "Job",
+    "0": {
+      "table_name": "Person",
       "created_by_account": "",
       "create_by_user": "",
       "fields": {},
@@ -43,6 +43,19 @@
         "y"
       ],
       "instructions": {
+        "1": {
+          "opcode": "Loop",
+          "index": 0,
+          "switches": []
+        },
+        "0": {
+          "opcode": "SetVariable",
+          "index": 0,
+          "switches": [
+            "i",
+            "x"
+          ]
+        },
         "3": {
           "opcode": "SetVariable",
           "index": 0,
@@ -56,18 +69,6 @@
           "index": 0,
           "switches": []
         },
-        "1": {
-          "opcode": "Loop",
-          "index": 0,
-          "switches": []
-        },
-        "2": {
-          "opcode": "ExitLoopIf",
-          "index": 0,
-          "switches": [
-            "i==y"
-          ]
-        },
         "5": {
           "opcode": "ExitScript",
           "index": 0,
@@ -75,29 +76,28 @@
             "i"
           ]
         },
-        "0": {
-          "opcode": "SetVariable",
+        "2": {
+          "opcode": "ExitLoopIf",
           "index": 0,
           "switches": [
-            "i",
-            "x"
+            "i==y"
           ]
         }
       }
     }
   },
   "table_occurrences": {
-    "1": {
-      "table_occurence_name": "Person",
-      "table_actual": 0,
-      "table_actual_name": "Person",
-      "created_by_account": "",
-      "create_by_user": ""
-    },
     "0": {
       "table_occurence_name": "Job",
       "table_actual": 0,
       "table_actual_name": "Job",
+      "created_by_account": "",
+      "create_by_user": ""
+    },
+    "1": {
+      "table_occurence_name": "Person",
+      "table_actual": 0,
+      "table_actual_name": "Person",
       "created_by_account": "",
       "create_by_user": ""
     }

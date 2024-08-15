@@ -108,32 +108,36 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
 fn print_chunk(chunk: &chunk::Chunk, path: &Vec<String>) {
     match chunk.ctype {
         ChunkType::DataSegment => {
-            println!("Path:{:?}::segment:{:?}::data:{:?}", 
+            println!("Path:{:?}::segment:{:?}::data:{:?}::size:{:?}", 
                  &path.clone(),
                  chunk.segment_idx,
-                 chunk.data.unwrap_or(&[0]));
+                 chunk.data.unwrap_or(&[0]),
+                 chunk.data.unwrap().len());
         },
         ChunkType::RefSimple => {
             println!("Path:{:?}::reference:{:?}::ref_data:{:?}", 
                  &path.clone(),
-                 chunk.ref_simple,
+                 chunk.ref_simple.unwrap(),
                  chunk.data.unwrap_or(&[0]));
         }
         ChunkType::DataSimple => {
-            println!("Path:{:?}::reference:na::ref_data:{:?}", 
-                 &path.clone(),
-                 chunk.data.unwrap_or(&[0]));
+            if chunk.data.is_some() && !chunk.data.unwrap().is_empty() {
+                println!("Path:{:?}::reference:na::ref_data:{:?}", 
+                     &path.clone(),
+                     chunk.data.unwrap());
+            }
         }
         ChunkType::RefLong => {
             println!("Path:{:?}::reference:{:?}::ref_data:{:?}", 
                  &path.clone(),
-                 chunk.ref_data,
+                 chunk.ref_data.unwrap(),
                  chunk.data.unwrap_or(&[0]));
         }
         ChunkType::PathPush => {
-            println!("Path:{:?}::reference:PUSH::ref_data:{:?}", 
+            println!("Path:{:?}::reference:PUSH::ref_data:{:?}::ins:{:x}", 
                  &path.clone(),
-                 chunk.data.unwrap_or(&[0]));
+                 chunk.data.unwrap_or(&[0]),
+                 chunk.code);
         }
         ChunkType::PathPop => {
             println!("Path:{:?}::reference:POP::ref_data:{:?}", 
@@ -160,7 +164,6 @@ pub fn decompile_fmp12_file_with_header(path: &Path) -> FmpFile {
 }
 
 pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
-    
     let mut file = File::open(path).expect("unable to open file.");
     let mut fmp_file = FmpFile::new();
     let mut buffer = Vec::<u8>::new();
@@ -170,6 +173,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
     let mut sectors = Vec::<sector::Sector>::new();
 
     let first = sector::get_sector(&buffer[offset..]);
+    // println!("{:?} == {}", &buffer[offset+8..offset+12], first.next);
     let n_blocks = first.next;
 
     sectors.resize(n_blocks + 1, sector::Sector { 
@@ -192,6 +196,8 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
         offset = start;
 
         sectors[idx] = sector::get_sector(&buffer[offset..]);
+        println!("sector: {}, next: {}", idx, sectors[idx].next);
+        // println!("{:?} == {}", &buffer[offset+8..offset+12], sectors[idx].next);
         let mut path = Vec::<String>::new();
         offset += 20;
         while offset < bound {

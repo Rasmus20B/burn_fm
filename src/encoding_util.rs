@@ -7,6 +7,19 @@ pub fn get_path_int(bytes : &[u8]) -> usize {
     }
 }
 
+pub fn put_path_int(n: usize) -> Vec<u8> {
+    let mut res = vec![];
+    let len = n.div_ceil(255);
+    res.resize(len, 0);
+
+    match len {
+        1 => { res[0] = n as u8 }
+        2 => { res[1] = n as u8 + 0x7f + 1; res[0] = (n as u8).wrapping_sub(res[1]) }
+        _ => { return [0].to_vec() }
+    }
+    return res;
+}
+
 pub fn get_int(bytes: &[u8]) -> usize {
     return match bytes.len() {
         1 => bytes[0] as usize,
@@ -14,6 +27,18 @@ pub fn get_int(bytes: &[u8]) -> usize {
         4 => (get_int(&bytes[0..2]) << 16) + get_int(&bytes[2..4]),
         _ => 0
     }
+}
+
+pub fn put_int(mut n: usize) -> Vec<u8> {
+    let mut res = vec![0, 0, 0, 0];
+    let mut idx = 3;
+    while n > 1 {
+        let cur = n % 256;
+        n /= 256;
+        res[idx] = cur as u8;
+        idx -= 1;
+    }
+    return res;
 }
 
 pub fn fm_string_decrypt(bytes: &[u8]) -> String {
@@ -32,14 +57,20 @@ mod tests {
     #[test]
     fn path_int_testing() {
         assert_eq!(get_path_int(&[1]), 1);
+        assert_eq!(&put_path_int(1), &[1]);
+        assert_eq!(&put_path_int(2), &[2]);
         assert_eq!(get_path_int(&[]), 0);
+        assert_eq!(&put_path_int(266), &[128, 138]);
+        assert_eq!(get_path_int(&[128, 138]), 266);
+        assert_eq!(&put_path_int(0), &[0]);
     }
 
     #[test]
     fn int_testing() {
-        assert_eq!(get_path_int(&[128, 138]), 266);
-        assert_eq!(get_path_int(&[128, 138]), 266);
-        assert_eq!(get_path_int(&[]), 0);
+        assert_eq!(put_int(67), &[0, 0, 0, 67]);
+        assert_eq!(get_int(&[0, 0, 0, 67]), 67);
+        assert_eq!(get_int(&[0, 0, 4, 0]), 1024);
+        assert_eq!(put_int(1024), &[0, 0, 4, 0]);
     }
 
     #[test]

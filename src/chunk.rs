@@ -11,7 +11,7 @@ pub enum ChunkType {
     Noop = 6,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Chunk<'a> {
     pub ctype: ChunkType,
     pub code: u16,
@@ -256,12 +256,12 @@ pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec
             *offset += 1;
             ctype = ChunkType::PathPush;
             data = Some(&code[*offset..*offset+3]);
-            // let dir = 0x80 + ((code[*offset + 1] as usize) << 8) + code[*offset + 2] as usize;
             let dir = get_path_int(&code[*offset..*offset+3]).to_string();
             path.push(dir.to_string());
             *offset += 3;
         },
         0x38 => {
+            println!("getting here");
             *offset += 1;
             ctype = ChunkType::PathPush;
             let len = code[*offset] as usize;

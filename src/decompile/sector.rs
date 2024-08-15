@@ -1,7 +1,7 @@
 use crate::encoding_util::get_int;
 use crate::chunk;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct Sector<'a> {
     pub deleted: bool,
     pub level: u32,

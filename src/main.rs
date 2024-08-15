@@ -1,7 +1,7 @@
 #![allow(unused)]
 use std::{fs::{write, File}, io::Read, path::Path};
 use clap::Parser;
-use compile::compiler::compile_burn;
+use compile::{assembler::Assembler, compiler::compile_burn};
 use decompile::decompiler::{decompile_fmp12_file, decompile_fmp12_file_with_header};
 use file::FmpFile;
 
@@ -59,8 +59,10 @@ fn main() {
                 env.generate_test_environment();
                 env.run_tests_with_cleanup();
             }
-            let assembly = compile::assembler::assemble_fmp12(&file);
-            write(format!("{}.fmp12", file.name), assembly).expect("unable to write to file.");
+            let mut assembler = Assembler::new();
+            assembler.assemble_fmp12(&file);
+            assembler.emit_assembly(&file.name);
+            // write(format!("{}.fmp12", file.name), assembler.buffer).expect("unable to write to file.");
         }
     } else if args.op.decompile.is_some() {
         for f in args.op.decompile.unwrap() {
