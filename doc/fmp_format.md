@@ -4,7 +4,6 @@
 
 - Tables: [3].[16].[5]
 - Relationships: [3].[17].[5]
-- Fields: [table].[3].[5]
 - Layout info: [4].[1].[7]
 - Theme info: [6].[5]
 - Scripts: [17]
@@ -12,7 +11,8 @@
 - Fonts: [25]
 - value lists: [33].[5].[valuelist]
 - Toolbar information: [65]
-- Data: [>128]
+- Fields: [tableid].[3].[5]
+- Data: [tableid].[5].[recordid]
 
 # Table Information
 

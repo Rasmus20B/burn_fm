@@ -106,10 +106,46 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
 }
 
 fn print_chunk(chunk: &chunk::Chunk, path: &Vec<String>) {
-    println!("Path:{:?}::reference:{:?}::ref_data:{:?}", 
-         &path.clone(),
-         chunk.ref_simple,
-         chunk.data.unwrap_or(&[0]));
+    match chunk.ctype {
+        ChunkType::DataSegment => {
+            println!("Path:{:?}::segment:{:?}::data:{:?}", 
+                 &path.clone(),
+                 chunk.segment_idx,
+                 chunk.data.unwrap_or(&[0]));
+        },
+        ChunkType::RefSimple => {
+            println!("Path:{:?}::reference:{:?}::ref_data:{:?}", 
+                 &path.clone(),
+                 chunk.ref_simple,
+                 chunk.data.unwrap_or(&[0]));
+        }
+        ChunkType::DataSimple => {
+            println!("Path:{:?}::reference:na::ref_data:{:?}", 
+                 &path.clone(),
+                 chunk.data.unwrap_or(&[0]));
+        }
+        ChunkType::RefLong => {
+            println!("Path:{:?}::reference:{:?}::ref_data:{:?}", 
+                 &path.clone(),
+                 chunk.ref_data,
+                 chunk.data.unwrap_or(&[0]));
+        }
+        ChunkType::PathPush => {
+            println!("Path:{:?}::reference:PUSH::ref_data:{:?}", 
+                 &path.clone(),
+                 chunk.data.unwrap_or(&[0]));
+        }
+        ChunkType::PathPop => {
+            println!("Path:{:?}::reference:POP::ref_data:{:?}", 
+                 &path.clone(),
+                 chunk.data.unwrap_or(&[0]));
+        }
+        ChunkType::Noop => {
+            println!("Path:{:?}::reference:NOOP::ref_data:{:?}", 
+                 &path.clone(),
+                 chunk.data.unwrap_or(&[0]));
+        }
+    }
 }
 
 pub fn decompile_fmp12_file_with_header(path: &Path) -> FmpFile {
