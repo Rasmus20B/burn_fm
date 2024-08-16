@@ -8,17 +8,16 @@ pub fn get_path_int(bytes : &[u8]) -> usize {
     }
 }
 
-pub fn put_path_int(n: usize) -> Vec<u8> {
-    let mut res = vec![];
-    let len = n.div_ceil(255);
-    res.resize(len, 0);
-
-    match len {
-        1 => { res[0] = n as u8 }
-        2 => { res[1] = n as u8 + 0x7f + 1; res[0] = (n as u8).wrapping_sub(res[1]) }
-        _ => { return [0].to_vec() }
+pub fn put_path_int(n: u16, len: u8) -> Vec<u8> {
+    if n >= 128 {
+        let mut x = n - 128;
+        let mut b1 = (((x >> 8) & 0x7f) | 0x80) as u8;
+        let mut b2 = (x & 0xFF) as u8;
+        b1 |= 0x7c;
+        [b1, b2].to_vec()
+    } else {
+        [n as u8].to_vec() 
     }
-    return res;
 }
 
 pub fn get_int(bytes: &[u8]) -> usize {
@@ -42,6 +41,14 @@ pub fn put_int(mut n: usize) -> Vec<u8> {
     return res;
 }
 
+pub fn fm_string_encrypt(text: String) -> Vec<u8> {
+    text
+        .bytes()
+        .into_iter()
+        .map(|c| c ^ 0x5A)
+        .collect()
+}
+
 pub fn fm_string_decrypt(bytes: &[u8]) -> String {
     match String::from_utf8(bytes
                                  .into_iter()
@@ -59,12 +66,22 @@ mod tests {
     #[test]
     fn path_int_testing() {
         assert_eq!(get_path_int(&[1]), 1);
-        assert_eq!(&put_path_int(1), &[1]);
-        assert_eq!(&put_path_int(2), &[2]);
+        assert_eq!(get_path_int(&[127]), 127);
+        assert_eq!(get_path_int(&[128]), 128);
+        assert_eq!(get_path_int(&[252, 1]), 129);
+        let mut n = put_path_int(129, 2);
+        println!("{:#010b} == {:#010b} :: {:#010b} == {:#010b}", n[0], 252, n[1], 1);
+        assert_eq!(&put_path_int(129, 2), &[252 , 1]);
+        assert_eq!(&put_path_int(130, 2), &[252 , 2]);
+        assert_eq!(&put_path_int(131, 2), &[252 , 3]);
+        assert_eq!(&put_path_int(1, 1), &[1]);
+        assert_eq!(&put_path_int(2, 1), &[2]);
         assert_eq!(get_path_int(&[]), 0);
-        assert_eq!(&put_path_int(266), &[128, 138]);
+        assert_eq!(get_path_int(&[252, 138]), 266);
+        assert_eq!(get_path_int(&put_path_int(266, 2)), 266);
         assert_eq!(get_path_int(&[128, 138]), 266);
-        assert_eq!(&put_path_int(0), &[0]);
+        assert_eq!(get_path_int(&[252, 1]), 129);
+        assert_eq!(&put_path_int(0, 1), &[0]);
     }
 
     #[test]

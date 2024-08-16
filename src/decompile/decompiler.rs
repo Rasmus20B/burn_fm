@@ -117,7 +117,11 @@ fn print_chunk(chunk: &chunk::Chunk, path: &Vec<String>) {
                  chunk.code);
         },
         ChunkType::RefSimple => {
-            println!("Path:{:?}::reference:{:?}::ref_data:{:x?}::ins:{:x}", 
+            match chunk.ref_simple.unwrap() {
+                216 => chunk.ref_simple,
+                _ => chunk.ref_simple
+            };
+            println!("Path:{:?}::reference:{:?}::ref_data:{:?}::ins:{:x}", 
                  &path.clone(),
                  chunk.ref_simple.unwrap(),
                  chunk.data.unwrap_or(&[]),
@@ -140,10 +144,10 @@ fn print_chunk(chunk: &chunk::Chunk, path: &Vec<String>) {
                             }
                 })
                 .collect();
-            println!("Path:{:?}::reference:{:x?}::ref_data:{:?}::ins:{:x}", 
+            println!("Path:{:?}::reference:{:?}::ref_data:{:?}::ins:{:x}", 
                  &path.clone(),
-                 chunk.ref_data.unwrap(),
                  decoded,
+                 chunk.data.unwrap(),
                  chunk.code);
         }
         ChunkType::PathPush => {

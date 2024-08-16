@@ -1,4 +1,4 @@
-use crate::{encoding_util::{put_int, put_path_int}, FmpFile};
+use crate::{encoding_util::{fm_string_encrypt, get_int, get_path_int, put_int, put_path_int}, FmpFile};
 
 use std::{fs::{write, File}, io::Read, path::Path};
 use super::header::HEADER_INIT;
@@ -39,6 +39,41 @@ impl<'a> Assembler<'a> {
         ((val.len() + 1).div_ceil(2)) as u8
     }
 
+    fn emit_long_kv(&mut self, key: &[u8], val: &[u8]) {
+
+        let code = 0x1e;
+        self.buffer[self.idx] = code;
+        self.idx += 1;
+        self.buffer[self.idx] = key.len() as u8;
+        self.idx += 1;
+        // let db_encoding : Vec<(u8, u8)> = encoding
+        //     .chunks_exact(2)
+        //     .map(|chunk| (chunk[0], chunk[1]))
+        //     .collect();
+        self.buffer.splice(self.idx..self.idx+key.len(), key.to_vec());
+        self.idx += key.len();
+        self.buffer[self.idx] = val.len() as u8;
+        self.idx += 1;
+        self.buffer.splice(self.idx..self.idx+val.len(), val.to_vec());
+        self.idx += val.len();
+    }
+    
+    fn emit_simple_kv_e(&mut self, key: u32, val: &[u8]) {
+
+        self.buffer[self.idx] = 0x0e;
+        self.idx += 1;
+        let n = vec![20, 10];
+        // let n = put_path_int(key as usize, 2);
+        let n_len = n.len();
+        println!("Pushing {:?}", n);
+        self.buffer.splice(self.idx..self.idx+n_len, n);
+        self.idx += 2;
+        self.buffer[self.idx] = val.len() as u8;
+        self.idx += 1;
+        self.buffer.splice(self.idx..self.idx+val.len(), val.to_vec());
+        self.idx += val.len();
+    }
+
     fn emit_simple_kv(&mut self, key: u8, val: &[u8]) {
         let ins = match key {
             16 => { 0x6 }
@@ -76,7 +111,7 @@ impl<'a> Assembler<'a> {
     }
 
     fn push_directory(&mut self, dir: usize) {
-        let d = put_path_int(dir);
+        let d = &[20, 10];
         let ins = match d.len() {
             1 => { 0x20 }
             2 => { 0x40 }
@@ -117,6 +152,33 @@ impl<'a> Assembler<'a> {
         self.emit_noop();
         self.push_directory(1);
         self.emit_noop();
+        self.push_directory(1);
+        self.emit_noop();
+
+        for t in &self.file.tables {
+            let mut encoding = dbcharconv::encode_text(&t.1.table_name);
+            encoding.push(0x0);
+            encoding.push(0x0);
+            encoding.push(0x0);
+            /* TODO: second argument shoudl not be hard coded in this way */
+            self.emit_long_kv(&encoding, &[2, 128, (*t.0 as u8)]);
+        }
+
+        self.pop_directory();
+        self.push_directory(3);
+        self.emit_noop();
+
+        for t in &self.file.tables {
+            let key = put_int(*t.0);
+            println!("pushing {:?}", (*t.0 as u32).to_be_bytes());
+            self.emit_long_kv(&key, &(*t.0 as u32).to_be_bytes());
+        }
+        self.pop_directory();
+        self.emit_simple_kv(4, &put_int(self.file.tables.len()));
+        self.emit_simple_kv(216, &fm_string_encrypt("hello".to_string()));
+        self.emit_simple_kv_e(129, &vec![59, 62, 55, 51, 52]);
+        self.emit_simple_kv_e(130, &vec![59, 62, 55, 51, 52]);
+
     }
 
     pub fn assemble_fmp12(&mut self, schema: &FmpFile) {
@@ -134,10 +196,10 @@ impl<'a> Assembler<'a> {
         self.idx += 20;
         self.emit_noop();
         self.emit_init_blobs();
+        self.emit_table_metadata();
         self.append_blank_chunk();
         self.buffer.splice((self.idx+8) as usize..(self.idx+12) as usize, 4_u32.to_be_bytes());
         self.idx += 20;
-        self.emit_table_metadata();
         self.append_blank_chunk();
         self.buffer.splice((self.idx+8) as usize..(self.idx+12) as usize, 0_u32.to_be_bytes());
     }

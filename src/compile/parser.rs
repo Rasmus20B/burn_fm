@@ -45,7 +45,7 @@ impl Parser {
                             }
                         }
                     }
-                    ret.tables.insert(ret.tables.len(), table);
+                    ret.tables.insert(ret.tables.len() + 1, table);
                 },
                 TokenType::Relationship => {
                     let mut relationship = FMComponentRelationship::new();
@@ -81,7 +81,7 @@ impl Parser {
                             }
                         }
                     }
-                    ret.relationships.insert(ret.tables.len(), relationship);
+                    ret.relationships.insert(ret.tables.len() + 1, relationship);
                 },
                 TokenType::ValueList => {
                     let mut value_list = FMComponentValueList::new();
@@ -109,7 +109,7 @@ impl Parser {
                             }
                         }
                     }
-                    ret.value_lists.insert(ret.value_lists.len(), value_list);
+                    ret.value_lists.insert(ret.value_lists.len() + 1, value_list);
                 },
                 TokenType::Script => {
                     let scripts: Vec<FMComponentScript> = vec![];
@@ -126,7 +126,7 @@ impl Parser {
                     let scripts = burn_script::compiler::BurnScriptCompiler::compile_burn_script(&block.text);
                     
                     for s in scripts {
-                        ret.scripts.insert(ret.scripts.len(), s);
+                        ret.scripts.insert(ret.scripts.len() + 1, s);
                     }
 
                     let next = parser_iter.next().unwrap();
@@ -174,7 +174,7 @@ impl Parser {
                             }
                         }
                     }
-                    ret.table_occurrences.insert(ret.table_occurrences.len(), table_occurence);
+                    ret.table_occurrences.insert(ret.table_occurrences.len() + 1, table_occurence);
                 },
                 TokenType::Test => {
                     let mut test = FMComponentTest::new();
