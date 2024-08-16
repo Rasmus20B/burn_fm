@@ -1,4 +1,5 @@
 
+
 pub fn get_path_int(bytes : &[u8]) -> usize {
     match bytes.len() {
         1 => bytes[0] as usize,
@@ -50,6 +51,7 @@ pub fn fm_string_decrypt(bytes: &[u8]) -> String {
         Err(e) => "value not utf-8.".to_string()
     }
 }
+
 #[cfg(test)]
 mod tests {
     use crate::encoding_util::*;

@@ -1,3 +1,4 @@
+use std::char::decode_utf16;
 use std::fs::{File, write};
 use std::io::Read;
 use std::path::Path;
@@ -108,17 +109,19 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
 fn print_chunk(chunk: &chunk::Chunk, path: &Vec<String>) {
     match chunk.ctype {
         ChunkType::DataSegment => {
-            println!("Path:{:?}::segment:{:?}::data:{:?}::size:{:?}", 
+            println!("Path:{:?}::segment:{:?}::data:{:?}::size:{:?}::ins:{:x}", 
                  &path.clone(),
                  chunk.segment_idx,
-                 chunk.data.unwrap_or(&[0]),
-                 chunk.data.unwrap().len());
+                 chunk.data.unwrap_or(&[]),
+                 chunk.data.unwrap().len(),
+                 chunk.code);
         },
         ChunkType::RefSimple => {
-            println!("Path:{:?}::reference:{:?}::ref_data:{:?}", 
+            println!("Path:{:?}::reference:{:?}::ref_data:{:?}::ins:{:x}", 
                  &path.clone(),
                  chunk.ref_simple.unwrap(),
-                 chunk.data.unwrap_or(&[0]));
+                 chunk.data.unwrap_or(&[]),
+                 chunk.code);
         }
         ChunkType::DataSimple => {
             if chunk.data.is_some() && !chunk.data.unwrap().is_empty() {
@@ -128,26 +131,29 @@ fn print_chunk(chunk: &chunk::Chunk, path: &Vec<String>) {
             }
         }
         ChunkType::RefLong => {
-            println!("Path:{:?}::reference:{:?}::ref_data:{:?}", 
+            println!("Path:{:?}::reference:{:?}::ref_data:{:?}::ins:{:x}", 
                  &path.clone(),
                  chunk.ref_data.unwrap(),
-                 chunk.data.unwrap_or(&[0]));
+                 chunk.data.unwrap_or(&[]),
+                 chunk.code);
         }
         ChunkType::PathPush => {
             println!("Path:{:?}::reference:PUSH::ref_data:{:?}::ins:{:x}", 
                  &path.clone(),
-                 chunk.data.unwrap_or(&[0]),
+                 chunk.data.unwrap_or(&[]),
                  chunk.code);
         }
         ChunkType::PathPop => {
-            println!("Path:{:?}::reference:POP::ref_data:{:?}", 
+            println!("Path:{:?}::reference:POP::ref_data:{:?}::ins:{:x}", 
                  &path.clone(),
-                 chunk.data.unwrap_or(&[0]));
+                 chunk.data.unwrap_or(&[]),
+                 chunk.code);
         }
         ChunkType::Noop => {
-            println!("Path:{:?}::reference:NOOP::ref_data:{:?}", 
+            println!("Path:{:?}::reference:NOOP::ref_data:{:?}::ins:{:x}", 
                  &path.clone(),
-                 chunk.data.unwrap_or(&[0]));
+                 chunk.data.unwrap_or(&[]),
+                 chunk.code);
         }
     }
 }
@@ -157,9 +163,7 @@ pub fn decompile_fmp12_file_with_header(path: &Path) -> FmpFile {
     let mut buffer = Vec::<u8>::new();
     file.read_to_end(&mut buffer).expect("Unable to read file.");
 
-    // println!("Found: {:x?}", &buffer[4096..8192]);
     write("header.log", buffer);
-    // return FmpFile::new();
     decompile_fmp12_file(path)
 }
 
@@ -357,6 +361,12 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     }
 
                 },
+                ["3", "16", "1", "1"] => {
+                    if chunk.ref_data.is_some() {
+                        let s = chunk.ref_data;
+                        println!("{:?}", chunk.ref_data.unwrap())
+                    }
+                }
                 /* Examining metadata for table */
                 ["3", "16", "5", x] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));

@@ -59,7 +59,7 @@ fn main() {
                 env.generate_test_environment();
                 env.run_tests_with_cleanup();
             }
-            let mut assembler = Assembler::new();
+            let mut assembler = Assembler::new(&file);
             assembler.assemble_fmp12(&file);
             assembler.emit_assembly(&file.name);
             // write(format!("{}.fmp12", file.name), assembler.buffer).expect("unable to write to file.");
