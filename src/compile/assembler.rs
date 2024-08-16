@@ -3,6 +3,7 @@ use crate::{encoding_util::{put_int, put_path_int}, FmpFile};
 use std::{fs::{write, File}, io::Read, path::Path};
 use super::header::HEADER_INIT;
 use crate::encoding_util;
+use crate::dbcharconv;
 
 pub struct Assembler<'a> {
     idx: usize,

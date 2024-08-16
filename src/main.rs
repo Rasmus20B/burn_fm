@@ -16,6 +16,7 @@ mod chunk;
 mod encoding_util;
 mod fm_script_engine;
 mod testing;
+mod dbcharconv;
 
 
 fn main() {
@@ -53,7 +54,7 @@ fn main() {
             file.layouts.extend(tmp.layouts);
             file.tests.extend(tmp.tests);
             let json = serde_json::to_string_pretty(&file).expect("Unable to generate json file");
-            write("test_compile", json).expect("Unable to write to file.");
+            write("inspect_output/test_compile", json).expect("Unable to write to file.");
             if args.no_testing == false && !file.tests.is_empty() {
                 let mut env = testing::test::TestEnvironment::new(&file);
                 env.generate_test_environment();
@@ -76,7 +77,7 @@ fn main() {
             }
 
             let json = serde_json::to_string_pretty(&tmp).expect("Unable to generate json file");
-            write("test_decompile", json).expect("Unable to write to file.");
+            write("inspect_output/test_decompile", json).expect("Unable to write to file.");
             file.tables.extend(tmp.tables);
             file.relationships.extend(tmp.relationships);
             file.value_lists.extend(tmp.value_lists);

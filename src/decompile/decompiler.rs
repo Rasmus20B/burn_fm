@@ -117,7 +117,7 @@ fn print_chunk(chunk: &chunk::Chunk, path: &Vec<String>) {
                  chunk.code);
         },
         ChunkType::RefSimple => {
-            println!("Path:{:?}::reference:{:?}::ref_data:{:?}::ins:{:x}", 
+            println!("Path:{:?}::reference:{:?}::ref_data:{:x?}::ins:{:x}", 
                  &path.clone(),
                  chunk.ref_simple.unwrap(),
                  chunk.data.unwrap_or(&[]),
@@ -131,7 +131,7 @@ fn print_chunk(chunk: &chunk::Chunk, path: &Vec<String>) {
             }
         }
         ChunkType::RefLong => {
-            println!("Path:{:?}::reference:{:?}::ref_data:{:?}::ins:{:x}", 
+            println!("Path:{:?}::reference:{:x?}::ref_data:{:?}::ins:{:x}", 
                  &path.clone(),
                  chunk.ref_data.unwrap(),
                  chunk.data.unwrap_or(&[]),
