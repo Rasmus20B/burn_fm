@@ -5,7 +5,7 @@ use std::path::Path;
 use std::collections::{BTreeMap, HashMap};
 
 use crate::fm_script_engine::fm_script_engine_instructions::{ScriptStep, INSTRUCTIONMAP, Instruction};
-use crate::{chunk, component, decompile, metadata_constants};
+use crate::{chunk, component, dbcharconv, decompile, metadata_constants};
 use crate::file::FmpFile;
 use crate::decompile::sector;
 
@@ -131,10 +131,19 @@ fn print_chunk(chunk: &chunk::Chunk, path: &Vec<String>) {
             }
         }
         ChunkType::RefLong => {
+            let decoded : String = chunk.ref_data.unwrap()
+                .chunks(2)
+                .map(|x|    { if x.len() < 2  {
+                                '\0' 
+                            } else {
+                                dbcharconv::decode_char(x[0], x[1])
+                            }
+                })
+                .collect();
             println!("Path:{:?}::reference:{:x?}::ref_data:{:?}::ins:{:x}", 
                  &path.clone(),
                  chunk.ref_data.unwrap(),
-                 chunk.data.unwrap_or(&[]),
+                 decoded,
                  chunk.code);
         }
         ChunkType::PathPush => {
@@ -364,7 +373,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 ["3", "16", "1", "1"] => {
                     if chunk.ref_data.is_some() {
                         let s = chunk.ref_data;
-                        println!("{:?}", chunk.ref_data.unwrap())
                     }
                 }
                 /* Examining metadata for table */
