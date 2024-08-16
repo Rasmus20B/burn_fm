@@ -1,4 +1,4 @@
-use crate::{encoding_util::{fm_string_encrypt, get_int, get_path_int, put_int, put_path_int}, FmpFile};
+use crate::{dbcharconv::encode_text, encoding_util::{fm_string_encrypt, get_int, get_path_int, put_int, put_path_int}, FmpFile};
 
 use std::{fs::{write, File}, io::Read, path::Path};
 use super::header::HEADER_INIT;
@@ -39,6 +39,19 @@ impl<'a> Assembler<'a> {
         ((val.len() + 1).div_ceil(2)) as u8
     }
 
+    fn emit_simple_data_1b(&mut self, data: &[u8]) {
+        self.buffer[self.idx] = 0x1b;
+        self.idx += 1;
+        self.buffer[self.idx] = data.len() as u8;
+        self.idx += 1;
+        self.buffer.splice(self.idx..self.idx+data.len(), data.to_vec());
+        self.idx += data.len() + 2 * (0x1b as usize - 0x19);
+    }
+
+    fn emit_simple_data(&mut self, data: &[u8]) {
+
+    }
+
     fn emit_long_kv(&mut self, key: &[u8], val: &[u8]) {
 
         let code = 0x1e;
@@ -62,12 +75,11 @@ impl<'a> Assembler<'a> {
 
         self.buffer[self.idx] = 0x0e;
         self.idx += 1;
-        let n = vec![20, 10];
-        // let n = put_path_int(key as usize, 2);
+        let n = put_path_int(key);
         let n_len = n.len();
         println!("Pushing {:?}", n);
         self.buffer.splice(self.idx..self.idx+n_len, n);
-        self.idx += 2;
+        self.idx += n_len;
         self.buffer[self.idx] = val.len() as u8;
         self.idx += 1;
         self.buffer.splice(self.idx..self.idx+val.len(), val.to_vec());
@@ -110,11 +122,11 @@ impl<'a> Assembler<'a> {
         self.idx += 1;
     }
 
-    fn push_directory(&mut self, dir: usize) {
-        let d = &[20, 10];
+    fn push_directory(&mut self, dir: u32) {
+        let d = put_path_int(dir);
         let ins = match d.len() {
             1 => { 0x20 }
-            2 => { 0x40 }
+            2 => { 0x28 }
             _ => { 0x48 }
         };
 
@@ -124,6 +136,7 @@ impl<'a> Assembler<'a> {
         self.idx += 1;
         self.buffer.splice(self.idx..self.idx + d.len(), d.clone());
         self.idx += d.len();
+        self.emit_noop();
     }
 
     pub fn append_blank_chunk(&mut self) {
@@ -134,7 +147,6 @@ impl<'a> Assembler<'a> {
 
     pub fn emit_init_blobs(&mut self) {
         self.push_directory(2);
-        self.emit_noop();
         self.emit_simple_kv(3, &[120, 104, 106, 116, 107, 120]);
         self.emit_simple_kv(5, &[4, 184]);
         self.emit_simple_kv(6, &[1, 10, 4, 179, 4, 115, 8, 179, 0, 19, 0, 0, 3, 124, 4, 0, 18, 5, 66, 128, 2, 0, 0, 0, 0, 66, 144, 0, 0, 0, 8, 2, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
@@ -145,15 +157,35 @@ impl<'a> Assembler<'a> {
         self.pop_directory();
     }
 
+    pub fn emit_relationship_data(&mut self) {
+        self.push_directory(17);
+        self.push_directory(1);
+        self.emit_simple_kv(0, &[3, 208, 0, 9]);
+        self.push_directory(1);
+
+        for to in &self.file.table_occurrences {
+            let name = &encode_text(&(to.1.table_occurence_name.clone() + "\0\0"));
+            self.emit_simple_data_1b(&name);
+        }
+
+        self.pop_directory();
+        self.push_directory(3);
+        for to in &self.file.table_occurrences {
+            self.emit_simple_data_1b(&put_int(*to.0));
+        }
+
+        self.pop_directory();
+        self.push_directory(8);
+
+        self.pop_directory();
+
+    }
+
     pub fn emit_table_metadata(&mut self) {
         self.push_directory(3);
-        self.emit_noop();
         self.push_directory(16);
-        self.emit_noop();
         self.push_directory(1);
-        self.emit_noop();
         self.push_directory(1);
-        self.emit_noop();
 
         for t in &self.file.tables {
             let mut encoding = dbcharconv::encode_text(&t.1.table_name);
@@ -166,7 +198,6 @@ impl<'a> Assembler<'a> {
 
         self.pop_directory();
         self.push_directory(3);
-        self.emit_noop();
 
         for t in &self.file.tables {
             let key = put_int(*t.0);
@@ -179,6 +210,15 @@ impl<'a> Assembler<'a> {
         self.emit_simple_kv_e(129, &vec![59, 62, 55, 51, 52]);
         self.emit_simple_kv_e(130, &vec![59, 62, 55, 51, 52]);
 
+        self.push_directory(5);
+
+        for t in &self.file.tables {
+            self.push_directory(128 + *t.0 as u32);
+            self.pop_directory();
+        }
+        self.pop_directory();
+        self.pop_directory();
+        self.pop_directory();
     }
 
     pub fn assemble_fmp12(&mut self, schema: &FmpFile) {
@@ -197,6 +237,7 @@ impl<'a> Assembler<'a> {
         self.emit_noop();
         self.emit_init_blobs();
         self.emit_table_metadata();
+        self.emit_relationship_data();
         self.append_blank_chunk();
         self.buffer.splice((self.idx+8) as usize..(self.idx+12) as usize, 4_u32.to_be_bytes());
         self.idx += 20;

@@ -8,7 +8,7 @@ pub fn get_path_int(bytes : &[u8]) -> usize {
     }
 }
 
-pub fn put_path_int(n: u16, len: u8) -> Vec<u8> {
+pub fn put_path_int(n: u32) -> Vec<u8> {
     if n >= 128 {
         let mut x = n - 128;
         let mut b1 = (((x >> 8) & 0x7f) | 0x80) as u8;
@@ -32,7 +32,7 @@ pub fn get_int(bytes: &[u8]) -> usize {
 pub fn put_int(mut n: usize) -> Vec<u8> {
     let mut res = vec![0, 0, 0, 0];
     let mut idx = 3;
-    while n > 1 {
+    while n > 0 {
         let cur = n % 256;
         n /= 256;
         res[idx] = cur as u8;
@@ -69,19 +69,19 @@ mod tests {
         assert_eq!(get_path_int(&[127]), 127);
         assert_eq!(get_path_int(&[128]), 128);
         assert_eq!(get_path_int(&[252, 1]), 129);
-        let mut n = put_path_int(129, 2);
+        let mut n = put_path_int(129);
         println!("{:#010b} == {:#010b} :: {:#010b} == {:#010b}", n[0], 252, n[1], 1);
-        assert_eq!(&put_path_int(129, 2), &[252 , 1]);
-        assert_eq!(&put_path_int(130, 2), &[252 , 2]);
-        assert_eq!(&put_path_int(131, 2), &[252 , 3]);
-        assert_eq!(&put_path_int(1, 1), &[1]);
-        assert_eq!(&put_path_int(2, 1), &[2]);
+        assert_eq!(&put_path_int(129), &[252 , 1]);
+        assert_eq!(&put_path_int(130), &[252 , 2]);
+        assert_eq!(&put_path_int(131), &[252 , 3]);
+        assert_eq!(&put_path_int(1), &[1]);
+        assert_eq!(&put_path_int(2), &[2]);
         assert_eq!(get_path_int(&[]), 0);
         assert_eq!(get_path_int(&[252, 138]), 266);
-        assert_eq!(get_path_int(&put_path_int(266, 2)), 266);
+        assert_eq!(get_path_int(&put_path_int(266)), 266);
         assert_eq!(get_path_int(&[128, 138]), 266);
         assert_eq!(get_path_int(&[252, 1]), 129);
-        assert_eq!(&put_path_int(0, 1), &[0]);
+        assert_eq!(&put_path_int(0), &[0]);
     }
 
     #[test]

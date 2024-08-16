@@ -418,6 +418,13 @@ the file value to append to the path above.
 ### [17].[5].[script].[5] - The Instruction Directory
 - The "data" for each script step is located in this folder.
 
+## ToolBar information
+
+- Found @ [65]
+
+- [65].[1] -> Regular buttons, variable length encoding. 
+- [65].[5] -> Drop-down buttons, filemaker 0x5a XOR encoding.
+
 ## FMP12 format instructions
 - ins 0x6 is used 
 

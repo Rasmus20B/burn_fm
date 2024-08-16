@@ -104,7 +104,19 @@ mod tests {
         assert_eq!(
             encode_text(text),
             encoded
-        )
+        );
+
+        let out : String = [3, 1, 18, 15, 19, 48, 18, 236, 18, 176, 19, 109, 2, 10, 20, 51, 18, 107, 20,
+        151, 20, 51, 3, 2, 0, 0, 0]
+            .chunks(2)
+            .map(|a| 
+                if a[0] == 0 {
+                    '\0'
+                } else {
+                    decode_char(a[0], a[1])
+                })
+            .collect();
+        println!("{}", out);
     }
 }
 

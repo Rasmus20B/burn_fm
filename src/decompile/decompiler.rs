@@ -129,20 +129,22 @@ fn print_chunk(chunk: &chunk::Chunk, path: &Vec<String>) {
         }
         ChunkType::DataSimple => {
             if chunk.data.is_some() && !chunk.data.unwrap().is_empty() {
-                println!("Path:{:?}::reference:na::ref_data:{:?}", 
+                println!("Path:{:?}::reference:na::ref_data:{:?}::ins:{:x}", 
                      &path.clone(),
-                     chunk.data.unwrap());
+                     chunk.data.unwrap(),
+                     chunk.code);
             }
         }
         ChunkType::RefLong => {
             let decoded : String = chunk.ref_data.unwrap()
                 .chunks(2)
-                .map(|x|    { if x.len() < 2  {
-                                '\0' 
-                            } else {
-                                dbcharconv::decode_char(x[0], x[1])
-                            }
-                })
+                .map(|x|    
+                    if x.len() < 2  {
+                        '\0' 
+                    } else {
+                        dbcharconv::decode_char(x[0], x[1])
+                    }
+                )
                 .collect();
             println!("Path:{:?}::reference:{:?}::ref_data:{:?}::ins:{:x}", 
                  &path.clone(),

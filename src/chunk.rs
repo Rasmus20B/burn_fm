@@ -117,7 +117,6 @@ pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec
             if code[*offset + 1] != 0xFF {
                 *offset += 1;
                 ctype = ChunkType::RefSimple;
-                println!("chunk: {:?}", &code[*offset..*offset+2]);
                 ref_simple = Some(get_path_int(&code[*offset..*offset+2]) as u16);
                 *offset += 2;
                 let len = code[*offset] as usize;
