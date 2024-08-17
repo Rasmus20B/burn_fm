@@ -41,15 +41,12 @@ def flush_segment(seg_map, total):
     with open("segment." + str(total), 'wb') as file:
         for key in sorted(seg_map.keys()):
             payload = seg_map[key]
-            # payload: bytes = b''.join(seg_map[key])
-            print(payload)
-            file.write(seg_map[key])
+            file.write(payload)
 
 
 def concat_segments(path):
     with open(path) as file:
         seg_map = {}
-        byte_count = 0
         projected_size = 0
         current_size = 0
         current_path = ""
@@ -73,7 +70,8 @@ def concat_segments(path):
             elif chunk.instruction not in [0x7, 0x20, 0x38, 0x40, 0x80]:
                 if in_segment is True:
                     in_segment = False
-                    print(f"segment: {current_path} size: {current_size} / {projected_size}")
+                    print(f"segment: {current_path}"
+                          "size: {current_size} / {projected_size}")
                     current_path = ""
                     current_size = 0
                     projected_size = 0
@@ -89,9 +87,10 @@ def concat_segments(path):
                 current_size += chunk.size
 
                 if in_segment is False:
+
                     in_segment = True
+
 
 if __name__ == "__main__":
     path = sys.argv[1]
     concat_segments(path)
-    
