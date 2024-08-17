@@ -157,29 +157,6 @@ impl<'a> Assembler<'a> {
         self.pop_directory();
     }
 
-    pub fn emit_relationship_data(&mut self) {
-        self.push_directory(17);
-        self.push_directory(1);
-        self.emit_simple_kv(0, &[3, 208, 0, 9]);
-        self.push_directory(1);
-
-        for to in &self.file.table_occurrences {
-            let name = &encode_text(&(to.1.table_occurence_name.clone() + "\0\0"));
-            self.emit_simple_data_1b(&name);
-        }
-
-        self.pop_directory();
-        self.push_directory(3);
-        for to in &self.file.table_occurrences {
-            self.emit_simple_data_1b(&put_int(*to.0));
-        }
-
-        self.pop_directory();
-        self.push_directory(8);
-
-        self.pop_directory();
-
-    }
 
     pub fn emit_table_metadata(&mut self) {
         self.push_directory(3);
@@ -221,6 +198,87 @@ impl<'a> Assembler<'a> {
         self.pop_directory();
     }
 
+    pub fn emit_relationship_data(&mut self) {
+        self.push_directory(17);
+        self.push_directory(1);
+        self.emit_simple_kv(0, &[3, 208, 0, 9]);
+        self.push_directory(1);
+
+        for to in &self.file.table_occurrences {
+            let name = &encode_text(&(to.1.table_occurence_name.clone() + "\0\0"));
+            self.emit_simple_data_1b(&name);
+        }
+
+        self.pop_directory();
+        self.push_directory(3);
+        for to in &self.file.table_occurrences {
+            self.emit_simple_data_1b(&put_int(*to.0));
+        }
+
+        self.pop_directory();
+        self.push_directory(8);
+        self.pop_directory();
+        self.pop_directory();
+        self.pop_directory();
+        self.pop_directory();
+    }
+
+    pub fn emit_layout_data(&mut self) {
+        self.push_directory(4);
+        self.push_directory(1);
+        self.emit_simple_kv(0, &[1, self.file.layouts.len() as u8]);
+        self.push_directory(5);
+        self.pop_directory();
+        self.pop_directory();
+        self.pop_directory();
+    }
+    
+    pub fn emit_theme_data(&mut self) {
+        self.push_directory(6);
+        self.pop_directory();
+    }
+
+    pub fn emit_script_data(&mut self) {
+        self.push_directory(17);
+        self.push_directory(1);
+        self.emit_simple_kv(0, &[1, self.file.scripts.len() as u8]);
+
+        self.push_directory(1);
+
+        for script in &self.file.scripts {
+            self.emit_simple_data(&encode_text(&script.1.script_name));
+        }
+        self.pop_directory();
+        self.pop_directory();
+        self.pop_directory();
+    }
+
+    pub fn emit_security_data(&mut self) {
+        self.push_directory(23);
+
+        self.pop_directory();
+    }
+
+    pub fn emit_value_list_data(&mut self) {
+        self.push_directory(33);
+        self.pop_directory();
+    }
+
+    pub fn emit_font_data(&mut self) {
+        self.push_directory(25);
+        self.pop_directory();
+    }
+
+    pub fn emit_toolbar_data(&mut self) {
+        self.push_directory(65);
+        self.pop_directory();
+    }
+
+    pub fn emit_table_data(&mut self) {
+
+    }
+
+
     pub fn assemble_fmp12(&mut self, schema: &FmpFile) {
 
         self.buffer.extend(HEADER_INIT);
@@ -238,6 +296,13 @@ impl<'a> Assembler<'a> {
         self.emit_init_blobs();
         self.emit_table_metadata();
         self.emit_relationship_data();
+        self.emit_layout_data();
+        self.emit_theme_data();
+        self.emit_script_data();
+        self.emit_security_data();
+        self.emit_theme_data();
+        self.emit_font_data();
+        self.emit_toolbar_data();
         self.append_blank_chunk();
         self.buffer.splice((self.idx+8) as usize..(self.idx+12) as usize, 4_u32.to_be_bytes());
         self.idx += 20;

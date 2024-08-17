@@ -261,7 +261,6 @@ pub fn get_chunk_from_code<'a>(code: &'a[u8], offset: &mut usize, path: &mut Vec
             *offset += 3;
         },
         0x38 => {
-            println!("getting here");
             *offset += 1;
             ctype = ChunkType::PathPush;
             let len = code[*offset] as usize;

@@ -111,7 +111,7 @@ fn print_chunk(chunk: &chunk::Chunk, path: &Vec<String>) {
         ChunkType::DataSegment => {
             println!("Path:{:?}::segment:{:?}::data:{:?}::size:{:?}::ins:{:x}", 
                  &path.clone(),
-                 chunk.segment_idx,
+                 chunk.segment_idx.unwrap(),
                  chunk.data.unwrap_or(&[]),
                  chunk.data.unwrap().len(),
                  chunk.code);
@@ -121,17 +121,19 @@ fn print_chunk(chunk: &chunk::Chunk, path: &Vec<String>) {
                 216 => chunk.ref_simple,
                 _ => chunk.ref_simple
             };
-            println!("Path:{:?}::reference:{:?}::ref_data:{:?}::ins:{:x}", 
+            println!("Path:{:?}::reference:{:?}::ref_data:{:?}::size:{}::ins:{:x}", 
                  &path.clone(),
                  chunk.ref_simple.unwrap(),
                  chunk.data.unwrap_or(&[]),
+                 chunk.data.unwrap().len(),
                  chunk.code);
         }
         ChunkType::DataSimple => {
             if chunk.data.is_some() && !chunk.data.unwrap().is_empty() {
-                println!("Path:{:?}::reference:na::ref_data:{:?}::ins:{:x}", 
+                println!("Path:{:?}::reference:na::ref_data:{:?}::size:{}::ins:{:x}", 
                      &path.clone(),
                      chunk.data.unwrap(),
+                     chunk.data.unwrap().len(),
                      chunk.code);
             }
         }
@@ -146,28 +148,32 @@ fn print_chunk(chunk: &chunk::Chunk, path: &Vec<String>) {
                     }
                 )
                 .collect();
-            println!("Path:{:?}::reference:{:?}::ref_data:{:?}::ins:{:x}", 
+            println!("Path:{:?}::reference:{:?}::ref_data:{:?}::size:{}::ins:{:x}", 
                  &path.clone(),
                  decoded,
                  chunk.data.unwrap(),
+                 chunk.data.unwrap().len(),
                  chunk.code);
         }
         ChunkType::PathPush => {
-            println!("Path:{:?}::reference:PUSH::ref_data:{:?}::ins:{:x}", 
+            println!("Path:{:?}::reference:PUSH::ref_data:{:?}::size:{}::ins:{:x}", 
                  &path.clone(),
                  chunk.data.unwrap_or(&[]),
+                 chunk.data.unwrap().len(),
                  chunk.code);
         }
         ChunkType::PathPop => {
-            println!("Path:{:?}::reference:POP::ref_data:{:?}::ins:{:x}", 
+            println!("Path:{:?}::reference:POP::ref_data:{:?}::size:{}::ins:{:x}", 
                  &path.clone(),
                  chunk.data.unwrap_or(&[]),
+                 0,
                  chunk.code);
         }
         ChunkType::Noop => {
-            println!("Path:{:?}::reference:NOOP::ref_data:{:?}::ins:{:x}", 
+            println!("Path:{:?}::reference:NOOP::ref_data:{:?}::size:{}::ins:{:x}", 
                  &path.clone(),
                  chunk.data.unwrap_or(&[]),
+                 0,
                  chunk.code);
         }
     }
