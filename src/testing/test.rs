@@ -66,11 +66,8 @@ enum Mode {
 
 pub struct TestEnvironment<'a> {
     pub file_handle: &'a file::FmpFile, // Doesn't need to be stored here
-    pub tables: Vec<VMTable>, // chopping block
 
     /* Each table has it's own record pointer, as per FileMaker */
-    pub record_ptrs: Vec<Option<Record>>,   // chopping block
-
     /* Each script has it's own instruction ptr.
      * on calling of a script, a new ptr is pushed.
      * When script is finished, we pop the instruction ptr.
@@ -92,8 +89,6 @@ impl<'a> TestEnvironment<'a> {
     pub fn new(file: &'a file::FmpFile) -> Self {
         Self {
             file_handle: file,
-            tables: vec![],
-            record_ptrs: vec![],
             instruction_ptr: vec![],
             variables: vec![],
             current_test: None,
@@ -147,10 +142,9 @@ impl<'a> TestEnvironment<'a> {
             } else if self.test_state == TestState::Fail {
                 cprintln!("Test {} outcome: <red>Fail</red>", self.current_test.as_ref().unwrap().test_name);
             }
-            for t in &mut self.tables {
-                t.records.clear();
-            }
         }
+
+        self.database.clear_records();
     }
 
     pub fn load_test(&mut self, test: FMComponentTest) {
@@ -204,6 +198,7 @@ impl<'a> TestEnvironment<'a> {
                 }
             },
             Instruction::EnterFindMode => {
+
             },
             Instruction::UnsortRecords => {
 
