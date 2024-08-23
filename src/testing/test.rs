@@ -551,7 +551,6 @@ impl<'a> TestEnvironment<'a> {
                 .filter(|x| x.0 == fieldname[1])
                 .collect::<Vec<_>>();
 
-
             let mut n = 0;
             let mut table_handle : Option<&VMTable> = None;
             for (i, table) in self.tables.iter().enumerate() {
@@ -570,10 +569,12 @@ impl<'a> TestEnvironment<'a> {
                 };
             }
 
-            println!("{:?} -> {:?}", 
-                fieldname[1], 
-                &table_handle.unwrap().records.get(fieldname[1]).unwrap()[self.record_ptrs[n].unwrap()]);
-            return self.get_operand_val(&table_handle.unwrap().records.get(fieldname[1]).unwrap()[self.record_ptrs[n].unwrap()]);
+            // println!("{:?} -> {:?}", 
+            //     fieldname[1], 
+            //     &table_handle.unwrap().records.get(fieldname[1]).unwrap()[self.record_ptrs[n].unwrap()]);
+            // return self.get_operand_val(&table_handle.unwrap().records.get(fieldname[1]).unwrap()[self.record_ptrs[n].unwrap()]);
+            let val = self.database.get_current_record_by_table_field(fieldname[0], fieldname[1]);
+            return self.get_operand_val(val);
         } else {
             let scope = self.instruction_ptr.len() - 1;
             let var_val = self.variables[scope]
@@ -698,6 +699,7 @@ mod tests {
                     set_field(blank::PrimaryKey, \"alvin\" & \" Presley\");
                 } elif(x == 2) {
                     set_field(blank::PrimaryKey, \"NAHHH\");
+                    assert(blank::PrimaryKey == \"NAHHH\");
                 } else {
                     set_field(blank::PrimaryKey, \"Jeff\" & \" Keighly\");
                 }

@@ -112,7 +112,7 @@ impl Database {
                                            *occurrence.0 as u16);
 
                 let tmp = TableOccurrence {
-                    found_set: vec![],
+                    found_set: vec![0],
                     record_ptr: 0,
                     table_ptr: occurrence.1.table_actual,
                 };
@@ -121,7 +121,7 @@ impl Database {
 
         self.occurrence_handle = self.table_occurrences.iter()
             .enumerate()
-            .filter(|x| x.1.table_ptr != 0)
+            .filter(|x| !x.1.found_set.is_empty())
             .map(|x| x.0)
             .collect::<Vec<_>>()[0] as u16;
     }
@@ -227,14 +227,14 @@ impl Database {
         &mut self.tables[table as usize].fields[field].records[id]
     }
 
-    pub fn get_current_record_by_table_field(&mut self, occurrence: &str, field: &str) -> &str {
+    pub fn get_current_record_by_table_field(&self, occurrence: &str, field: &str) -> &str {
 
         let occurrence = &self.table_occurrences[self.occurrence_indices[occurrence] as usize];
         let id = occurrence.get_current_record();
         let table = occurrence.table_ptr;
 
         let field = self.tables[table as usize].fields
-            .iter_mut()
+            .iter()
             .enumerate()
             .filter(|x| x.1.name == field)
             .collect::<Vec<_>>()[0].0;
