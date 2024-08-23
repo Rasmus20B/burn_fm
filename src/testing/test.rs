@@ -514,8 +514,6 @@ impl<'a> TestEnvironment<'a> {
         self.evaluate(ast)
     }
 
-    /* TODO: Update field indexing to use new database struct. Finally remove the old 'tables'
-     * field in testing environment struct. */
     fn get_operand_val(&'a self, val: &'a str) -> Operand {
         let r = val.parse::<i64>();
         if r.is_ok() {
@@ -569,10 +567,6 @@ impl<'a> TestEnvironment<'a> {
                 };
             }
 
-            // println!("{:?} -> {:?}", 
-            //     fieldname[1], 
-            //     &table_handle.unwrap().records.get(fieldname[1]).unwrap()[self.record_ptrs[n].unwrap()]);
-            // return self.get_operand_val(&table_handle.unwrap().records.get(fieldname[1]).unwrap()[self.record_ptrs[n].unwrap()]);
             let val = self.database.get_current_record_by_table_field(fieldname[0], fieldname[1]);
             return self.get_operand_val(val);
         } else {
