@@ -532,41 +532,6 @@ impl<'a> TestEnvironment<'a> {
 
         let fieldname = val.split("::").collect::<Vec<&str>>();
         if fieldname.len() == 2 {
-            let ts = &self.tables.iter()
-                .filter(|x| x.name == fieldname[0])
-                .collect::<Vec<_>>();
-            if ts.is_empty() { 
-                eprintln!("Unknown table: {}", fieldname[0]); 
-                return Operand {
-                    otype: OperandType::Text,
-                    value: val
-                }
-            }
-            let t_ptr = ts[0];
-
-            let f_ptr = t_ptr.records.keys()
-                .zip(0..t_ptr.records.keys().len())
-                .filter(|x| x.0 == fieldname[1])
-                .collect::<Vec<_>>();
-
-            let mut n = 0;
-            let mut table_handle : Option<&VMTable> = None;
-            for (i, table) in self.tables.iter().enumerate() {
-                if table.name == fieldname[0] {
-                    table_handle = Some(table);
-                    n = i;
-                    break;
-                }
-            }
-
-            if table_handle.is_none() {
-                eprintln!("Table does not exist.");
-                return Operand {
-                    otype: OperandType::Text,
-                    value: ""
-                };
-            }
-
             let val = self.database.get_current_record_by_table_field(fieldname[0], fieldname[1]);
             return self.get_operand_val(val);
         } else {
