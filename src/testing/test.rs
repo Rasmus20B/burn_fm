@@ -121,7 +121,7 @@ impl<'a> TestEnvironment<'a> {
              * 3. Clean the test environment for next test */
             println!("Running test: {}", test.test_name);
             self.load_test(test.clone());
-            while !self.instruction_ptr.is_empty() {
+            while self.test_state == TestState::Pass && !self.instruction_ptr.is_empty() {
                 self.step();
             }
             if self.test_state == TestState::Pass {
