@@ -1,5 +1,6 @@
 use std::borrow::BorrowMut;
 use std::collections::HashMap;
+use std::fmt::write;
 use std::ops::Deref;
 
 use color_print::cprintln;
@@ -9,8 +10,11 @@ use crate::file;
 use crate::fm_script_engine::fm_script_engine_instructions::Instruction;
 use crate::fm_script_engine::fm_script_engine_instructions::ScriptStep;
 use crate::testing::calc_eval;
+use crate::testing::database;
+use crate::testing::database::Table;
 
 use super::calc_tokens;
+use super::database::Database;
 
 #[derive(Debug)]
 pub struct Variable {
@@ -55,11 +59,18 @@ struct Operand<'a> {
 
 type Record = usize;
 
+enum Mode {
+    Browse,
+    Find,
+}
+
 pub struct TestEnvironment<'a> {
-    pub file_handle: &'a file::FmpFile,
-    pub tables: Vec<VMTable>,
+    pub file_handle: &'a file::FmpFile, // Doesn't need to be stored here
+    pub tables: Vec<VMTable>, // chopping block
+
     /* Each table has it's own record pointer, as per FileMaker */
-    pub record_ptrs: Vec<Option<Record>>,
+    pub record_ptrs: Vec<Option<Record>>,   // chopping block
+
     /* Each script has it's own instruction ptr.
      * on calling of a script, a new ptr is pushed.
      * When script is finished, we pop the instruction ptr.
@@ -69,12 +80,13 @@ pub struct TestEnvironment<'a> {
     pub instruction_ptr: Vec<(String, usize)>,
     pub variables: Vec<HashMap<String, Variable>>,
     pub current_test: Option<FMComponentTest>, 
-    pub table_ptr: Option<usize>,
     pub loop_scopes: Vec<usize>,
     pub test_state: TestState,
 
     pub punc_stack: Vec<Instruction>,
     pub branch_taken: bool,
+
+    pub database: Database,
 }
 impl<'a> TestEnvironment<'a> {
     pub fn new(file: &'a file::FmpFile) -> Self {
@@ -85,36 +97,20 @@ impl<'a> TestEnvironment<'a> {
             instruction_ptr: vec![],
             variables: vec![],
             current_test: None,
-            table_ptr: None,
             loop_scopes: vec![],
             test_state: TestState::Pass,
             punc_stack: vec![],
             branch_taken: false,
+            database: Database::new()
         }
     }
 
+    pub fn generate_database(&mut self) {
+        self.database.generate_from_fmp12(&self.file_handle);
+    }
+
     pub fn generate_test_environment(&mut self) {
-        /* For each test, we will reuse the same table structure 
-         * as defined in the fmp_file. Don't rebuild for each one */
-        self.record_ptrs.resize(self.file_handle.tables.len(), None);
-        for (i, table) in self.file_handle.tables.clone().into_iter().enumerate() {
-            let vmtable_tmp = VMTable {
-                name: table.1.table_name.clone(),
-                records: HashMap::new(),
-            };
-            self.tables.push(vmtable_tmp);
-            // println!("Pushing Table \"{}\" to test environment", table.1.table_name);
-            // println!("Table has \"{}\" fields", table.1.fields.len());
-            for f in &table.1.fields {
-                // println!("Pushing field: \"{}::{}\" to test environemnt", table.1.table_name, f.1.field_name);
-                self.tables.last_mut().unwrap().records
-                    .insert(f.1.field_name.to_string(), vec![]);
-            }
-            /* Each table is empty, therefore no pointer to a record */
-            if table.0 == 1 {
-                self.table_ptr = Some(i);
-            }
-        }
+        self.generate_database();
     }
 
     #[allow(unused)]
@@ -207,6 +203,13 @@ impl<'a> TestEnvironment<'a> {
                     }
                 }
             },
+            Instruction::EnterFindMode => {
+            },
+            Instruction::UnsortRecords => {
+
+            },
+            Instruction::ShowAllRecords => {
+            },
             Instruction::SetVariable => {
                 let name : &str = cur_instruction.switches[0].as_ref();
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[1]);
@@ -221,27 +224,10 @@ impl<'a> TestEnvironment<'a> {
             },
             Instruction::SetField => {
                 let name : &str = cur_instruction.switches[0].as_ref();
-                let val : &str = &self.eval_calculation(&cur_instruction.switches[1]);
+                let val : &str = &mut self.eval_calculation(&cur_instruction.switches[1]);
 
                 let parts : Vec<&str> = name.split("::").collect();
-                let mut table_handle : Option<&mut VMTable> = None;
-                let mut n = 0;
-                for (i, table) in self.tables.iter_mut().enumerate() {
-                    if table.name == parts[0] {
-                        table_handle = Some(table);
-                        n = i;
-                        break;
-                    }
-                }
-
-                if table_handle.is_none() {
-                    eprintln!("Table does not exist.");
-                    self.instruction_ptr[n_stack].1 += 1;
-                    return;
-                }
-
-                table_handle.unwrap().records.get_mut(parts[1])
-                    .expect("Field does not exist.")[self.record_ptrs[n].unwrap()] = val.to_string();
+                *self.database.get_current_record_by_table_field_mut(parts[0], parts[1]) = val.to_string();
                 self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::Loop => {
@@ -304,7 +290,7 @@ impl<'a> TestEnvironment<'a> {
                             Instruction::ElseIf => {
                                 return;
                             },
-                            _ => {self.instruction_ptr[n_stack].1 += 1;}
+                            _ => { self.instruction_ptr[n_stack].1 += 1; }
                         }
                     }
                 }
@@ -348,15 +334,7 @@ impl<'a> TestEnvironment<'a> {
                 }
             }
             Instruction::NewRecordRequest => {
-                for (name, f) in &mut self.tables[self.table_ptr.unwrap()].records {
-                    f.push(String::new());
-                }
-                let handle = &mut self.record_ptrs[self.table_ptr.unwrap()];
-                if handle.is_none() {
-                    *handle = Some(0);
-                } else {
-                    *handle = Some(handle.unwrap() + 1);
-                }
+                self.database.create_record();
                 self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::ShowCustomDialog => {
@@ -536,6 +514,8 @@ impl<'a> TestEnvironment<'a> {
         self.evaluate(ast)
     }
 
+    /* TODO: Update field indexing to use new database struct. Finally remove the old 'tables'
+     * field in testing environment struct. */
     fn get_operand_val(&'a self, val: &'a str) -> Operand {
         let r = val.parse::<i64>();
         if r.is_ok() {
@@ -590,9 +570,9 @@ impl<'a> TestEnvironment<'a> {
                 };
             }
 
-            // println!("{:?} -> {:?}", 
-            //     fieldname[1], 
-            //     &table_handle.unwrap().records.get(fieldname[1]).unwrap()[self.record_ptrs[n].unwrap()]);
+            println!("{:?} -> {:?}", 
+                fieldname[1], 
+                &table_handle.unwrap().records.get(fieldname[1]).unwrap()[self.record_ptrs[n].unwrap()]);
             return self.get_operand_val(&table_handle.unwrap().records.get(fieldname[1]).unwrap()[self.record_ptrs[n].unwrap()]);
         } else {
             let scope = self.instruction_ptr.len() - 1;
@@ -733,16 +713,17 @@ mod tests {
         let mut te : TestEnvironment = TestEnvironment::new(&file);
         te.generate_test_environment();
         te.run_tests();
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap().len(), 10);
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[0], "\"Jeff Keighly\"");
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[1], "\"alvin Presley\"");
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[2], "\"NAHHH\"");
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[3], "\"Jeff Keighly\"");
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[4], "\"Jeff Keighly\"");
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[5], "\"Jeff Keighly\"");
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[6], "\"Jeff Keighly\"");
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[7], "\"Kevin\"");
-        assert_eq!(te.tables[te.table_ptr.unwrap()].records.get("PrimaryKey").unwrap()[8], "\"Jeff Keighly\"");
+        let table_ptr = te.database.get_current_occurrence().table_ptr as usize;
+        assert_eq!(te.database.get_table("blank").unwrap().fields[0].records.len(), 10);
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 0), "\"Jeff Keighly\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 1), "\"alvin Presley\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 2), "\"NAHHH\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 3), "\"Jeff Keighly\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 4), "\"Jeff Keighly\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 5), "\"Jeff Keighly\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 6), "\"Jeff Keighly\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 7), "\"Kevin\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 8), "\"Jeff Keighly\"");
     }
 }
 
