@@ -90,15 +90,16 @@ impl Database {
     }
 
     pub fn generate_from_fmp12(&mut self, file: &FmpFile) {
-        self.tables.resize(file.tables.len(), Table::new("".to_string()));
-        for (i, table) in file.tables.clone().into_iter().enumerate() {
+        let tables_size = file.tables.keys().into_iter().max().unwrap();
+        self.tables.resize(*tables_size + 1, Table::new("".to_string()));
+        for (i, table) in &file.tables {
             let tmp = Table {
-                name: table.1.table_name.clone(),
+                name: table.table_name.clone(),
                 fields: vec![],
             };
-            self.tables.insert(table.0, tmp);
-            for f in &table.1.fields {
-                self.tables[table.0].fields
+            self.tables[*i] = tmp;
+            for f in &table.fields {
+                self.tables[*i].fields
                     .push(
                         Field {
                             name: f.1.field_name.to_string(),
@@ -107,22 +108,20 @@ impl Database {
                 );
             }
         }
+        let occurrence_size = file.table_occurrences.keys().into_iter().max().unwrap();
+        self.table_occurrences.resize(*occurrence_size + 1, TableOccurrence::new());
+        for (i, occurrence) in &file.table_occurrences {
+            self.occurrence_indices.insert(
+                occurrence.table_occurence_name.clone(),
+                *i as u16);
 
-        self.table_occurrences.resize(file.table_occurrences.len(), TableOccurrence::new());
-        for (i, occurrence) in file.table_occurrences.iter().enumerate() {
-
-
-                self.occurrence_indices.insert(occurrence.1.table_occurence_name.clone(),
-                                           *occurrence.0 as u16);
-
-                let tmp = TableOccurrence {
-                    found_set: vec![0],
-                    record_ptr: 0,
-                    table_ptr: occurrence.1.table_actual,
-                };
-                self.table_occurrences.insert(*occurrence.0, tmp);
+            let tmp = TableOccurrence {
+                found_set: vec![0],
+                record_ptr: 0,
+                table_ptr: occurrence.table_actual,
+            };
+            self.table_occurrences[*i] = tmp;
         }
-
         self.occurrence_handle = self.table_occurrences.iter()
             .enumerate()
             .filter(|x| !x.1.found_set.is_empty())
@@ -136,6 +135,9 @@ impl Database {
          * set (even if it doesn't match), and update their record_ptr to look at the new record.
          */ 
         
+        let handle = self.occurrence_handle;
+        let t = self.table_occurrences[handle as usize].clone();
+        let name = self.tables[t.table_ptr as usize].name.clone();
         let table_idx = self.get_current_occurrence().table_ptr;
         let table = self.get_current_table_mut();
         table.add_blank_record();
@@ -159,9 +161,11 @@ impl Database {
                 return &f.records[cur_idx];
             }
         }
-
         return "";
+    }
 
+    pub fn set_current_occurrence(&mut self, occurrence: u16) {
+        self.occurrence_handle = occurrence;
     }
 
     pub fn get_current_occurrence(&self) -> &TableOccurrence {

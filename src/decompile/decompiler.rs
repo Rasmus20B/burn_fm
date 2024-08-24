@@ -692,13 +692,5 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
 
         }
     }
-
-    for (id, layout) in &fmp_file.layouts {
-        println!("{} :: {} :: {}", 
-            layout.layout_name,
-            layout.table_occurrence,
-            fmp_file.table_occurrences.get(&layout.table_occurrence).unwrap().table_occurence_name
-            )
-    }
     return fmp_file;
 }

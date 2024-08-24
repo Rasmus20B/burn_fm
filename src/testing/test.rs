@@ -116,7 +116,7 @@ impl<'a> TestEnvironment<'a> {
 
     pub fn generate_layout_mgr(&mut self) {
         for (id, layout) in &self.file_handle.layouts {
-            // self.layout_mgr.add_mapping(layout.layout_name)
+            self.layout_mgr.add_mapping(layout.layout_name.clone(), layout.table_occurrence);
         }
     }
 
@@ -216,6 +216,15 @@ impl<'a> TestEnvironment<'a> {
                 }
             },
             Instruction::GoToLayout => {
+                let mut name : &str = &self.eval_calculation(&cur_instruction.switches[0]);
+                name = name
+                    .strip_prefix('"').unwrap()
+                    .strip_suffix('"').unwrap();
+
+                let occurrence = self.layout_mgr.lookup(name.to_string());
+                if occurrence.is_some() {
+                    self.database.set_current_occurrence(occurrence.unwrap() as u16);
+                }
                 self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::EnterFindMode => {
@@ -691,6 +700,9 @@ mod tests {
           script: [
             define blank_test() {
               set_variable(x, 0);
+              go_to_layout(\"second table\");
+              new_record_request();
+              go_to_layout(\"testing\");
               loop {
                 new_record_request();
                 exit_loop_if(x == 9);
@@ -724,6 +736,7 @@ mod tests {
         te.run_tests();
         let table_ptr = te.database.get_current_occurrence().table_ptr as usize;
         assert_eq!(te.database.get_table("blank").unwrap().fields[0].records.len(), 10);
+        assert_eq!(te.database.get_table("second table").unwrap().fields[0].records.len(), 1);
         assert_eq!(te.database.get_record_by_field("PrimaryKey", 0), "\"Jeff Keighly\"");
         assert_eq!(te.database.get_record_by_field("PrimaryKey", 1), "\"alvin Presley\"");
         assert_eq!(te.database.get_record_by_field("PrimaryKey", 2), "\"NAHHH\"");
