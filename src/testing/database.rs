@@ -144,6 +144,22 @@ impl Database {
         }
     }
 
+    pub fn get_found_set_record_field(&self, field: &str) -> &str {
+        let occ = self.get_current_occurrence();
+        let table = self.get_current_table();
+
+        let cur_idx = occ.found_set[occ.record_ptr];
+
+        for f in &table.fields {
+            if f.name == field {
+                return &f.records[cur_idx];
+            }
+        }
+
+        return "";
+
+    }
+
     pub fn get_current_occurrence(&self) -> &TableOccurrence {
         &self.table_occurrences[self.occurrence_handle as usize]
     }
@@ -185,6 +201,15 @@ impl Database {
 
     pub fn get_records_for_current_table(&self) -> &Vec<Field> {
         &self.tables[self.get_current_occurrence().table_ptr as usize].fields
+    }
+
+    pub fn get_field_vals_for_current_table(&self, field: &str) -> &Vec<String> {
+        let records = self.tables[self.get_current_occurrence().table_ptr as usize]
+            .fields.iter()
+            .filter(|x| x.name == field)
+            .collect::<Vec<&Field>>();
+
+        &records[0].records
     }
 
     pub fn get_current_record_field(&self, field: &str) -> &str {
@@ -259,7 +284,21 @@ impl Database {
 
     /* called after a "perform_find" type script step */
     pub fn update_found_set(&mut self, records: &Vec<usize>) {
-        self.get_current_occurrence_mut().found_set = records.to_vec();
+        if records.is_empty() {
+            self.reset_found_set();
+            return;
+        }
+        let handle = self.get_current_occurrence_mut();
+        handle.found_set = records.to_vec();
+        handle.record_ptr = handle.found_set[0];
+    }
+
+    pub fn reset_found_set(&mut self) {
+        self.get_current_occurrence_mut().found_set = self.get_current_table()
+                                                        .fields[0].records.iter()
+                                                        .enumerate()
+                                                        .map(|x| x.0)
+                                                        .collect();
     }
 
     pub fn goto_record(&mut self, record_id: usize) {

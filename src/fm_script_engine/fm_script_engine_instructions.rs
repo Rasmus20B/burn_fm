@@ -203,6 +203,9 @@ impl FromStr for Instruction {
     fn from_str(input: &str) -> Result<Instruction, Self::Err> {
         match input {
             "perform_script" => Ok(Instruction::PerformScript),
+            "enter_find_mode" => Ok(Instruction::EnterFindMode),
+            "perform_find" => Ok(Instruction::PerformFind),
+            "show_all_records" => Ok(Instruction::ShowAllRecords),
             "set_field" => Ok(Instruction::SetField),
             "set_variable" => Ok(Instruction::SetVariable),
             "loop" => Ok(Instruction::Loop),

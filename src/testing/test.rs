@@ -1,5 +1,6 @@
 use std::borrow::BorrowMut;
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::fmt::write;
 use std::ops::Deref;
 
@@ -84,6 +85,8 @@ pub struct TestEnvironment<'a> {
     pub branch_taken: bool,
 
     pub database: Database,
+    pub find_criteria: Vec<(String, String)>,
+    mode: Mode
 }
 impl<'a> TestEnvironment<'a> {
     pub fn new(file: &'a file::FmpFile) -> Self {
@@ -96,7 +99,9 @@ impl<'a> TestEnvironment<'a> {
             test_state: TestState::Pass,
             punc_stack: vec![],
             branch_taken: false,
-            database: Database::new()
+            database: Database::new(),
+            find_criteria: vec![],
+            mode: Mode::Browse,
         }
     }
 
@@ -181,6 +186,7 @@ impl<'a> TestEnvironment<'a> {
         }
 
         let mut cur_instruction = &script_handle.instructions[&ip_handle.1];
+        println!("instr: {:?}", cur_instruction);
         match &cur_instruction.opcode {
             Instruction::PerformScript => {
                 let script_name = self.eval_calculation(&cur_instruction.switches[0])
@@ -198,12 +204,35 @@ impl<'a> TestEnvironment<'a> {
                 }
             },
             Instruction::EnterFindMode => {
-
+                self.mode = Mode::Find;
+                self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::UnsortRecords => {
 
             },
+            Instruction::PerformFind => {
+                let mut records: HashSet<usize> = HashSet::new();
+                for criteria in &self.find_criteria {
+                    println!("Field: {}", &criteria.0);
+                    let values = self.database.get_field_vals_for_current_table(&criteria.0.split("::").collect::<Vec<&str>>()[1]);
+                    let ids = values.into_iter()
+                        .enumerate()
+                        .filter(|x| *x.1 == criteria.1)
+                        .map(|x| x.0)
+                        .collect::<Vec<usize>>();
+                    println!("Adding {:?}", ids);
+                    records.extend(ids);
+                }
+
+                let mut records = Vec::from_iter(records);
+                self.database.update_found_set(&records);
+                self.database.get_current_occurrence_mut().record_ptr = 0;
+                self.mode = Mode::Browse;
+                self.instruction_ptr[n_stack].1 += 1;
+            },
             Instruction::ShowAllRecords => {
+                self.database.reset_found_set();
+                self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::SetVariable => {
                 let name : &str = cur_instruction.switches[0].as_ref();
@@ -220,9 +249,16 @@ impl<'a> TestEnvironment<'a> {
             Instruction::SetField => {
                 let name : &str = cur_instruction.switches[0].as_ref();
                 let val : &str = &mut self.eval_calculation(&cur_instruction.switches[1]);
-
                 let parts : Vec<&str> = name.split("::").collect();
-                *self.database.get_current_record_by_table_field_mut(parts[0], parts[1]) = val.to_string();
+
+                match self.mode {
+                    Mode::Browse => {
+                        *self.database.get_current_record_by_table_field_mut(parts[0], parts[1]) = val.to_string();
+                    },
+                    Mode::Find => {
+                        self.find_criteria.push((name.to_string(), val.to_string()));
+                    }
+                }
                 self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::Loop => {
@@ -527,7 +563,7 @@ impl<'a> TestEnvironment<'a> {
 
         let fieldname = val.split("::").collect::<Vec<&str>>();
         if fieldname.len() == 2 {
-            let val = self.database.get_current_record_by_table_field(fieldname[0], fieldname[1]);
+            let val = self.database.get_found_set_record_field(fieldname[1]);
             return self.get_operand_val(val);
         } else {
             let scope = self.instruction_ptr.len() - 1;
@@ -659,6 +695,11 @@ mod tests {
                 }
                 set_variable(x, x + 1);
               }
+              enter_find_mode();
+              set_field(blank::PrimaryKey, \"Kevin\");
+              perform_find();
+              assert(blank::PrimaryKey == \"Kevin\");
+              show_all_records();
             }
           ],
         end test;";
