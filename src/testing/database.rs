@@ -37,6 +37,10 @@ impl Table {
     }
 }
 
+pub struct Relationship {
+    
+}
+
 #[derive(Clone)]
 pub struct TableOccurrence {
     pub found_set: Vec<usize>,

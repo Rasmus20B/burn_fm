@@ -157,6 +157,7 @@ impl FMComponentRelationship {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FMComponentLayout {
     pub layout_name: String,
+    pub table_occurrence: usize,
     pub created_by_account: String,
     pub create_by_user: String,
 }
@@ -165,6 +166,7 @@ impl FMComponentLayout {
     pub fn new() -> Self {
         Self {
             layout_name: String::new(),
+            table_occurrence: 0,
             created_by_account: String::new(),
             create_by_user: String::new()
         }

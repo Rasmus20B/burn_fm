@@ -16,6 +16,7 @@ use crate::testing::database::Table;
 
 use super::calc_tokens;
 use super::database::Database;
+use super::layout_mgr::LayoutMgr;
 
 #[derive(Debug)]
 pub struct Variable {
@@ -66,7 +67,7 @@ enum Mode {
 }
 
 pub struct TestEnvironment<'a> {
-    pub file_handle: &'a file::FmpFile, // Doesn't need to be stored here
+    pub file_handle: &'a file::FmpFile, // TODO: Doesn't need to be stored here
 
     /* Each table has it's own record pointer, as per FileMaker */
     /* Each script has it's own instruction ptr.
@@ -75,18 +76,21 @@ pub struct TestEnvironment<'a> {
      * Nothing more complex than function calls. No generators etc,
      * so this is fine.
      */
+
+    /* Language interpretation */
     pub instruction_ptr: Vec<(String, usize)>,
     pub variables: Vec<HashMap<String, Variable>>,
     pub current_test: Option<FMComponentTest>, 
     pub loop_scopes: Vec<usize>,
     pub test_state: TestState,
-
     pub punc_stack: Vec<Instruction>,
     pub branch_taken: bool,
+    mode: Mode,
 
+    /* Data storage and behaviour */
     pub database: Database,
+    pub layout_mgr: LayoutMgr,
     pub find_criteria: Vec<(String, String)>,
-    mode: Mode
 }
 impl<'a> TestEnvironment<'a> {
     pub fn new(file: &'a file::FmpFile) -> Self {
@@ -99,6 +103,7 @@ impl<'a> TestEnvironment<'a> {
             test_state: TestState::Pass,
             punc_stack: vec![],
             branch_taken: false,
+            layout_mgr: LayoutMgr::new(),
             database: Database::new(),
             find_criteria: vec![],
             mode: Mode::Browse,
@@ -109,8 +114,15 @@ impl<'a> TestEnvironment<'a> {
         self.database.generate_from_fmp12(&self.file_handle);
     }
 
+    pub fn generate_layout_mgr(&mut self) {
+        for (id, layout) in &self.file_handle.layouts {
+            // self.layout_mgr.add_mapping(layout.layout_name)
+        }
+    }
+
     pub fn generate_test_environment(&mut self) {
         self.generate_database();
+        self.generate_layout_mgr();
     }
 
     #[allow(unused)]
@@ -186,7 +198,7 @@ impl<'a> TestEnvironment<'a> {
         }
 
         let mut cur_instruction = &script_handle.instructions[&ip_handle.1];
-        println!("instr: {:?}", cur_instruction);
+        // println!("instr: {:?}", cur_instruction);
         match &cur_instruction.opcode {
             Instruction::PerformScript => {
                 let script_name = self.eval_calculation(&cur_instruction.switches[0])
@@ -203,24 +215,25 @@ impl<'a> TestEnvironment<'a> {
                     }
                 }
             },
+            Instruction::GoToLayout => {
+                self.instruction_ptr[n_stack].1 += 1;
+            },
             Instruction::EnterFindMode => {
                 self.mode = Mode::Find;
                 self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::UnsortRecords => {
-
+                self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::PerformFind => {
                 let mut records: HashSet<usize> = HashSet::new();
                 for criteria in &self.find_criteria {
-                    println!("Field: {}", &criteria.0);
                     let values = self.database.get_field_vals_for_current_table(&criteria.0.split("::").collect::<Vec<&str>>()[1]);
                     let ids = values.into_iter()
                         .enumerate()
                         .filter(|x| *x.1 == criteria.1)
                         .map(|x| x.0)
                         .collect::<Vec<usize>>();
-                    println!("Adding {:?}", ids);
                     records.extend(ids);
                 }
 

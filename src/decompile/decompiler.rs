@@ -231,7 +231,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                             &mut path, 
                                             start).expect("Unable to decode chunk.");          
 
-            print_chunk(&chunk, &path);
             match &path.iter().map(|s| s.as_str()).collect::<Vec<_>>().as_slice() {
                 /* Examining relatinoships of table occurences */
                 ["3", "17", "5", "0", "251"] => {
@@ -245,6 +244,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 /* Examining table occurences */
                 ["3", "17", "5", "0", ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
+                    // print_chunk(&chunk, &path);
                     match chunk.ref_simple {
                         Some(2) => {
                             let tmp = component::FMComponentTableOccurence {
@@ -283,30 +283,52 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 },
                 ["4", "5", ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                    if chunk.ref_simple.is_some() {
-                    }
+                    // print_chunk(&chunk, &path);
                 },
                 /* Examing layouts */
                 ["4", "1", "7", x, ..] => {
-                    let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                    match chunk.ref_simple {
-                        Some(16) => {
-                            if fmp_file.layouts.contains_key(&x.parse().unwrap()) {
-                                fmp_file.layouts.get_mut(&x.parse().unwrap()).unwrap().layout_name = s;
-                            } else {
-                                let tmp = component::FMComponentLayout {
-                                    layout_name: s,
-                                    created_by_account: String::new(),
-                                    create_by_user: String::new(),
-                                };
-                                fmp_file.layouts.insert(x.parse().unwrap(), tmp);
+                    if chunk.ctype == ChunkType::PathPush {
+                        println!("Adding layout: {}", x);
+                        fmp_file.layouts.insert(
+                            x.parse::<usize>().unwrap(),
+                            component::FMComponentLayout::new()
+                            );
+                        continue;
+                    } else {
+                        match chunk.ref_simple {
+                            Some(2) => {
+                                /* Byte 2 refers to table occurrence */
+                                let layout_handle = fmp_file.layouts.get_mut(&x.parse().unwrap());
+                                if layout_handle.is_none() {
+                                    println!("FUCKIED");
+                                } else {
+                                    let occurrence = chunk.data.unwrap()[1] as usize - 128;
+                                    println!("Layout: {} -> {}", x, occurrence);
+                                    fmp_file.layouts.get_mut(&x.parse().unwrap())
+                                        .unwrap().table_occurrence = occurrence;
+                                }
                             }
-                        },
-                        _ => {
+                            Some(16) => {
+                                let layout_handle = fmp_file.layouts.get_mut(&x.parse().unwrap());
+                                if layout_handle.is_none() {
+                                    println!("FUCKIED");
+                                } else {
+                                    let s = fm_string_decrypt(chunk.data.unwrap());
+                                    fmp_file.layouts.get_mut(&x.parse().unwrap())
+                                        .unwrap().layout_name = s;
+                                }
 
+                            },
+                            _ => {
+
+                            }
                         }
                     }
-                },
+                }
+                // ["4", "1", "7", x, ..] => {
+                //     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
+                //     // print_chunk(&chunk, &path);
+                // },
                 /* Examining field definitions for tables */
                 [x, "3", "5", y] => {
                     if x.parse::<usize>().unwrap() >= 128 {
@@ -669,6 +691,14 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
             }
 
         }
+    }
+
+    for (id, layout) in &fmp_file.layouts {
+        println!("{} :: {} :: {}", 
+            layout.layout_name,
+            layout.table_occurrence,
+            fmp_file.table_occurrences.get(&layout.table_occurrence).unwrap().table_occurence_name
+            )
     }
     return fmp_file;
 }
