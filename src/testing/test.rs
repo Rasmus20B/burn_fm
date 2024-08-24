@@ -226,7 +226,6 @@ impl<'a> TestEnvironment<'a> {
 
                 let mut records = Vec::from_iter(records);
                 self.database.update_found_set(&records);
-                self.database.get_current_occurrence_mut().record_ptr = 0;
                 self.mode = Mode::Browse;
                 self.instruction_ptr[n_stack].1 += 1;
             },

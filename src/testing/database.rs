@@ -290,15 +290,16 @@ impl Database {
         }
         let handle = self.get_current_occurrence_mut();
         handle.found_set = records.to_vec();
-        handle.record_ptr = handle.found_set[0];
+        handle.record_ptr = 0;
     }
 
     pub fn reset_found_set(&mut self) {
-        self.get_current_occurrence_mut().found_set = self.get_current_table()
-                                                        .fields[0].records.iter()
-                                                        .enumerate()
-                                                        .map(|x| x.0)
-                                                        .collect();
+        self.get_current_occurrence_mut()
+            .found_set = self.get_current_table()
+                            .fields[0].records.iter()
+                            .enumerate()
+                            .map(|x| x.0)
+                            .collect();
     }
 
     pub fn goto_record(&mut self, record_id: usize) {
