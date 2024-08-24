@@ -227,6 +227,41 @@ impl<'a> TestEnvironment<'a> {
                 }
                 self.instruction_ptr[n_stack].1 += 1;
             },
+            Instruction::GoToRecordRequestPage => {
+                let val = &self.eval_calculation(&cur_instruction.switches[0]);
+                let mut exit = false;
+                if cur_instruction.switches.len() > 1 {
+                    let res = &self.eval_calculation(&cur_instruction.switches[1]);
+                    if res != "false" || res != "" || res != "0" {
+                        exit = true;
+                    }
+                }
+
+                match self.mode {
+                    Mode::Browse => {
+                        let cache_pos = self.database.get_current_occurrence().record_ptr;
+                        match val.as_str() {
+                            "\"previous\"" => { self.database.goto_previous_record(); }
+                            "\"next\"" => { self.database.goto_next_record(); }
+                            "\"first\"" => { self.database.goto_first_record(); }
+                            "\"last\"" => { self.database.goto_last_record(); }
+                            _ => {}
+                        }
+                        if exit && self.database.get_current_occurrence().record_ptr == cache_pos {
+                            while cur_instruction.opcode != Instruction::EndLoop {
+                                cur_instruction = &script_handle.instructions[&ip_handle.1];
+                                ip_handle.1 += 1;
+                            }
+                            self.instruction_ptr[n_stack].1 = ip_handle.1; 
+                        }
+
+                    },
+                    Mode::Find => {
+
+                    }
+                }
+                self.instruction_ptr[n_stack].1 += 1;
+            },
             Instruction::EnterFindMode => {
                 self.mode = Mode::Find;
                 self.instruction_ptr[n_stack].1 += 1;
@@ -237,7 +272,13 @@ impl<'a> TestEnvironment<'a> {
             Instruction::PerformFind => {
                 let mut records: HashSet<usize> = HashSet::new();
                 for criteria in &self.find_criteria {
-                    let values = self.database.get_field_vals_for_current_table(&criteria.0.split("::").collect::<Vec<&str>>()[1]);
+                    let values = self.database
+                        .get_field_vals_for_current_table(
+                            &criteria.0
+                                .split("::")
+                                .collect::<Vec<&str>>()[1]
+                            );
+
                     let ids = values.into_iter()
                         .enumerate()
                         .filter(|x| *x.1 == criteria.1)
@@ -246,9 +287,12 @@ impl<'a> TestEnvironment<'a> {
                     records.extend(ids);
                 }
 
+
                 let mut records = Vec::from_iter(records);
+                records.sort();
                 self.database.update_found_set(&records);
                 self.mode = Mode::Browse;
+                self.find_criteria.clear();
                 self.instruction_ptr[n_stack].1 += 1;
             },
             Instruction::ShowAllRecords => {
@@ -543,7 +587,8 @@ impl<'a> TestEnvironment<'a> {
                     buffer.push(*c);
                     while let Some(c) = &lex_iter.next() {
                         buffer.push(*c);
-                        if !lex_iter.peek().unwrap().is_alphanumeric() {
+                        let peeked = lex_iter.peek();
+                        if peeked.is_none() || !peeked.unwrap().is_alphanumeric() {
                             break;
                         }
                     }
@@ -723,6 +768,15 @@ mod tests {
               set_field(blank::PrimaryKey, \"Kevin\");
               perform_find();
               assert(blank::PrimaryKey == \"Kevin\");
+
+              enter_find_mode();
+              set_field(blank::PrimaryKey, \"Jeff Keighly\");
+              perform_find();
+              go_to_record(\"first\");
+              loop {
+                show_custom_dialog(blank::PrimaryKey);
+                go_to_record(\"next\", \"true\");
+              }
               show_all_records();
             }
           ],

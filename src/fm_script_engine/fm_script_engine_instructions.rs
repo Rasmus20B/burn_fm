@@ -204,6 +204,7 @@ impl FromStr for Instruction {
         match input {
             "perform_script" => Ok(Instruction::PerformScript),
             "go_to_layout" => Ok(Instruction::GoToLayout),
+            "go_to_record" | "go_to_request" => Ok(Instruction::GoToRecordRequestPage),
             "enter_find_mode" => Ok(Instruction::EnterFindMode),
             "perform_find" => Ok(Instruction::PerformFind),
             "show_all_records" => Ok(Instruction::ShowAllRecords),

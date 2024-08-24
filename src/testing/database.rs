@@ -296,6 +296,8 @@ impl Database {
             self.reset_found_set();
             return;
         }
+
+        self.reset_found_set();
         let handle = self.get_current_occurrence_mut();
         handle.found_set = records.to_vec();
         handle.record_ptr = 0;
@@ -317,6 +319,30 @@ impl Database {
         } else {
             set.record_ptr = record_id;
         }
+    }
+
+    pub fn goto_previous_record(&mut self) {
+        let mut set = self.get_current_occurrence_mut();
+        if set.record_ptr > 0 {
+            set.record_ptr -= 1;
+        }
+    }
+
+    pub fn goto_next_record(&mut self) {
+        let mut set = self.get_current_occurrence_mut();
+        if set.record_ptr < set.found_set.len() - 1 {
+            set.record_ptr += 1;
+        }
+    }
+
+    pub fn goto_first_record(&mut self) {
+        let mut set = self.get_current_occurrence_mut();
+        set.record_ptr = 0;
+    }
+
+    pub fn goto_last_record(&mut self) {
+        let mut set = self.get_current_occurrence_mut();
+        set.record_ptr = set.found_set.len() - 1;
     }
 }
 
