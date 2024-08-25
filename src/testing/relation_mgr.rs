@@ -10,20 +10,25 @@ impl RelationMgr {
             graph: HashMap::new(),
         }
     }
-    pub fn add_relation(&mut self, occ1: usize, occ2: usize) {
+
+    pub fn add_node(&mut self, occ1: usize, occ2: usize) {
+        let exists = self.graph.get(&occ1).unwrap_or(&vec![])
+            .iter()
+            .filter(|x| **x == occ2)
+            .collect::<Vec<_>>().len() > 0;
+
         let graph_node = self.graph.get_mut(&(occ1 as usize));
         if graph_node.is_none() {
             self.graph.insert(occ1, vec![occ2]);
         } else {
-            graph_node.unwrap().push(occ2);
+            if !exists {
+                graph_node.unwrap().push(occ2);
+            }         
         }
-
-        let graph_node = self.graph.get_mut(&(occ2 as usize));
-        if graph_node.is_none() {
-            self.graph.insert(occ2, vec![occ1]);
-        } else {
-            graph_node.unwrap().push(occ1);
-        }
+    }
+    pub fn add_relation(&mut self, occ1: usize, occ2: usize) {
+        self.add_node(occ1, occ2);
+        self.add_node(occ2, occ1);
     }
 
     pub fn get_path(&self, occ1: usize, occ2: usize) -> Option<Vec<usize>> {
@@ -69,6 +74,7 @@ mod tests {
     pub fn graph_test() {
         let mut mgr = RelationMgr::new();
         mgr.add_relation(1, 2);
+        mgr.add_relation(2, 1);
         mgr.add_relation(2, 7);
         mgr.add_relation(1, 3);
         mgr.add_relation(8, 9);

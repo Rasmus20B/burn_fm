@@ -175,7 +175,6 @@ impl Database {
                 }
             );
             self.relation_mgr.add_relation(rel.table1 as usize, rel.table2 as usize);
-            self.relation_mgr.add_relation(rel.table2 as usize, rel.table1 as usize);
         }
     }
 
