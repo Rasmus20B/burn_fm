@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{component::FMComponentTable, file::FmpFile};
+use crate::{component::{FMComponentTable, RelationComparison}, file::FmpFile};
 
 #[derive(Clone, PartialEq)]
 pub struct Field {
@@ -37,25 +37,14 @@ impl Table {
     }
 }
 
-#[derive(Clone)]
-pub enum RelationshipType {
-    Eq,
-    Neq,
-    Gt,
-    Gte,
-    Lt,
-    Lte,
-    C,
-}
-
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Relationship {
-    join_by: RelationshipType,
+    join_by: RelationComparison,
     field1: String,
     field2: String,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct RelatedRecordSet {
     relationship: Relationship,
     occurrence: usize,
@@ -164,14 +153,23 @@ impl Database {
                     relationship: Relationship {
                         field1: "PrimaryKey".to_string(),
                         field2: "PrimaryKey".to_string(),
-                        join_by: RelationshipType::Eq,
-
+                        join_by: rel.comparison.clone(),
+                    },
+                    records: vec![],
+                }
+            );
+            self.table_occurrences[rel.table2 as usize].related_records.push(
+                RelatedRecordSet {
+                    occurrence: rel.table1 as usize,
+                    relationship: Relationship {
+                        field1: "PrimaryKey".to_string(),
+                        field2: "PrimaryKey".to_string(),
+                        join_by: rel.comparison.clone(),
                     },
                     records: vec![],
                 }
             );
         }
-
     }
 
     pub fn create_record(&mut self) {
