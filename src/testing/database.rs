@@ -37,8 +37,29 @@ impl Table {
     }
 }
 
+#[derive(Clone)]
+pub enum RelationshipType {
+    Eq,
+    Neq,
+    Gt,
+    Gte,
+    Lt,
+    Lte,
+    C,
+}
+
+#[derive(Clone)]
 pub struct Relationship {
-    
+    join_by: RelationshipType,
+    field1: String,
+    field2: String,
+}
+
+#[derive(Clone)]
+pub struct RelatedRecordSet {
+    relationship: Relationship,
+    occurrence: usize,
+    records: Vec<usize>,
 }
 
 #[derive(Clone)]
@@ -46,6 +67,7 @@ pub struct TableOccurrence {
     pub found_set: Vec<usize>,
     pub table_ptr: u16,
     pub record_ptr: usize,
+    pub related_records: Vec<RelatedRecordSet>,
 }
 
 impl TableOccurrence {
@@ -54,6 +76,7 @@ impl TableOccurrence {
             found_set: vec![],
             table_ptr: 0,
             record_ptr: 0,
+            related_records: Vec::<RelatedRecordSet>::new(),
         }
     }
     fn get_current_record(&self) -> usize {
@@ -90,6 +113,8 @@ impl Database {
     }
 
     pub fn generate_from_fmp12(&mut self, file: &FmpFile) {
+
+        /* Generate Base Tables */
         let tables_size = file.tables.keys().into_iter().max().unwrap();
         self.tables.resize(*tables_size + 1, Table::new("".to_string()));
         for (i, table) in &file.tables {
@@ -108,6 +133,8 @@ impl Database {
                 );
             }
         }
+
+        /* Generate Table Occurrences */
         let occurrence_size = file.table_occurrences.keys().into_iter().max().unwrap();
         self.table_occurrences.resize(*occurrence_size + 1, TableOccurrence::new());
         for (i, occurrence) in &file.table_occurrences {
@@ -119,6 +146,7 @@ impl Database {
                 found_set: vec![0],
                 record_ptr: 0,
                 table_ptr: occurrence.table_actual,
+                related_records: Vec::new(),
             };
             self.table_occurrences[*i] = tmp;
         }
@@ -127,6 +155,23 @@ impl Database {
             .filter(|x| !x.1.found_set.is_empty())
             .map(|x| x.0)
             .collect::<Vec<_>>()[0] as u16;
+
+        /* Generate Relationships */ 
+        for (_, rel) in &file.relationships {
+            self.table_occurrences[rel.table1 as usize].related_records.push(
+                RelatedRecordSet {
+                    occurrence: rel.table2 as usize,
+                    relationship: Relationship {
+                        field1: "PrimaryKey".to_string(),
+                        field2: "PrimaryKey".to_string(),
+                        join_by: RelationshipType::Eq,
+
+                    },
+                    records: vec![],
+                }
+            );
+        }
+
     }
 
     pub fn create_record(&mut self) {
@@ -288,6 +333,105 @@ impl Database {
             .collect::<Vec<_>>()[0].0;
 
         &mut self.tables[table as usize].fields[field].records[id]
+    }
+
+    pub fn get_related_record_field(&mut self, occurrence: &str, field: &str) -> &str {
+        let target_idx = self.occurrence_indices[occurrence] as usize;
+        let target_occurrence = &self.table_occurrences[target_idx];
+        let current_occurrence = &self.get_current_occurrence();
+
+        let related_record_idx = current_occurrence.related_records
+            .iter()
+            .filter(|x| x.occurrence == target_idx)
+            .take(1)
+            .collect::<Vec<_>>()[0].records[0];
+
+        let table_idx = target_occurrence.table_ptr;
+
+        let field = self.tables[table_idx as usize].fields
+            .iter()
+            .enumerate()
+            .filter(|x| x.1.name == field)
+            .collect::<Vec<_>>()[0].0;
+
+        &self.tables[table_idx as usize].fields[field].records[0]
+    }
+
+    pub fn get_related_record_field_mut(&mut self, occurrence: &str, field: &str) -> &mut str {
+        let target_idx = self.occurrence_indices[occurrence] as usize;
+        let target_occurrence = &self.table_occurrences[target_idx];
+        let current_occurrence = &self.get_current_occurrence();
+
+        let related_record_idx = current_occurrence.related_records
+            .iter()
+            .filter(|x| x.occurrence == target_idx)
+            .take(1)
+            .collect::<Vec<_>>()[0].records[0];
+
+        let table_idx = target_occurrence.table_ptr;
+
+        let field = self.tables[table_idx as usize].fields
+            .iter()
+            .enumerate()
+            .filter(|x| x.1.name == field)
+            .collect::<Vec<_>>()[0].0;
+
+        &mut self.tables[table_idx as usize].fields[field].records[0]
+    }
+
+    pub fn get_nth_related_record_field(&mut self, occurrence: &str, field: &str, n: usize) -> &str {
+        let target_idx = self.occurrence_indices[occurrence] as usize;
+        let target_occurrence = &self.table_occurrences[target_idx];
+        let current_occurrence = &self.get_current_occurrence();
+
+        let related_record_idx = current_occurrence.related_records
+            .iter()
+            .filter(|x| x.occurrence == target_idx)
+            .take(1)
+            .collect::<Vec<_>>()[0].records[0];
+
+        let table_idx = target_occurrence.table_ptr;
+
+        let field = self.tables[table_idx as usize].fields
+            .iter()
+            .enumerate()
+            .filter(|x| x.1.name == field)
+            .collect::<Vec<_>>()[0].0;
+
+        let records = &self.tables[table_idx as usize].fields[field].records;
+        if n >= records.len() {
+            return &records[records.len()];
+        } else {
+            return &records[n];
+        }
+    }
+
+    pub fn get_nth_related_record_field_mut(&mut self, occurrence: &str, field: &str, n: usize) -> &mut str {
+        let target_idx = self.occurrence_indices[occurrence] as usize;
+        let target_occurrence = &self.table_occurrences[target_idx];
+        let current_occurrence = &self.get_current_occurrence();
+
+        let related_record_idx = current_occurrence.related_records
+            .iter()
+            .filter(|x| x.occurrence == target_idx)
+            .take(1)
+            .collect::<Vec<_>>()[0].records[0];
+
+        let table_idx = target_occurrence.table_ptr;
+
+        let field = self.tables[table_idx as usize].fields
+            .iter()
+            .enumerate()
+            .filter(|x| x.1.name == field)
+            .collect::<Vec<_>>()[0].0;
+
+        let records = &mut self.tables[table_idx as usize].fields[field].records;
+        let length = records.len();
+        if n >= records.len() {
+            return &mut records[length];
+        } else {
+            return &mut records[n];
+        }
     }
 
     /* called after a "perform_find" type script step */

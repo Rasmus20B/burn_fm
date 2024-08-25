@@ -160,6 +160,20 @@
 
 ## Relationship Structure
 
+### [3].[251].[5].[relationship_id].[3]
+
+- Stores the relationship criteria.
+    - Byte 1: Comparison
+        - 0x0: Equal
+        - 0x1: Not equal
+        - 0x2: Less than
+        - 0x3: Less than or Equal
+        - 0x4: Greater than
+        - 0x5: Greater than or Equal
+        - 0x6: Cartesian join (no filter)
+    - Bytes 2, 3, 4: 2 bytes encoded integer for table 1 field index
+    - Bytes 5, 6, 7: 2 bytes encoded integer for table 2 field index
+
 ### [3].[17].[5].[0]
 
 - Each relationship is read sequentially at the same path, reusing the same key for references. 

@@ -4,6 +4,7 @@ use std::io::Read;
 use std::path::Path;
 use std::collections::{BTreeMap, HashMap};
 
+use crate::component::RelationComparison;
 use crate::fm_script_engine::fm_script_engine_instructions::{ScriptStep, INSTRUCTIONMAP, Instruction};
 use crate::{chunk, component, dbcharconv, decompile, metadata_constants};
 use crate::file::FmpFile;
@@ -101,8 +102,6 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
         }
 
     }
-
-    // println!("Found calculation: {}", result);
     return result;
 }
 
@@ -221,7 +220,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
         offset = start;
 
         sectors[idx] = sector::get_sector(&buffer[offset..]);
-        println!("sector: {}, next: {}", idx, sectors[idx].next);
+        // println!("sector: {}, next: {}", idx, sectors[idx].next);
         // println!("{:?} == {}", &buffer[offset+8..offset+12], sectors[idx].next);
         let mut path = Vec::<String>::new();
         offset += 20;
@@ -238,13 +237,16 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         let mut tmp = component::FMComponentRelationship::new();
                         tmp.table1 = fmp_file.table_occurrences.len() as u16;
                         tmp.table2 = chunk.data.unwrap()[2] as u16;
-                        fmp_file.relationships.insert(fmp_file.relationships.len(), tmp);
+                        if fmp_file.relationships.iter()
+                            .filter(|x| x.1.table1 == tmp.table2 && x.1.table2 == tmp.table1)
+                            .collect::<Vec<_>>().len() == 0 {
+                            fmp_file.relationships.insert(fmp_file.relationships.len() + 1, tmp);
+                        }
                     }
                 },
                 /* Examining table occurences */
                 ["3", "17", "5", "0", ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                    // print_chunk(&chunk, &path);
                     match chunk.ref_simple {
                         Some(2) => {
                             let tmp = component::FMComponentTableOccurence {
@@ -281,14 +283,30 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         }
                     }
                 },
+                ["3", "251", "5", x, "3"] => {
+                    match chunk.ref_simple {
+                        Some(1) => {
+                            let comp = match chunk.data.unwrap()[0] {
+                                0x0 => RelationComparison::Equal,
+                                0x1 => RelationComparison::NotEqual,
+                                0x2 => RelationComparison::Less,
+                                0x3 => RelationComparison::LessEqual,
+                                0x4 => RelationComparison::Greater,
+                                0x5 => RelationComparison::GreaterEqual,
+                                0x6 => RelationComparison::Cartesian,
+                                _ => RelationComparison::Equal
+                            };
+                            fmp_file.relationships.get_mut(&x.parse().unwrap()).unwrap().comparison = comp;
+                        }
+                        _ => {}
+                    }
+                },
                 ["4", "5", ..] => {
                     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                    // print_chunk(&chunk, &path);
                 },
                 /* Examing layouts */
                 ["4", "1", "7", x, ..] => {
                     if chunk.ctype == ChunkType::PathPush {
-                        println!("Adding layout: {}", x);
                         fmp_file.layouts.insert(
                             x.parse::<usize>().unwrap(),
                             component::FMComponentLayout::new()
@@ -300,10 +318,8 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 /* Byte 2 refers to table occurrence */
                                 let layout_handle = fmp_file.layouts.get_mut(&x.parse().unwrap());
                                 if layout_handle.is_none() {
-                                    println!("FUCKIED");
                                 } else {
                                     let occurrence = chunk.data.unwrap()[1] as usize - 128;
-                                    println!("Layout: {} -> {}", x, occurrence);
                                     fmp_file.layouts.get_mut(&x.parse().unwrap())
                                         .unwrap().table_occurrence = occurrence;
                                 }
@@ -325,11 +341,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         }
                     }
                 }
-                // ["4", "1", "7", x, ..] => {
-                //     let s = fm_string_decrypt(chunk.data.unwrap_or(&[0]));
-                //     // print_chunk(&chunk, &path);
-                // },
-                /* Examining field definitions for tables */
                 [x, "3", "5", y] => {
                     if x.parse::<usize>().unwrap() >= 128 {
                         if chunk.ctype == ChunkType::PathPush {
@@ -535,15 +546,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                         continue;
                     }
 
-                    // if(chunk.ref_simple == Some(4)) {
-                    // println!("THIS ONE Path: {:?}. reference: {:?}, ref_data: {:?}, data: {:?}", 
-                    //      &path.clone(),
-                    //      chunk.ref_simple,
-                    //      chunk.ref_data,
-                    //      chunk.data,
-                    //      );
-                    // }
-
                     if chunk.segment_idx == Some(4) {
                             let instrs = chunk.data.unwrap().chunks(28);
                             for (i, ins) in instrs.enumerate() {
@@ -578,9 +580,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 let instrs = chunk.data.unwrap().chunks(28);
                                 for ins in instrs {
                                     if ins.len() >= 21 {
-                                        // println!("{}, ref_data: {}", 
-                                        //         i + 1,
-                                        //      ins[21]);
                                     let oc = &INSTRUCTIONMAP[ins[21] as usize];
                                     if oc.is_some() {
                                         let mut switch: Vec<String> = vec![];
@@ -598,9 +597,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                             index: n,
                                             switches: switch,
                                         };
-
-                                        // println!("Adding idx: {} for script {}. Exists? {:?}", tmp.index, x.parse::<u64>().unwrap(),
-                                            // fmp_file.scripts.get(&x.parse().unwrap()));
                                         let handle = &mut fmp_file.scripts
                                             .get_mut(&x.parse().unwrap()).unwrap().instructions;
                                             handle.insert(n, tmp);
@@ -609,11 +605,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 }
                             },
                             None => {
-                                if chunk.ctype == ChunkType::DataSegment {
-                                    // println!("Data: {:?}. Segment: {:?}. Data: {:?}", chunk.path, chunk.segment_idx, chunk.data)
-                                } else {
-                                    // println!("Instruction: {:?}. Data: {:?}", chunk.ctype, chunk.data)
-                                }
                             },
                             _ => {
                             },

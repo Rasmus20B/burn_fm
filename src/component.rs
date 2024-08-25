@@ -134,12 +134,23 @@ impl FMComponentTableOccurence {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum RelationComparison {
+    Equal,
+    NotEqual,
+    Less,
+    LessEqual,
+    Greater,
+    GreaterEqual,
+    Cartesian
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FMComponentRelationship {
     pub table1: u16,
     pub table1_name: String,
     pub table2: u16,
     pub table2_name: String,
-    pub comparison: u8,
+    pub comparison: RelationComparison,
 }
 
 impl FMComponentRelationship {
@@ -149,7 +160,7 @@ impl FMComponentRelationship {
             table1_name: String::new(),
             table2: 0,
             table2_name: String::new(),
-            comparison: 0,
+            comparison: RelationComparison::Equal,
         }
     }
 }

@@ -287,7 +287,6 @@ impl<'a> TestEnvironment<'a> {
                     records.extend(ids);
                 }
 
-
                 let mut records = Vec::from_iter(records);
                 records.sort();
                 self.database.update_found_set(&records);
@@ -774,7 +773,7 @@ mod tests {
               perform_find();
               go_to_record(\"first\");
               loop {
-                show_custom_dialog(blank::PrimaryKey);
+                assert(blank::PrimaryKey == \"Jeff Keighly\");
                 go_to_record(\"next\", \"true\");
               }
               show_all_records();
