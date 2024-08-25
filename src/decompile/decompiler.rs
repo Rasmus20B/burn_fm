@@ -11,7 +11,7 @@ use crate::file::FmpFile;
 use crate::decompile::sector;
 
 use crate::chunk::{get_chunk_from_code, ChunkType};
-use crate::encoding_util::{fm_string_decrypt, get_path_int};
+use crate::encoding_util::{fm_string_decrypt, get_int, get_path_int};
 
 const SECTOR_SIZE : usize = 4096;
 
@@ -296,7 +296,14 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 0x6 => RelationComparison::Cartesian,
                                 _ => RelationComparison::Equal
                             };
-                            fmp_file.relationships.get_mut(&x.parse().unwrap()).unwrap().comparison = comp;
+                            let field1 = get_path_int(&chunk.data.unwrap()[2..=3]) - 128;
+                            let field2 = get_path_int(&chunk.data.unwrap()[5..=6]) - 128;
+                            fmp_file.relationships.get_mut(&x.parse().unwrap()).unwrap().comparison
+                                = comp;
+                            fmp_file.relationships.get_mut(&x.parse().unwrap()).unwrap().field1 =
+                                field1 as u16;
+                            fmp_file.relationships.get_mut(&x.parse().unwrap()).unwrap().field2 =
+                                field2 as u16;
                         }
                         _ => {}
                     }

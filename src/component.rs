@@ -1,5 +1,5 @@
 
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 use serde::{Deserialize, Serialize};
 
@@ -64,7 +64,7 @@ pub struct FMComponentTable {
     pub table_name: String,
     pub created_by_account: String,
     pub create_by_user: String,
-    pub fields: HashMap<u16, FMComponentField>,
+    pub fields: BTreeMap<u16, FMComponentField>,
     pub init: bool,
 }
 
@@ -74,7 +74,7 @@ impl FMComponentTable {
             table_name: String::new(),
             created_by_account: String::new(),
             create_by_user: String::new(),
-            fields: HashMap::new(),
+            fields: BTreeMap::new(),
             init: false
         }
     }
@@ -84,7 +84,7 @@ impl FMComponentTable {
             table_name: String::new(),
             created_by_account: String::new(),
             create_by_user: String::new(),
-            fields: HashMap::new(),
+            fields: BTreeMap::new(),
             init: true
         }
 
@@ -148,8 +148,10 @@ pub enum RelationComparison {
 pub struct FMComponentRelationship {
     pub table1: u16,
     pub table1_name: String,
+    pub field1: u16,
     pub table2: u16,
     pub table2_name: String,
+    pub field2: u16,
     pub comparison: RelationComparison,
 }
 
@@ -158,8 +160,10 @@ impl FMComponentRelationship {
         Self {
             table1: 0,
             table1_name: String::new(),
+            field1: 0,
             table2: 0,
             table2_name: String::new(),
+            field2: 0,
             comparison: RelationComparison::Equal,
         }
     }

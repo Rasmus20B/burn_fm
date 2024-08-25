@@ -2,6 +2,8 @@ use std::collections::HashMap;
 
 use crate::{component::{FMComponentTable, RelationComparison}, file::FmpFile};
 
+use super::relation_mgr::RelationMgr;
+
 #[derive(Clone, PartialEq)]
 pub struct Field {
     pub name: String,
@@ -40,8 +42,8 @@ impl Table {
 #[derive(Clone, Debug)]
 pub struct Relationship {
     join_by: RelationComparison,
-    field1: String,
-    field2: String,
+    field1: usize,
+    field2: usize,
 }
 
 #[derive(Clone, Debug)]
@@ -81,6 +83,7 @@ pub struct Database {
     occurrence_indices: HashMap<String, u16>,
     occurrence_handle: u16,
     pub tables: Vec<Table>,
+    relation_mgr: RelationMgr,
 }
 
 impl Database {
@@ -90,6 +93,7 @@ impl Database {
             occurrence_indices: HashMap::new(),
             occurrence_handle: 0,
             tables: vec![],
+            relation_mgr: RelationMgr::new(),
         }
     }
 
@@ -112,6 +116,7 @@ impl Database {
                 fields: vec![],
             };
             self.tables[*i] = tmp;
+
             for f in &table.fields {
                 self.tables[*i].fields
                     .push(
@@ -151,8 +156,8 @@ impl Database {
                 RelatedRecordSet {
                     occurrence: rel.table2 as usize,
                     relationship: Relationship {
-                        field1: "PrimaryKey".to_string(),
-                        field2: "PrimaryKey".to_string(),
+                        field1: rel.field1 as usize,
+                        field2: rel.field2 as usize,
                         join_by: rel.comparison.clone(),
                     },
                     records: vec![],
@@ -162,13 +167,15 @@ impl Database {
                 RelatedRecordSet {
                     occurrence: rel.table1 as usize,
                     relationship: Relationship {
-                        field1: "PrimaryKey".to_string(),
-                        field2: "PrimaryKey".to_string(),
+                        field1: rel.field2 as usize,
+                        field2: rel.field1 as usize,
                         join_by: rel.comparison.clone(),
                     },
                     records: vec![],
                 }
             );
+            self.relation_mgr.add_relation(rel.table1 as usize, rel.table2 as usize);
+            self.relation_mgr.add_relation(rel.table2 as usize, rel.table1 as usize);
         }
     }
 
