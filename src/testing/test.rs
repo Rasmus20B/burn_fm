@@ -141,7 +141,6 @@ impl<'a> TestEnvironment<'a> {
             } else if self.test_state == TestState::Fail {
                 cprintln!("Test {} outcome: <red>Fail</red>", self.current_test.as_ref().unwrap().test_name);
             }
-
         }
     }
     pub fn run_tests_with_cleanup(&mut self) {
@@ -240,12 +239,16 @@ impl<'a> TestEnvironment<'a> {
                 match self.mode {
                     Mode::Browse => {
                         let cache_pos = self.database.get_current_occurrence().record_ptr;
-                        match val.as_str() {
-                            "\"previous\"" => { self.database.goto_previous_record(); }
-                            "\"next\"" => { self.database.goto_next_record(); }
-                            "\"first\"" => { self.database.goto_first_record(); }
-                            "\"last\"" => { self.database.goto_last_record(); }
-                            _ => {}
+                        if let Ok(n) = val.parse::<usize>() {
+                            self.database.goto_record(n);
+                        } else {
+                            match val.as_str() {
+                                "\"previous\"" => { self.database.goto_previous_record(); }
+                                "\"next\"" => { self.database.goto_next_record(); }
+                                "\"first\"" => { self.database.goto_first_record(); }
+                                "\"last\"" => { self.database.goto_last_record(); }
+                                _ => {}
+                            }
                         }
                         if exit && self.database.get_current_occurrence().record_ptr == cache_pos {
                             while cur_instruction.opcode != Instruction::EndLoop {
@@ -253,8 +256,8 @@ impl<'a> TestEnvironment<'a> {
                                 ip_handle.1 += 1;
                             }
                             self.instruction_ptr[n_stack].1 = ip_handle.1; 
+                            return;
                         }
-
                     },
                     Mode::Find => {
 
@@ -317,7 +320,7 @@ impl<'a> TestEnvironment<'a> {
 
                 match self.mode {
                     Mode::Browse => {
-                        *self.database.get_current_record_by_table_field_mut(parts[0], parts[1]) = val.to_string();
+                        *self.database.get_current_record_by_table_field_mut(parts[0], parts[1]).unwrap() = val.to_string();
                     },
                     Mode::Find => {
                         self.find_criteria.push((name.to_string(), val.to_string()));
@@ -744,12 +747,14 @@ mod tests {
           script: [
             define blank_test() {
               set_variable(x, 0);
-              go_to_layout(\"second table\");
+              go_to_layout(\"second_table\");
               new_record_request();
+              set_field(second_table::PrimaryKey, \"Kevin\");
+              set_field(second_table::add, \"secret\");
               go_to_layout(\"testing\");
               loop {
+                exit_loop_if(x == 10);
                 new_record_request();
-                exit_loop_if(x == 9);
                 assert(x != 10);
                 if(x == 7) {
                     set_field(blank::PrimaryKey, \"Kevin\");
@@ -777,6 +782,11 @@ mod tests {
                 go_to_record(\"next\", \"true\");
               }
               show_all_records();
+              go_to_record(\"first\");
+              loop {
+                show_custom_dialog(blank::PrimaryKey);
+                go_to_record(\"next\", \"true\");
+              }
             }
           ],
         end test;";
@@ -787,18 +797,22 @@ mod tests {
         let mut te : TestEnvironment = TestEnvironment::new(&file);
         te.generate_test_environment();
         te.run_tests();
-        let table_ptr = te.database.get_current_occurrence().table_ptr as usize;
         assert_eq!(te.database.get_table("blank").unwrap().fields[0].records.len(), 10);
-        assert_eq!(te.database.get_table("second table").unwrap().fields[0].records.len(), 1);
-        assert_eq!(te.database.get_record_by_field("PrimaryKey", 0), "\"Jeff Keighly\"");
-        assert_eq!(te.database.get_record_by_field("PrimaryKey", 1), "\"alvin Presley\"");
-        assert_eq!(te.database.get_record_by_field("PrimaryKey", 2), "\"NAHHH\"");
-        assert_eq!(te.database.get_record_by_field("PrimaryKey", 3), "\"Jeff Keighly\"");
-        assert_eq!(te.database.get_record_by_field("PrimaryKey", 4), "\"Jeff Keighly\"");
-        assert_eq!(te.database.get_record_by_field("PrimaryKey", 5), "\"Jeff Keighly\"");
-        assert_eq!(te.database.get_record_by_field("PrimaryKey", 6), "\"Jeff Keighly\"");
-        assert_eq!(te.database.get_record_by_field("PrimaryKey", 7), "\"Kevin\"");
-        assert_eq!(te.database.get_record_by_field("PrimaryKey", 8), "\"Jeff Keighly\"");
+        assert_eq!(te.database.get_table("second_table").unwrap().fields[0].records.len(), 1);
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 0).unwrap(), "\"Jeff Keighly\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 1).unwrap(), "\"alvin Presley\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 2).unwrap(), "\"NAHHH\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 3).unwrap(), "\"Jeff Keighly\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 4).unwrap(), "\"Jeff Keighly\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 5).unwrap(), "\"Jeff Keighly\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 6).unwrap(), "\"Jeff Keighly\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 7).unwrap(), "\"Kevin\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 8).unwrap(), "\"Jeff Keighly\"");
+        assert_eq!(te.database.get_record_by_field("PrimaryKey", 9).unwrap(), "\"Jeff Keighly\"");
+        te.database.goto_record(7);
+        assert_eq!(te.database.get_current_record_field("PrimaryKey"), "\"Kevin\"");
+        assert_eq!(te.database.get_occurrence_by_name("second_table").found_set.len(), 1);
+        assert_eq!(te.database.get_related_record_field("second_table", "add").unwrap(), "\"secret\"");
     }
 }
 

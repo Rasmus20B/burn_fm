@@ -4,10 +4,19 @@ use crate::{component::{FMComponentTable, RelationComparison}, file::FmpFile};
 
 use super::relation_mgr::RelationMgr;
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Field {
     pub name: String,
     pub records: Vec<String>,
+}
+
+impl Field {
+    pub fn new() -> Self {
+        Self {
+            name: "".to_string(),
+            records: vec![],
+        }
+    }
 }
 
 #[derive(Clone, PartialEq)]
@@ -70,8 +79,12 @@ impl TableOccurrence {
             related_records: Vec::<RelatedRecordSet>::new(),
         }
     }
-    fn get_current_record(&self) -> usize {
-        self.found_set[self.record_ptr]
+    pub fn get_current_record(&self) -> Result<usize, &str> {
+        let res = self.found_set.get(self.record_ptr);
+        match res {
+            Some(res) => Ok(*res),
+            None => Err("No Record found.")
+        }
     }
 }
 
@@ -117,19 +130,19 @@ impl Database {
             };
             self.tables[*i] = tmp;
 
-            for f in &table.fields {
-                self.tables[*i].fields
-                    .push(
-                        Field {
-                            name: f.1.field_name.to_string(),
-                            records: vec![]
-                        }
-                );
+            let fields_size = table.fields.keys().into_iter().max().unwrap();
+            self.tables[*i].fields.resize(*fields_size as usize + 1, Field::new());
+            for (j, field) in &table.fields {
+                self.tables[*i as usize].fields[*j as usize] = Field {
+                    name: field.field_name.to_string(),
+                    records: vec![]
+                }
             }
         }
 
         /* Generate Table Occurrences */
         let occurrence_size = file.table_occurrences.keys().into_iter().max().unwrap();
+        self.occurrence_handle = *file.table_occurrences.keys().into_iter().min().unwrap() as u16;
         self.table_occurrences.resize(*occurrence_size + 1, TableOccurrence::new());
         for (i, occurrence) in &file.table_occurrences {
             self.occurrence_indices.insert(
@@ -137,18 +150,13 @@ impl Database {
                 *i as u16);
 
             let tmp = TableOccurrence {
-                found_set: vec![0],
+                found_set: vec![],
                 record_ptr: 0,
                 table_ptr: occurrence.table_actual,
                 related_records: Vec::new(),
             };
             self.table_occurrences[*i] = tmp;
         }
-        self.occurrence_handle = self.table_occurrences.iter()
-            .enumerate()
-            .filter(|x| !x.1.found_set.is_empty())
-            .map(|x| x.0)
-            .collect::<Vec<_>>()[0] as u16;
 
         /* Generate Relationships */ 
         for (_, rel) in &file.relationships {
@@ -213,6 +221,22 @@ impl Database {
         return "";
     }
 
+    pub fn get_occurrence(&self, occurrence_handle: usize) -> &TableOccurrence {
+        &self.table_occurrences[occurrence_handle]
+    }
+
+    pub fn get_occurrence_mut(&mut self, occurrence_handle: usize) -> &mut TableOccurrence {
+        &mut self.table_occurrences[occurrence_handle]
+    }
+
+    pub fn get_occurrence_by_name(&self, occurrence_handle: &str) -> &TableOccurrence {
+        &self.table_occurrences[self.occurrence_indices[occurrence_handle] as usize]
+    }
+
+    pub fn get_occurrence_by_name_mut(&mut self, occurrence_handle: &str) -> &mut TableOccurrence {
+        &mut self.table_occurrences[self.occurrence_indices[occurrence_handle] as usize]
+    }
+
     pub fn set_current_occurrence(&mut self, occurrence: u16) {
         self.occurrence_handle = occurrence;
     }
@@ -272,6 +296,11 @@ impl Database {
     pub fn get_current_record_field(&self, field: &str) -> &str {
         let occurrence = self.get_current_occurrence();
         let id = occurrence.get_current_record();
+
+        if id.is_err() {
+            eprintln!("[-] Record not found.");
+            return "";
+        }
         let table = occurrence.table_ptr;
 
         let field = self.tables[table as usize].fields
@@ -279,26 +308,34 @@ impl Database {
             .filter(|x| x.name == field)
             .collect::<Vec<&Field>>();
 
-        &field[0].records[id]
+        &field[0].records[id.unwrap()]
     }
 
-    pub fn get_record_by_field(&self, field: &str, record_id: usize) -> &str {
+    pub fn get_record_by_field(&self, field: &str, record_id: usize) -> Result<&str, &str> {
         let occurrence = self.get_current_occurrence();
         let id = occurrence.get_current_record();
         let table = occurrence.table_ptr;
+
+        if id.is_err() {
+            return Err("Record not found.");
+        }
 
         let field = self.tables[table as usize].fields
             .iter()
             .filter(|x| x.name == field)
             .collect::<Vec<&Field>>();
 
-        &field[0].records[record_id]
+        Ok(&field[0].records[record_id])
     }
 
-    pub fn get_current_record_by_field_mut(&mut self, field: &str) -> &mut str {
-        let occurrence = self.get_current_occurrence();
+    pub fn get_current_record_by_field_mut(&mut self, field: &str) -> Result<&mut str, &str> {
+        let occurrence = self.get_current_occurrence().clone();
         let id = occurrence.get_current_record();
         let table = occurrence.table_ptr;
+
+        if id.is_err() {
+            return Err("Record not found.");
+        }
 
         let field = self.tables[table as usize].fields
             .iter_mut()
@@ -306,14 +343,18 @@ impl Database {
             .filter(|x| x.1.name == field)
             .collect::<Vec<_>>()[0].0;
 
-        &mut self.tables[table as usize].fields[field].records[id]
+        Ok(&mut self.tables[table as usize].fields[field].records[id.unwrap()])
     }
 
-    pub fn get_current_record_by_table_field(&self, occurrence: &str, field: &str) -> &str {
+    pub fn get_current_record_by_table_field(&self, occurrence: &str, field: &str) -> Result<&str, &str> {
 
         let occurrence = &self.table_occurrences[self.occurrence_indices[occurrence] as usize];
         let id = occurrence.get_current_record();
         let table = occurrence.table_ptr;
+
+        if id.is_err() {
+            return Err("Record not found.");
+        }
 
         let field = self.tables[table as usize].fields
             .iter()
@@ -321,14 +362,18 @@ impl Database {
             .filter(|x| x.1.name == field)
             .collect::<Vec<_>>()[0].0;
 
-        &self.tables[table as usize].fields[field].records[id]
+        Ok(&self.tables[table as usize].fields[field].records[id.unwrap()])
     }
 
-    pub fn get_current_record_by_table_field_mut(&mut self, occurrence: &str, field: &str) -> &mut String {
+    pub fn get_current_record_by_table_field_mut(&mut self, occurrence: &str, field: &str) -> Result<&mut String, &str> {
 
         let occurrence = &self.table_occurrences[self.occurrence_indices[occurrence] as usize];
         let id = occurrence.get_current_record();
         let table = occurrence.table_ptr;
+
+        if id.is_err() {
+            return Err("Record not found.");
+        }
 
         let field = self.tables[table as usize].fields
             .iter_mut()
@@ -336,29 +381,92 @@ impl Database {
             .filter(|x| x.1.name == field)
             .collect::<Vec<_>>()[0].0;
 
-        &mut self.tables[table as usize].fields[field].records[id]
+        Ok(&mut self.tables[table as usize].fields[field].records[id.unwrap()])
     }
 
-    pub fn get_related_record_field(&mut self, occurrence: &str, field: &str) -> &str {
+    pub fn get_related_record_field(&mut self, occurrence: &str, field_target: &str) -> Result<String, &str> {
+
         let target_idx = self.occurrence_indices[occurrence] as usize;
-        let target_occurrence = &self.table_occurrences[target_idx];
-        let current_occurrence = &self.get_current_occurrence();
+        let path = self.relation_mgr.get_path(self.occurrence_handle.into(), target_idx);
+        if path.is_none() {
+            return Err("Cannot access unrelated record.");
+        }
 
-        let related_record_idx = current_occurrence.related_records
+        println!("Path: {:?}", path.clone().unwrap());
+
+        let path_uw = path.clone().unwrap();
+        let mut current_set = vec![];
+
+        for (current, next) in path_uw.windows(2).map(|x| (x[0], x[1])) {
+            let current_occurrence = self.get_occurrence(current);
+            let current_record = current_occurrence.get_current_record();
+
+            if current_record.is_err() {
+                return Err("Cannot access unrelated record.");
+            }
+
+            let relation = current_occurrence.related_records
+                .iter()
+                .filter(|x| x.occurrence == next)
+                .collect::<Vec<_>>();
+
+            if relation.len() == 0 {
+                return Err("Cannot access unrelated record.");
+            }
+
+            if current_set.is_empty() {
+                println!("{:?}", &self.get_current_table()
+                    .fields[relation[0].relationship.field1]);
+                let tmp = &self.get_current_table()
+                    .fields[relation[0].relationship.field1]
+                    .records[current_record.unwrap()];
+                current_set.push((current_record.unwrap(), tmp.to_string()));
+            }
+
+            let next_occurrence = self.get_occurrence(next);
+            let next_table = &self.tables[next_occurrence.table_ptr as usize];
+
+            let rhs_list = &next_table
+                .fields[relation[0].relationship.field2]
+                .records;
+
+            // println!("list: {:?}", rhs_list);
+            let mut related_set = vec![];
+            for lhs in &mut current_set {
+                for rhs in rhs_list.iter().enumerate() {
+                    let related = match relation[0].relationship.join_by {
+                        RelationComparison::Equal => *lhs.1 == *rhs.1,
+                        RelationComparison::NotEqual => *lhs.1 != *rhs.1,
+                        RelationComparison::Less => *lhs.1 <= *rhs.1.to_string(),
+                        RelationComparison::LessEqual => *lhs.1 <= *rhs.1.to_string(),
+                        RelationComparison::Greater => *lhs.1 >= *rhs.1.to_string(),
+                        RelationComparison::GreaterEqual => *lhs.1 >= *rhs.1.to_string(),
+                        RelationComparison::Cartesian => true,
+                        _ => false
+                    };
+
+                    // println!("relation: {}: {} :: {:?} :: {}: {}", current, lhs.1,
+                    // relation[0].relationship.join_by, next, rhs.1);
+                    if related {
+                        related_set.push((rhs.0, rhs.1.to_string()));
+                    }
+                }
+            }
+            if related_set.is_empty() {
+                return Err("Cannot access unrelated record.");
+            }
+            current_set.clear();
+            current_set.clone_from(&related_set);
+        }
+
+        let n = path_uw.last().unwrap();
+        let table = self.get_occurrence(*n).table_ptr;
+
+        return Ok(self.tables[table as usize].fields
             .iter()
-            .filter(|x| x.occurrence == target_idx)
-            .take(1)
-            .collect::<Vec<_>>()[0].records[0];
-
-        let table_idx = target_occurrence.table_ptr;
-
-        let field = self.tables[table_idx as usize].fields
-            .iter()
-            .enumerate()
-            .filter(|x| x.1.name == field)
-            .collect::<Vec<_>>()[0].0;
-
-        &self.tables[table_idx as usize].fields[field].records[0]
+            .filter(|x| x.name == field_target)
+            .collect::<Vec<_>>()[0]
+            .records[current_set[0].0].to_string());
     }
 
     pub fn get_related_record_field_mut(&mut self, occurrence: &str, field: &str) -> &mut str {
