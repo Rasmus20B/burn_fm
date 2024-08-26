@@ -57,7 +57,7 @@ impl Parser {
 
                     /* Parse the instructions inside the script with their options */
                     while let Some(t) = parser_iter.next() {
-                        // println!("Found instruction: {:?} : {}", t.ttype, t.value);
+                        println!("Found instruction: {:?} : {}", t.ttype, t.value);
                         match t.ttype {
                             TokenType::Identifier => {
                                 if let Ok(op) = Instruction::from_str(&t.value) {
@@ -97,17 +97,17 @@ impl Parser {
                                             TokenType::Neq => {
                                                 buffer.push_str("!=");
                                             },
-                                            TokenType::Lt => {
-                                                buffer.push_str("<");
-                                            },
-                                            TokenType::Leq => {
-                                                buffer.push_str("<=");
-                                            },
                                             TokenType::Gt => {
                                                 buffer.push_str(">");
                                             },
                                             TokenType::Geq => {
                                                 buffer.push_str(">=");
+                                            },
+                                            TokenType::Lt => {
+                                                buffer.push_str("<");
+                                            },
+                                            TokenType::Leq => {
+                                                buffer.push_str("<=");
                                             },
                                             TokenType::Plus => {
                                                 buffer.push('+');
@@ -115,7 +115,7 @@ impl Parser {
                                             TokenType::Ampersand => {
                                                 buffer.push('&');
                                             },
-                                            _ => { eprintln!("Unexpected Token."); }
+                                            _ => { eprintln!("Unexpected Token : {:?}", t); }
                                         }
                                     }
                                     tmp.instructions.insert(tmp.instructions.len(), step);
@@ -201,18 +201,6 @@ impl Parser {
                                         TokenType::Neq => {
                                             buf.push_str("!=");
                                         },
-                                        TokenType::Lt => {
-                                            buf.push_str("<");
-                                        },
-                                        TokenType::Leq => {
-                                            buf.push_str("<=");
-                                        },
-                                        TokenType::Gt => {
-                                            buf.push_str(">");
-                                        },
-                                        TokenType::Geq => {
-                                            buf.push_str(">=");
-                                        },
                                         TokenType::Plus => {
                                             buf.push('+');
                                         },
@@ -250,18 +238,6 @@ impl Parser {
                                         },
                                         TokenType::Neq => {
                                             buf.push_str("!=");
-                                        },
-                                        TokenType::Lt => {
-                                            buf.push_str("<");
-                                        },
-                                        TokenType::Leq => {
-                                            buf.push_str("<=");
-                                        },
-                                        TokenType::Gt => {
-                                            buf.push_str(">");
-                                        },
-                                        TokenType::Geq => {
-                                            buf.push_str(">=");
                                         },
                                         TokenType::Plus => {
                                             buf.push('+');
@@ -326,6 +302,7 @@ mod tests {
                     set_variable(x, \"Jeff\" & \" Keighly\");
                 }
             }
+            assert(1 == 1);
             exit_script(i);
         }";
         let tokens = lexer::Lexer::new(code.to_string()).get_tokens();
@@ -374,6 +351,10 @@ mod tests {
             },
             ScriptStep { opcode: Instruction::EndLoop,
                          switches: vec![],
+                         index: 0,
+            },
+            ScriptStep { opcode: Instruction::Assert,
+                         switches: vec!["1==1".to_string()],
                          index: 0,
             },
             ScriptStep { opcode: Instruction::ExitScript,

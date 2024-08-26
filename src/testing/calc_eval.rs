@@ -115,6 +115,7 @@ impl Parser {
             return Err("Nothing to parse.");
         }
         let cur = n.unwrap().clone();
+        /* TODO: Parentheses Parsing */
         match cur.ttype {
             calc_tokens::TokenType::Identifier => {
                 Ok(self.parse_identifier(cur).expect("Unable to parse identifier"))
@@ -126,7 +127,7 @@ impl Parser {
                 Ok(self.parse_string(cur).expect("Unable to parse String literal"))
             },
             _ => {
-                Err("Unable to parse calculation")
+                Err("Unable to parse calculation: ")
             }
             
         }

@@ -161,6 +161,7 @@ impl Lexer {
                         ret.push(b);
                     }
                     if *lex_iter.peek().unwrap() == '=' {
+                        lex_iter.next();
                         ret.push(Token::new(TokenType::Geq));
                     } else {
                         lex_iter.next();
@@ -177,6 +178,7 @@ impl Lexer {
                         ret.push(b);
                     }
                     if *lex_iter.peek().unwrap() == '=' {
+                        lex_iter.next();
                         ret.push(Token::new(TokenType::Leq));
                     } else {
                         lex_iter.next();
@@ -297,6 +299,7 @@ mod tests {
                 exit_loop_if(i == y);
                 set_variable(i, i + 1);
             }
+            assert(i == y);
             exit_script(i);
         }";
 
@@ -335,6 +338,13 @@ mod tests {
             Token::new(TokenType::CloseParen),
             Token::new(TokenType::SemiColon),
             Token::new(TokenType::CloseBracket),
+            Token::with_value(TokenType::Identifier, "assert"),
+            Token::new(TokenType::OpenParen),
+            Token::with_value(TokenType::Identifier, "i"),
+            Token::new(TokenType::Eq),
+            Token::with_value(TokenType::Identifier, "y"),
+            Token::new(TokenType::CloseParen),
+            Token::new(TokenType::SemiColon),
             Token::with_value(TokenType::Identifier, "exit_script"),
             Token::new(TokenType::OpenParen),
             Token::with_value(TokenType::Identifier, "i"),
