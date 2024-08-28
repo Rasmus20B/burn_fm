@@ -18,7 +18,6 @@ mod fm_script_engine;
 mod testing;
 mod dbcharconv;
 
-
 fn main() {
 
     let args = cli::CLI::parse();

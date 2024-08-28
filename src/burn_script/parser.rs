@@ -36,7 +36,7 @@ impl Parser {
                     /* Parse arguments to script */
                     while let Some(t) = parser_iter.next() {
                         match t.ttype {
-                            TokenType::Identifier => {
+                            TokenType::Argument => {
                                 tmp.arguments.push(t.value.clone());
                             },
                             TokenType::Comma => {
@@ -57,7 +57,6 @@ impl Parser {
 
                     /* Parse the instructions inside the script with their options */
                     while let Some(t) = parser_iter.next() {
-                        println!("Found instruction: {:?} : {}", t.ttype, t.value);
                         match t.ttype {
                             TokenType::Identifier => {
                                 if let Ok(op) = Instruction::from_str(&t.value) {
@@ -66,59 +65,21 @@ impl Parser {
                                         index: 0,
                                         switches: vec![],
                                     };
-                                    let mut buffer = String::new();
+
                                     while let Some(t) = parser_iter.next() {
                                         match t.ttype {
-                                            TokenType::Identifier | TokenType::NumericLiteral | TokenType::String => {
-                                                buffer.push_str(&t.value);
+                                            TokenType::Argument => {
+                                                step.switches.push(t.value.clone());
                                             }
-                                            TokenType::SemiColon => {
+                                            _ => {
+                                                if t.ttype != TokenType::SemiColon {
+                                                    panic!("unterminated script step");
+                                                }
+                                                tmp.instructions.insert(tmp.instructions.len(), step);
                                                 break;
-                                            },
-                                            TokenType::OpenBracket => {
-                                                break;
                                             }
-                                            TokenType::OpenParen => {
-                                                continue;
-                                            },
-                                            TokenType::CloseParen => {
-                                                step.switches.push(buffer.clone());
-                                                buffer.clear();
-                                                continue;
-                                            }
-                                            TokenType::Comma => {
-                                                step.switches.push(buffer.clone());
-                                                buffer.clear();
-                                                continue;
-                                            },
-                                            TokenType::Eq => {
-                                                buffer.push_str("==");
-                                            },
-                                            TokenType::Neq => {
-                                                buffer.push_str("!=");
-                                            },
-                                            TokenType::Gt => {
-                                                buffer.push_str(">");
-                                            },
-                                            TokenType::Geq => {
-                                                buffer.push_str(">=");
-                                            },
-                                            TokenType::Lt => {
-                                                buffer.push_str("<");
-                                            },
-                                            TokenType::Leq => {
-                                                buffer.push_str("<=");
-                                            },
-                                            TokenType::Plus => {
-                                                buffer.push('+');
-                                            },
-                                            TokenType::Ampersand => {
-                                                buffer.push('&');
-                                            },
-                                            _ => { eprintln!("Unexpected Token : {:?}", t); }
                                         }
                                     }
-                                    tmp.instructions.insert(tmp.instructions.len(), step);
                                 } else {
                                     eprintln!("Invalid script step: {}", t.value);
                                 }
@@ -182,37 +143,22 @@ impl Parser {
                                     index: 0,
                                     switches: vec![]
                                 };
-                                let mut buf = "".to_string();
-                                while let Some(n) = parser_iter.next() {
-                                    match n.ttype {
-                                        TokenType::CloseParen => {
-                                            step.switches.push(buf.clone());
-                                            break;
-                                        },
-                                        TokenType::Identifier | TokenType::NumericLiteral => {
-                                            buf.push_str(&n.value);
+
+                                while let Some(t) = parser_iter.next() {
+                                    match t.ttype {
+                                        TokenType::Argument => {
+                                            println!("arg: {:?}", t.value);
+                                            step.switches.push(t.value.clone());
                                         }
-                                        TokenType::OpenParen => {
-                                            continue;
-                                        }
-                                        TokenType::Eq => {
-                                            buf.push_str("==");
-                                        },
-                                        TokenType::Neq => {
-                                            buf.push_str("!=");
-                                        },
-                                        TokenType::Plus => {
-                                            buf.push('+');
-                                        },
-                                        TokenType::Ampersand => {
-                                            buf.push('&');
-                                        },
                                         _ => {
-                                            buf.push_str(&t.value);
-                                        },
+                                            if t.ttype != TokenType::OpenBracket {
+                                                panic!("missing open bracket on elif");
+                                            }
+                                            tmp.instructions.insert(tmp.instructions.len(), step);
+                                            break;
+                                        }
                                     }
                                 }
-                                tmp.instructions.insert(tmp.instructions.len(), step);
                             },
                             TokenType::If => {
                                 let mut step = ScriptStep {
@@ -220,38 +166,21 @@ impl Parser {
                                     index: 0,
                                     switches: vec![]
                                 };
-                                let mut buf = "".to_string();
-                                while let Some(n) = parser_iter.next() {
-                                    match n.ttype {
-                                        TokenType::CloseParen => {
-                                            step.switches.push(buf.clone());
-                                            break;
-                                        },
-                                        TokenType::Identifier | TokenType::NumericLiteral => {
-                                            buf.push_str(&n.value);
+                                while let Some(t) = parser_iter.next() {
+                                    match t.ttype {
+                                        TokenType::Argument => {
+                                            println!("arg: {:?}", t.value);
+                                            step.switches.push(t.value.clone());
                                         }
-                                        TokenType::OpenParen => {
-                                            continue;
-                                        }
-                                        TokenType::Eq => {
-                                            buf.push_str("==");
-                                        },
-                                        TokenType::Neq => {
-                                            buf.push_str("!=");
-                                        },
-                                        TokenType::Plus => {
-                                            buf.push('+');
-                                        },
-                                        TokenType::Ampersand => {
-                                            buf.push('&');
-                                        },
                                         _ => {
-                                            buf.push_str(&t.value);
-                                        },
+                                            if t.ttype != TokenType::OpenBracket {
+                                                panic!("Missing open bracket on if");
+                                            }
+                                            tmp.instructions.insert(tmp.instructions.len(), step);
+                                            break;
+                                        }
                                     }
-                                    
                                 }
-                                tmp.instructions.insert(tmp.instructions.len(), step);
                                 punc_stack.push(Instruction::If);
                             },
                             TokenType::Else => {
@@ -267,7 +196,9 @@ impl Parser {
                                 };
                                 tmp.instructions.insert(tmp.instructions.len(), step);
                             },
-                            _ => { eprintln!("Invalid token in script: {:?}", t); }
+                            _ => { 
+                                eprintln!("Invalid token in script: {:?}", t); 
+                            }
                         }
                     }
                     scripts.push(tmp);
@@ -295,7 +226,7 @@ mod tests {
             set_variable(i, x);
             loop {
                 exit_loop_if(i == y);
-                set_variable(i, i + 1);
+                set_variable(i, (i + 1));
                 if(i == 7) {
                     set_variable(x, 20);
                 } else {
@@ -322,15 +253,15 @@ mod tests {
                          index: 0,
             },
             ScriptStep { opcode: Instruction::ExitLoopIf,
-                         switches: vec!["i==y".to_string()],
+                         switches: vec!["i == y".to_string()],
                          index: 0,
             },
             ScriptStep { opcode: Instruction::SetVariable,
-                         switches: vec!["i".to_string(), "i+1".to_string()],
+                         switches: vec!["i".to_string(), "(i + 1)".to_string()],
                          index: 0,
             },
             ScriptStep { opcode: Instruction::If,
-                         switches: vec!["i==7".to_string()],
+                         switches: vec!["i == 7".to_string()],
                          index: 0,
             },
             ScriptStep { opcode: Instruction::SetVariable,
@@ -342,7 +273,7 @@ mod tests {
                          index: 0,
             },
             ScriptStep { opcode: Instruction::SetVariable,
-                         switches: vec!["x".to_string(), "\"Jeff\"&\" Keighly\"".to_string()],
+                         switches: vec!["x".to_string(), "\"Jeff\" & \" Keighly\"".to_string()],
                          index: 0,
             },
             ScriptStep { opcode: Instruction::EndIf,
@@ -354,7 +285,7 @@ mod tests {
                          index: 0,
             },
             ScriptStep { opcode: Instruction::Assert,
-                         switches: vec!["1==1".to_string()],
+                         switches: vec!["1 == 1".to_string()],
                          index: 0,
             },
             ScriptStep { opcode: Instruction::ExitScript,

@@ -121,7 +121,7 @@ impl Database {
     pub fn generate_from_fmp12(&mut self, file: &FmpFile) {
 
         /* Generate Base Tables */
-        let tables_size = file.tables.keys().into_iter().max().unwrap();
+        let tables_size = file.tables.keys().into_iter().max().unwrap_or(&0);
         self.tables.resize(*tables_size + 1, Table::new("".to_string()));
         for (i, table) in &file.tables {
             let tmp = Table {
@@ -130,7 +130,7 @@ impl Database {
             };
             self.tables[*i] = tmp;
 
-            let fields_size = table.fields.keys().into_iter().max().unwrap();
+            let fields_size = table.fields.keys().into_iter().max().unwrap_or(&0);
             self.tables[*i].fields.resize(*fields_size as usize + 1, Field::new());
             for (j, field) in &table.fields {
                 self.tables[*i as usize].fields[*j as usize] = Field {
@@ -141,8 +141,8 @@ impl Database {
         }
 
         /* Generate Table Occurrences */
-        let occurrence_size = file.table_occurrences.keys().into_iter().max().unwrap();
-        self.occurrence_handle = *file.table_occurrences.keys().into_iter().min().unwrap() as u16;
+        let occurrence_size = file.table_occurrences.keys().into_iter().max().unwrap_or(&0);
+        self.occurrence_handle = *file.table_occurrences.keys().into_iter().min().unwrap_or(&0) as u16;
         self.table_occurrences.resize(*occurrence_size + 1, TableOccurrence::new());
         for (i, occurrence) in &file.table_occurrences {
             self.occurrence_indices.insert(

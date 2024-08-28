@@ -4,7 +4,8 @@ use super::calc_tokens::{self, Token, TokenType};
 #[derive(Debug, PartialEq)]
 pub enum Node {
     Unary { value: String, child: Option<Box<Node>> },
-    Binary { left: Box<Node>, operation: TokenType, right: Box<Node> }
+    Binary { left: Box<Node>, operation: TokenType, right: Box<Node> },
+    Grouping { left: Box<Node>, operation: TokenType, right: Box<Node> }
 }
 
 
@@ -33,6 +34,13 @@ impl Parser {
             return None;
         }
         self.index += 1;
+        Some(&self.tokens[self.index - 1])
+    }
+
+    fn previous(&self) -> Option<&Token> {
+        if self.index == 0 {
+            return None;
+        }
         Some(&self.tokens[self.index - 1])
     }
 
@@ -65,7 +73,7 @@ impl Parser {
     pub fn parse_numeric(&mut self, tok: Token) -> Result<Box<Node>, &str> {
         let n = self.next();
         if n.is_none() {
-            return Ok(Box::new(Node::Unary { value: self.current().value.clone(), child: None }));
+            return Ok(Box::new(Node::Unary { value: tok.value.clone(), child: None }));
         }
 
         match n.unwrap().ttype {
@@ -76,9 +84,15 @@ impl Parser {
                 Ok(Box::new(Node::Binary { 
                     left: Box::new(Node::Unary { value: tok.value, child: None }),
                     operation: n.unwrap().ttype, 
-                    right: self.parse().expect("Unable to parse.")
+                    right: self.parse_expression().expect("Unable to parse.")
                 }))
             },
+            TokenType::CloseParen => {
+                Ok(Box::new(Node::Unary { 
+                    value: tok.value.clone(), 
+                    child: None 
+                }))
+            }
             _ => {
                 Err("Invalid expression")
             }
@@ -91,14 +105,14 @@ impl Parser {
             return Ok(Box::new(Node::Unary { value: format!("{}", tok.value), child: None }));
         }
         match n.unwrap().ttype {
-            calc_tokens::TokenType::Ampersand => {
+            TokenType::Ampersand => {
                 Ok(Box::new(Node::Binary { 
                     left: Box::new(Node::Unary { value: format!("{}", tok.value), child: None } ), 
                     operation: n.unwrap().ttype, 
                     right: self.parse().expect("unable to parse") 
                 }))
             },
-            calc_tokens::TokenType::Eq => {
+            TokenType::Eq => {
                 Ok(Box::new(Node::Binary { 
                     left: Box::new(Node::Unary { value: format!("{}", tok.value), child: None } ), 
                     operation: n.unwrap().ttype,
@@ -109,7 +123,16 @@ impl Parser {
         }
     }
 
-    pub fn parse(&mut self) -> Result<Box<Node>, &str> {
+    pub fn parse_grouping(&mut self) -> Result<Box<Node>, &str> {
+
+        let n = self.peek();
+        if n.is_none() {
+            return Err("unterminated parenthesis.");
+        }
+        Ok(self.parse_expression().expect("Unable to parse subparen."))
+    }
+
+    pub fn parse_expression(&mut self) -> Result<Box<Node>, &str> {
         let n = self.next();
         if n.is_none() {
             return Err("Nothing to parse.");
@@ -117,20 +140,35 @@ impl Parser {
         let cur = n.unwrap().clone();
         /* TODO: Parentheses Parsing */
         match cur.ttype {
-            calc_tokens::TokenType::Identifier => {
+            TokenType::Identifier => {
                 Ok(self.parse_identifier(cur).expect("Unable to parse identifier"))
             },
-            calc_tokens::TokenType::NumericLiteral => {
+            TokenType::NumericLiteral => {
                 Ok(self.parse_numeric(cur).expect("Unable to parse numeric literal"))
             },
-            calc_tokens::TokenType::String => {
+            TokenType::String => {
                 Ok(self.parse_string(cur).expect("Unable to parse String literal"))
             },
+            TokenType::OpenParen => {
+                let expr1 = (self.parse_expression().expect("unable to parse grouped expression."));
+                let operator = self.next();
+                let op = operator.unwrap().ttype;
+                let expr2 = (self.parse_expression().expect("unable to parse grouped expression."));
+
+                Ok(Box::new( Node::Grouping { 
+                    left: expr1, 
+                    operation: op, 
+                    right: expr2 
+                }))
+            }
             _ => {
                 Err("Unable to parse calculation: ")
             }
-            
         }
+    }
+
+    pub fn parse(&mut self) -> Result<Box<Node>, &str> {
+        self.parse_expression()
     }
 }
 
@@ -159,6 +197,30 @@ mod tests {
 
         }
     }
+
+    #[test]
+    fn group_arithmetic() {
+        let tokens: Vec<Token> = vec![
+            Token::new(TokenType::OpenParen),
+            Token::with_value(TokenType::NumericLiteral, 3.to_string()),
+            Token::new(TokenType::Plus),
+            Token::with_value(TokenType::NumericLiteral, 2.to_string()),
+            Token::new(TokenType::CloseParen),
+            Token::new(TokenType::Multiply),
+            Token::with_value(TokenType::NumericLiteral, 4.to_string()),
+        ];
+        let mut parser = Parser::new(tokens);
+        let ast = parser.parse().expect("Unable to parse tokens");
+        assert_eq!(Box::new(Node::Grouping { 
+            left: Box::new(Node::Binary { 
+                left: Box::new(Node::Unary { value: 3.to_string(), child: None }), 
+                operation: TokenType::Plus, 
+                right: Box::new(Node::Unary { value: 2.to_string(), child: None }) }), 
+            operation: TokenType::Multiply, 
+            right: Box::new(Node::Unary { value: 4.to_string(), child: None }) 
+        }), ast);
+    }
+
     #[test]
     fn string_concat() {
         let tokens: Vec<Token> = vec![

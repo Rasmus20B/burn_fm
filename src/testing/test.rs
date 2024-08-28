@@ -15,6 +15,7 @@ use crate::testing::database;
 use crate::testing::database::Table;
 
 use super::calc_tokens;
+use super::calc_tokens::TokenType;
 use super::database::Database;
 use super::layout_mgr::LayoutMgr;
 
@@ -304,6 +305,8 @@ impl<'a> TestEnvironment<'a> {
             Instruction::SetVariable => {
                 let name : &str = cur_instruction.switches[0].as_ref();
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[1]);
+
+                println!("setting {} to {}", name, val);
                 let tmp = Variable::new(name.to_string(), val.to_string(), false);
                 let handle = &mut self.variables[n_stack].get_mut(name);
                 if handle.is_none() {
@@ -455,6 +458,10 @@ impl<'a> TestEnvironment<'a> {
         }
     }
 
+    pub fn get_variable_by_name(&self, scope: usize, var: &str) -> Option<&Variable> {
+        return self.variables[scope].get(var)
+    }
+
     pub fn eval_calculation(&self, calculation: &str) -> String {
         let flush_buffer = |b: &str| -> Result<calc_tokens::Token, String> {
             match b {
@@ -475,6 +482,7 @@ impl<'a> TestEnvironment<'a> {
         let mut lex_iter = calculation.chars().into_iter().peekable();
         let mut buffer = String::new();
         while let Some(c) = &lex_iter.next() {
+
             if c.is_whitespace() && buffer.is_empty() {
                 continue;
             }
@@ -495,6 +503,14 @@ impl<'a> TestEnvironment<'a> {
                     }
                     tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::OpenParen)).unwrap());
                 },
+                ')' => {
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        tokens.push(b.unwrap());
+                    }
+                    tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::CloseParen)).unwrap());
+                },
                 '+' => {
                     if buffer.len() > 0 {
                         let b = flush_buffer(buffer.as_str());
@@ -502,6 +518,30 @@ impl<'a> TestEnvironment<'a> {
                         tokens.push(b.unwrap());
                     }
                     tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::Plus)).unwrap());
+                },
+                '-' => {
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        tokens.push(b.unwrap());
+                    }
+                    tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::Minus)).unwrap());
+                },
+                '*' => {
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        tokens.push(b.unwrap());
+                    }
+                    tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::Multiply)).unwrap());
+                },
+                '/' => {
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        tokens.push(b.unwrap());
+                    }
+                    tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::Divide)).unwrap());
                 },
                 '&' => {
                     if buffer.len() > 0 {
@@ -608,6 +648,7 @@ impl<'a> TestEnvironment<'a> {
             buffer.clear();
             tokens.push(b.unwrap());
         }
+
         /* Once we have our tokens, parse them into a binary expression. */
         let ast = calc_eval::Parser::new(tokens).parse().expect("unable to parse tokens.");
         self.evaluate(ast)
@@ -666,6 +707,17 @@ impl<'a> TestEnvironment<'a> {
                 }
                 "".to_string()
             },
+            calc_eval::Node::Grouping { left, operation, right } => {
+                let lhs = &self.evaluate(left);
+                let rhs = &self.evaluate(right);
+
+                match operation {
+                    TokenType::Multiply => {
+                        (lhs.parse::<f32>().unwrap() * rhs.parse::<f32>().unwrap()).to_string()
+                    }
+                    _ => "Invalid operation.".to_string()
+                }
+            }
             calc_eval::Node::Binary { left, operation, right } => {
                 let lhs_wrap = &self.evaluate(left);
                 let rhs_wrap = &self.evaluate(right);
@@ -686,7 +738,6 @@ impl<'a> TestEnvironment<'a> {
                          ).to_string() 
                     },
                     calc_tokens::TokenType::Eq => { 
-                        // println!("lhs: {:?}, rhs: {:?} == {:?}", lhs, rhs, lhs == rhs);
                         (lhs.value
                          == 
                          rhs.value
@@ -737,9 +788,32 @@ impl<'a> TestEnvironment<'a> {
 #[cfg(test)]
 mod tests {
     use std::path::Path;
-    use crate::{compile::compiler::compile_burn, decompile::decompiler::decompile_fmp12_file};
+    use crate::{compile::{self, compiler::compile_burn}, decompile::decompiler::decompile_fmp12_file, file::FmpFile};
     use super::TestEnvironment;
 
+
+    #[test]
+    pub fn calc_test() {
+        let mut file = FmpFile::new();
+        let code = "
+        test basicTest:
+            script: [
+                define paren_test() {
+                    set_variable(x, (2 + 3) * 4);
+                    show_custom_dialog(x);
+                    assert(x == 20);
+                }
+            ]
+        end test;
+        ";
+
+        let mut test = compile_burn(code);
+        file.tests.append(&mut test.tests);
+        let mut te : TestEnvironment = TestEnvironment::new(&file);
+        te.generate_test_environment();
+        te.run_tests();
+        assert_eq!(te.get_variable_by_name(0, "x").unwrap().value, 20.to_string());
+    }
     #[test]
     pub fn basic_loop_test() {
         let code = "

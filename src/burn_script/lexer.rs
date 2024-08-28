@@ -15,6 +15,7 @@ impl Lexer {
         let mut result = vec![];
         let mut buffer = String::new();
         let mut lex_iter = self.code.chars().into_iter().peekable();
+        let mut scope = 0;
 
         let flush_buffer = |b: &str| {
             match b {
@@ -54,13 +55,55 @@ impl Lexer {
                 '(' =>
                 {
                     let mut ret: Vec<Token> = vec![];
-                    
+
                     if buffer.len() > 0 {
                         let b = flush_buffer(buffer.as_str());
                         buffer.clear();
                         ret.push(b);
                     }
-                    ret.push(Token::new(TokenType::OpenParen));
+
+                    let mut stack = 0;
+                    let mut in_string = false;
+                    while let Some(c) = &lex_iter.next() {
+                        match c {
+                            ' ' => {
+                                if !in_string && buffer.is_empty() {
+                                    continue;
+                                } else {
+                                    buffer.push(*c);
+                                }
+                            }
+                            '\"' => {
+                                in_string = !in_string;
+                                buffer.push(*c);
+                            }
+                            ')' => {
+                                if stack == 0 {
+                                    ret.push(Token::with_value(TokenType::Argument, &buffer));
+                                    buffer.clear();
+                                    break;
+                                } else {
+                                    buffer.push(*c);
+                                    stack -= 1;
+                                }
+                            },
+                            '(' => {
+                                stack += 1;
+                                buffer.push(*c);
+                            }
+                            ',' => {
+                                if stack == 0 {
+                                    ret.push(Token::with_value(TokenType::Argument, &buffer));
+                                    buffer.clear();
+                                } else {
+                                    buffer.push(*c);
+                                }
+                            }
+                            _ => {
+                                buffer.push(*c);
+                            }
+                        }
+                    }
                     Some(ret)
                 },
                 '{' =>
@@ -72,6 +115,7 @@ impl Lexer {
                         ret.push(b);
                     }
                     ret.push(Token::new(TokenType::OpenBracket));
+                    scope += 1;
                     Some(ret)
                 },
                 '}' =>
@@ -83,17 +127,7 @@ impl Lexer {
                         ret.push(b);
                     }
                     ret.push(Token::new(TokenType::CloseBracket));
-                    Some(ret)
-                },
-                ')' =>
-                {
-                    let mut ret: Vec<Token> = vec![];
-                    if buffer.len() > 0 {
-                        let b = flush_buffer(buffer.as_str());
-                        buffer.clear();
-                        ret.push(b);
-                    }
-                    ret.push(Token::new(TokenType::CloseParen));
+                    scope -= 1;
                     Some(ret)
                 },
                 ',' => 
@@ -241,33 +275,6 @@ impl Lexer {
                     ret.push(Token::new(TokenType::Ampersand));
                     Some(ret)
                 },
-                '"' => 
-                {
-                    let mut ret: Vec<Token> = vec![];
-                    if buffer.len() > 0 {
-                        let b = flush_buffer(buffer.as_str());
-                        buffer.clear();
-                        ret.push(b);
-                    }
-
-                    let mut buf = String::new();
-                    buf.push('"');
-
-                    while let Some(n) = lex_iter.next() {
-                        match n {
-                            '"' => {
-                                buf.push('"');
-                                break;
-                            },
-                            _ => {
-                                buf.push(n);
-                            }
-                        }
-                    }
-                    ret.push(Token::with_value(TokenType::String, &buf));
-                    Some(ret)
-
-                }
                 _ => {
                     buffer.push(*c);
                     None
@@ -299,6 +306,7 @@ mod tests {
                 exit_loop_if(i == y);
                 set_variable(i, i + 1);
             }
+            set_variable(x, min(3, 3));
             assert(i == y);
             exit_script(i);
         }";
@@ -306,49 +314,32 @@ mod tests {
         let tokens_expected: Vec<Token> = vec![
             Token::new(TokenType::Define),
             Token::with_value(TokenType::Identifier, "test_func"),
-            Token::new(TokenType::OpenParen),
-            Token::with_value(TokenType::Identifier, "x"),
-            Token::new(TokenType::Comma),
-            Token::with_value(TokenType::Identifier, "y"),
-            Token::new(TokenType::CloseParen), 
+            Token::with_value(TokenType::Argument, "x"),
+            Token::with_value(TokenType::Argument, "y"),
             Token::new(TokenType::OpenBracket),
             Token::with_value(TokenType::Identifier, "set_variable"),
-            Token::new(TokenType::OpenParen),
-            Token::with_value(TokenType::Identifier, "i"),
-            Token::new(TokenType::Comma),
-            Token::with_value(TokenType::Identifier, "x"),
-            Token::new(TokenType::CloseParen),
+            Token::with_value(TokenType::Argument, "i"),
+            Token::with_value(TokenType::Argument, "x"),
             Token::new(TokenType::SemiColon),
             Token::new(TokenType::Loop),
             Token::new(TokenType::OpenBracket),
             Token::with_value(TokenType::Identifier, "exit_loop_if"),
-            Token::new(TokenType::OpenParen),
-            Token::with_value(TokenType::Identifier, "i"),
-            Token::new(TokenType::Eq),
-            Token::with_value(TokenType::Identifier, "y"),
-            Token::new(TokenType::CloseParen),
+            Token::with_value(TokenType::Argument, "i == y"),
             Token::new(TokenType::SemiColon),
             Token::with_value(TokenType::Identifier, "set_variable"),
-            Token::new(TokenType::OpenParen),
-            Token::with_value(TokenType::Identifier, "i"),
-            Token::new(TokenType::Comma),
-            Token::with_value(TokenType::Identifier, "i"),
-            Token::new(TokenType::Plus),
-            Token::with_value(TokenType::NumericLiteral, "1"),
-            Token::new(TokenType::CloseParen),
+            Token::with_value(TokenType::Argument, "i"),
+            Token::with_value(TokenType::Argument, "i + 1"),
             Token::new(TokenType::SemiColon),
             Token::new(TokenType::CloseBracket),
+            Token::with_value(TokenType::Identifier, "set_variable"),
+            Token::with_value(TokenType::Argument, "x"),
+            Token::with_value(TokenType::Argument, "min(3, 3)"),
+            Token::new(TokenType::SemiColon),
             Token::with_value(TokenType::Identifier, "assert"),
-            Token::new(TokenType::OpenParen),
-            Token::with_value(TokenType::Identifier, "i"),
-            Token::new(TokenType::Eq),
-            Token::with_value(TokenType::Identifier, "y"),
-            Token::new(TokenType::CloseParen),
+            Token::with_value(TokenType::Argument, "i == y"),
             Token::new(TokenType::SemiColon),
             Token::with_value(TokenType::Identifier, "exit_script"),
-            Token::new(TokenType::OpenParen),
-            Token::with_value(TokenType::Identifier, "i"),
-            Token::new(TokenType::CloseParen),
+            Token::with_value(TokenType::Argument, "i"),
             Token::new(TokenType::SemiColon),
             Token::new(TokenType::CloseBracket)
         ];

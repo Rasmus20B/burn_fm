@@ -174,7 +174,7 @@ impl Parser {
                             }
                         }
                     }
-                    ret.table_occurrences.insert(ret.table_occurrences.len() + 1, table_occurence);
+                    ret.table_occurrences.insert(ret.table_occurrences.len(), table_occurence);
                 },
                 TokenType::Test => {
                     let mut test = FMComponentTest::new();
