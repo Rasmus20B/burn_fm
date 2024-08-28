@@ -306,7 +306,6 @@ impl<'a> TestEnvironment<'a> {
                 let name : &str = cur_instruction.switches[0].as_ref();
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[1]);
 
-                println!("setting {} to {}", name, val);
                 let tmp = Variable::new(name.to_string(), val.to_string(), false);
                 let handle = &mut self.variables[n_stack].get_mut(name);
                 if handle.is_none() {
@@ -737,6 +736,39 @@ impl<'a> TestEnvironment<'a> {
                          rhs.value.parse::<f64>().unwrap()
                          ).to_string() 
                     },
+                    calc_tokens::TokenType::Minus => { 
+                        if lhs.otype != OperandType::Number
+                            || rhs.otype != OperandType::Number {
+                                eprintln!("Unable to add non-number types.");
+                                return "undefined".to_string();
+                        }
+                        (lhs.value.parse::<f64>().unwrap()
+                         - 
+                         rhs.value.parse::<f64>().unwrap()
+                         ).to_string() 
+                    },
+                    calc_tokens::TokenType::Multiply => { 
+                        if lhs.otype != OperandType::Number
+                            || rhs.otype != OperandType::Number {
+                                eprintln!("Unable to add non-number types.");
+                                return "undefined".to_string();
+                        }
+                        (lhs.value.parse::<f64>().unwrap()
+                         * 
+                         rhs.value.parse::<f64>().unwrap()
+                         ).to_string() 
+                    },
+                    calc_tokens::TokenType::Divide => { 
+                        if lhs.otype != OperandType::Number
+                            || rhs.otype != OperandType::Number {
+                                eprintln!("Unable to add non-number types.");
+                                return "undefined".to_string();
+                        }
+                        (lhs.value.parse::<f64>().unwrap()
+                         / 
+                         rhs.value.parse::<f64>().unwrap()
+                         ).to_string() 
+                    },
                     calc_tokens::TokenType::Eq => { 
                         (lhs.value
                          == 
@@ -788,7 +820,7 @@ impl<'a> TestEnvironment<'a> {
 #[cfg(test)]
 mod tests {
     use std::path::Path;
-    use crate::{compile::{self, compiler::compile_burn}, decompile::decompiler::decompile_fmp12_file, file::FmpFile};
+    use crate::{compile::{self, compiler::compile_burn}, decompile::decompiler::decompile_fmp12_file, file::FmpFile, testing::test::TestState};
     use super::TestEnvironment;
 
 
@@ -802,6 +834,12 @@ mod tests {
                     set_variable(x, (2 + 3) * 4);
                     show_custom_dialog(x);
                     assert(x == 20);
+                    set_variable(x, 2 * (2 + 3));
+                    show_custom_dialog(x);
+                    assert(x == 10);
+                    set_variable(x, 2 * (2 * (2)));
+                    show_custom_dialog(x);
+                    assert(x == 8);
                 }
             ]
         end test;
@@ -812,7 +850,7 @@ mod tests {
         let mut te : TestEnvironment = TestEnvironment::new(&file);
         te.generate_test_environment();
         te.run_tests();
-        assert_eq!(te.get_variable_by_name(0, "x").unwrap().value, 20.to_string());
+        assert_eq!(te.test_state, TestState::Pass);
     }
     #[test]
     pub fn basic_loop_test() {

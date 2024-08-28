@@ -392,8 +392,6 @@ impl Database {
             return Err("Cannot access unrelated record.");
         }
 
-        println!("Path: {:?}", path.clone().unwrap());
-
         let path_uw = path.clone().unwrap();
         let mut current_set = vec![];
 
@@ -415,8 +413,6 @@ impl Database {
             }
 
             if current_set.is_empty() {
-                println!("{:?}", &self.get_current_table()
-                    .fields[relation[0].relationship.field1]);
                 let tmp = &self.get_current_table()
                     .fields[relation[0].relationship.field1]
                     .records[current_record.unwrap()];

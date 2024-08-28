@@ -147,7 +147,6 @@ impl Parser {
                                 while let Some(t) = parser_iter.next() {
                                     match t.ttype {
                                         TokenType::Argument => {
-                                            println!("arg: {:?}", t.value);
                                             step.switches.push(t.value.clone());
                                         }
                                         _ => {
@@ -169,7 +168,6 @@ impl Parser {
                                 while let Some(t) = parser_iter.next() {
                                     match t.ttype {
                                         TokenType::Argument => {
-                                            println!("arg: {:?}", t.value);
                                             step.switches.push(t.value.clone());
                                         }
                                         _ => {

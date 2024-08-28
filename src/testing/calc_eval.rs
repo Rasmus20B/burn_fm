@@ -151,7 +151,13 @@ impl Parser {
             },
             TokenType::OpenParen => {
                 let expr1 = (self.parse_expression().expect("unable to parse grouped expression."));
+
                 let operator = self.next();
+
+                if operator.is_none() || operator.unwrap().ttype == TokenType::CloseParen {
+                    return Ok(expr1)
+                }
+
                 let op = operator.unwrap().ttype;
                 let expr2 = (self.parse_expression().expect("unable to parse grouped expression."));
 
