@@ -367,7 +367,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             Some(16) => {
                                 let layout_handle = fmp_file.layouts.get_mut(&x.parse().unwrap());
                                 if layout_handle.is_none() {
-                                    println!("FUCKIED");
                                 } else {
                                     let s = fm_string_decrypt(chunk.data.unwrap());
                                     fmp_file.layouts.get_mut(&x.parse().unwrap())
