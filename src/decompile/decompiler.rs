@@ -18,6 +18,7 @@ const SECTOR_SIZE : usize = 4096;
 fn decompile_calculation(bytecode: &[u8]) -> String {
     let mut it = bytecode.iter().peekable();
     let mut result = String::new();
+    let mut in_get = false;
 
     while let Some(c) = it.next() {
         match c {
@@ -30,6 +31,26 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
             0x2d => {
                 result.push_str("Abs");
             }
+            0x9b => {
+                result.push_str("Get");
+            }
+            0x9c => {
+                match it.next().unwrap() {
+                    0x1d => {
+                        result.push_str("CurrentTime");
+                    }
+                    0x20 => {
+                        result.push_str("AccountName");
+                    }
+                    0x49 => {
+                        result.push_str("DocumentsPath");
+                    }
+                    0x5d => {
+                        result.push_str("DocumentsPathListing");
+                    }
+                    _ => {}
+                }
+            }
             0x9d => {
                 result.push_str("Acos");
             }
@@ -38,7 +59,6 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
                     0x3 => { result.push_str("Char")}
                     _ => eprintln!("unrecognized intrinsic.")
                 }
-
             }
             0x10 => {
                 /* decode number */
@@ -611,7 +631,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                             index: n,
                                             switches: switch,
                                         };
-                                        println!("step: {:?}", tmp);
                                         let handle = &mut fmp_file.scripts
                                             .get_mut(&x.parse().unwrap()).unwrap().instructions;
                                             handle.push(tmp);
@@ -697,11 +716,11 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
 
         }
     }
-    for script in &fmp_file.scripts {
-        println!("{:?}", script.1.script_name);
-        for step in &script.1.instructions {
-            println!("{:?}", step);
-        }
-    }
+    // for script in &fmp_file.scripts {
+    //     println!("{:?}", script.1.script_name);
+    //     for step in &script.1.instructions {
+    //         println!("{:?}", step);
+    //     }
+    // }
     return fmp_file;
 }

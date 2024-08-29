@@ -4,6 +4,7 @@ use std::collections::HashSet;
 use std::fmt::write;
 use std::ops::Deref;
 
+use chrono::Local;
 use color_print::cprintln;
 use crate::component::FMComponentScript;
 use crate::component::FMComponentTest;
@@ -198,7 +199,7 @@ impl<'a> TestEnvironment<'a> {
         }
 
         let mut cur_instruction = &script_handle.instructions[ip_handle.1];
-        println!("instr: {:?}", cur_instruction);
+        // println!("instr: {:?}", cur_instruction);
         match &cur_instruction.opcode {
             Instruction::PerformScript => {
                 let script_name = self.eval_calculation(&cur_instruction.switches[0])
@@ -619,7 +620,13 @@ impl<'a> TestEnvironment<'a> {
                         }
                         buffer.push(*c);
                     }
-                    tokens.push(calc_tokens::Token::with_value(calc_tokens::TokenType::String, buffer.clone()));
+
+                    let size = buffer.chars()
+                        .filter(|c| c.is_alphanumeric())
+                        .collect::<Vec<_>>().len();
+                    if size > 0 {
+                        tokens.push(calc_tokens::Token::with_value(calc_tokens::TokenType::String, buffer.clone()));
+                    }
                     buffer.clear();
                 },
                 ':' => {
@@ -651,14 +658,13 @@ impl<'a> TestEnvironment<'a> {
             buffer.clear();
             tokens.push(b.unwrap());
         }
-
         /* Once we have our tokens, parse them into a binary expression. */
         let ast = calc_eval::Parser::new(tokens).parse().expect("unable to parse tokens.");
         self.evaluate(ast)
     }
 
     fn get_operand_val(&'a self, val: &'a str) -> Operand {
-        let r = val.parse::<i64>();
+        let r = val.parse::<f64>();
         if r.is_ok() {
             return Operand {
                 otype: OperandType::Number,
@@ -703,12 +709,14 @@ impl<'a> TestEnvironment<'a> {
 
         match *ast {
             calc_eval::Node::Unary { value, child } => {
+                let val = self.get_operand_val(value.as_str())
+                    .value.to_string();
+
                 if child.is_none() {
-                    return self.get_operand_val(value.as_str())
-                        .value.to_string();
+                    return val;
                 } else {
                 }
-                "".to_string()
+                val.to_string()
             },
             calc_eval::Node::Grouping { left, operation, right } => {
                 let lhs = &self.evaluate(left);
@@ -726,9 +734,29 @@ impl<'a> TestEnvironment<'a> {
                     "Abs" => { return (self.evaluate(args[0].clone())
                         .parse::<f32>().expect("unable to perform Abs() on non-numeric")
                         .abs().to_string())}
-                    "Acos" => { return std::cmp::min(self.evaluate(args[0].clone()), self.evaluate(args[1].clone()))}
+                    "Acos" => { return (self.evaluate(args[0].clone()).parse::<f64>().unwrap().acos().to_string()) }
                     "Asin" => { return std::cmp::min(self.evaluate(args[0].clone()), self.evaluate(args[1].clone()))}
+                    "Char" => { 
+                        let mut res = String::new();
+                        res.push('\"');
+                        let c = char::from_u32(self.evaluate(args[0].clone()).parse::<u32>().unwrap()).unwrap();
+                        res.push(c);
+                        res.push('\"');
+                        return res;
+                    }
                     "Min" => { return std::cmp::min(self.evaluate(args[0].clone()), self.evaluate(args[1].clone()))}
+                    "Get" => {
+                        match *args[0] {
+                            calc_eval::Node::Unary { ref value, ref child } => {
+                                match value.as_str() {
+                                    "AccountName" => "\"Admin\"".to_string(),
+                                    "CurrentTime" => Local::now().timestamp().to_string(),
+                                    _ => { format!("Unknown argument for Get(): {:?}", args[0]) }
+                                }
+                            }
+                            _ => { format!("Unknown argument for Get(): {:?}", args[0]) }
+                        }
+                    }
                     _ => { format!("Unimplemented function: {}", name) }
 
                 }
