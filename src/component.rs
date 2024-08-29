@@ -97,7 +97,7 @@ pub struct FMComponentScript {
     pub created_by_account: String,
     pub create_by_user: String,
     pub arguments: Vec<String>,
-    pub instructions: HashMap<usize, ScriptStep>,
+    pub instructions: Vec<ScriptStep>,
 } 
 
 impl FMComponentScript {
@@ -107,7 +107,7 @@ impl FMComponentScript {
             created_by_account: String::new(),
             create_by_user: String::new(),
             arguments: vec![],
-            instructions: HashMap::new()
+            instructions: vec![],
         }
     }
 }

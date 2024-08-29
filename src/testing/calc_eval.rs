@@ -1,11 +1,12 @@
 
 use super::calc_tokens::{self, Token, TokenType};
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Node {
     Unary { value: String, child: Option<Box<Node>> },
     Binary { left: Box<Node>, operation: TokenType, right: Box<Node> },
-    Grouping { left: Box<Node>, operation: TokenType, right: Box<Node> }
+    Grouping { left: Box<Node>, operation: TokenType, right: Box<Node> },
+    Call { name: String, args: Vec<Box::<Node>> },
 }
 
 
@@ -48,6 +49,22 @@ impl Parser {
         &self.tokens[self.index - 1]
     }
 
+    fn parse_args(&mut self) -> Vec<Box<Node>> {
+        let mut _args = vec![];
+
+        loop {
+            _args.push(self.parse_expression().expect("Unable to parse argument"));
+
+            if !(self.tokens[self.index].ttype == TokenType::SemiColon) {
+                return vec![];
+            }
+        }
+    }
+
+    pub fn parse_func_call(&mut self, _name: String) -> Result<Box<Node>, &str>{
+        Ok(Box::new(Node::Call { name: _name, args: self.parse_args() }))
+    }
+
     pub fn parse_identifier(&mut self, tok: Token) -> Result<Box<Node>, &str> {
         let n = self.next();
         if n.is_none() {
@@ -64,6 +81,9 @@ impl Parser {
                     right: self.parse().expect("Unable to parse.")
                 }))
             },
+            TokenType::OpenParen => {
+                return Ok(self.parse_func_call(tok.value).expect("Unable to parse function call"));
+            }
             _ => {
                 Err("Invalid expression")
             }
@@ -119,17 +139,10 @@ impl Parser {
                     right: self.parse().expect("Uable to parse")
                 }))
             }
-            _ => { Err("Unable to perform specified binary operation on string.") }
+            _ => { 
+                Err("Unable to perform specified binary operation on string.") 
+            }
         }
-    }
-
-    pub fn parse_grouping(&mut self) -> Result<Box<Node>, &str> {
-
-        let n = self.peek();
-        if n.is_none() {
-            return Err("unterminated parenthesis.");
-        }
-        Ok(self.parse_expression().expect("Unable to parse subparen."))
     }
 
     pub fn parse_expression(&mut self) -> Result<Box<Node>, &str> {
@@ -174,6 +187,9 @@ impl Parser {
     }
 
     pub fn parse(&mut self) -> Result<Box<Node>, &str> {
+        for t in &self.tokens {
+            println!("t: {:?}", t);
+        }
         self.parse_expression()
     }
 }

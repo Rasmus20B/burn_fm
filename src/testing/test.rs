@@ -178,6 +178,7 @@ impl<'a> TestEnvironment<'a> {
         let n_stack = self.instruction_ptr.len() - 1;
         ip_handle = self.instruction_ptr[n_stack].clone();
         let s_name = self.instruction_ptr[n_stack].0.clone();
+
         if self.instruction_ptr.len() > 1 {
             for s in &self.file_handle.scripts {
                 if s.1.script_name == s_name {
@@ -189,16 +190,15 @@ impl<'a> TestEnvironment<'a> {
             script_handle = &self.current_test.as_ref().unwrap().script;
         }
 
-        if script_handle.instructions.is_empty() ||
-            ip_handle.1 > script_handle.instructions
-                .clone().into_iter().map(|x| x.0).max().unwrap() {
+        if script_handle.instructions.is_empty() 
+            || ip_handle.1 > script_handle.instructions.len() - 1 {
                 println!("Popping script: {}", ip_handle.0);
                 self.instruction_ptr.pop();
                 return;
         }
 
-        let mut cur_instruction = &script_handle.instructions[&ip_handle.1];
-        // println!("instr: {:?}", cur_instruction);
+        let mut cur_instruction = &script_handle.instructions[ip_handle.1];
+        println!("instr: {:?}", cur_instruction);
         match &cur_instruction.opcode {
             Instruction::PerformScript => {
                 let script_name = self.eval_calculation(&cur_instruction.switches[0])
@@ -209,7 +209,7 @@ impl<'a> TestEnvironment<'a> {
                 for s in &self.file_handle.scripts {
                     if s.1.script_name == script_name {
                         self.instruction_ptr[n_stack].1 += 1;
-                        self.instruction_ptr.push((script_name.clone(), *s.1.instructions.keys().take(1).collect::<Vec<_>>()[0]));
+                        self.instruction_ptr.push((script_name.clone(), 0));
                         println!("calling {}", script_name);
                         break;
                     }
@@ -253,7 +253,7 @@ impl<'a> TestEnvironment<'a> {
                         }
                         if exit && self.database.get_current_occurrence().record_ptr == cache_pos {
                             while cur_instruction.opcode != Instruction::EndLoop {
-                                cur_instruction = &script_handle.instructions[&ip_handle.1];
+                                cur_instruction = &script_handle.instructions[ip_handle.1];
                                 ip_handle.1 += 1;
                             }
                             self.instruction_ptr[n_stack].1 = ip_handle.1; 
@@ -342,7 +342,7 @@ impl<'a> TestEnvironment<'a> {
                     self.branch_taken = true;
                 } else {
                     while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
-                        cur_instruction = &script_handle.instructions[&self.instruction_ptr[n_stack].1];
+                        cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
                         match cur_instruction.opcode {
                             Instruction::EndIf => {
                                 return;
@@ -362,7 +362,7 @@ impl<'a> TestEnvironment<'a> {
             Instruction::ElseIf => {
                 if self.branch_taken == true {
                     while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
-                        cur_instruction = &script_handle.instructions[&self.instruction_ptr[n_stack].1];
+                        cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
                         match cur_instruction.opcode {
                             Instruction::EndIf => {
                                 self.branch_taken = false;
@@ -379,7 +379,7 @@ impl<'a> TestEnvironment<'a> {
                 } else {
                     self.instruction_ptr[n_stack].1 += 1;
                     while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
-                        cur_instruction = &script_handle.instructions[&self.instruction_ptr[n_stack].1];
+                        cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
                         match cur_instruction.opcode {
                             Instruction::EndIf => {
                                 return;
@@ -398,7 +398,7 @@ impl<'a> TestEnvironment<'a> {
             Instruction::Else => {
                 if self.branch_taken == true {
                     while self.instruction_ptr[n_stack].1 < script_handle.instructions.len() {
-                        cur_instruction = &script_handle.instructions[&self.instruction_ptr[n_stack].1];
+                        cur_instruction = &script_handle.instructions[self.instruction_ptr[n_stack].1];
                         match cur_instruction.opcode {
                             Instruction::EndIf => {
                                 self.branch_taken = false;
@@ -425,7 +425,7 @@ impl<'a> TestEnvironment<'a> {
                 let val : &str = &self.eval_calculation(&cur_instruction.switches[0]);
                 if val == "true" {
                     while cur_instruction.opcode != Instruction::EndLoop {
-                        cur_instruction = &script_handle.instructions[&ip_handle.1];
+                        cur_instruction = &script_handle.instructions[ip_handle.1];
                         ip_handle.1 += 1;
                     }
                     self.instruction_ptr[n_stack].1 = ip_handle.1; 
@@ -449,6 +449,9 @@ impl<'a> TestEnvironment<'a> {
                 } 
                 self.instruction_ptr[n_stack].1 += 1;
             },
+            Instruction::CommentedOut | Instruction::BlankLineComment => {
+                self.instruction_ptr[n_stack].1 += 1;
+            }
             _ => {
                 eprintln!("Unimplemented instruction: {:?}", cur_instruction.opcode);
                 self.instruction_ptr[n_stack].1 += 1;
@@ -602,6 +605,7 @@ impl<'a> TestEnvironment<'a> {
                     }
                 }
                 '"' => {
+                    // TODO: String handling directly from fmp12 file. Extra quotes.
                     if buffer.len() > 0 {
                         let b = flush_buffer(buffer.as_str());
                         buffer.clear();
@@ -609,7 +613,7 @@ impl<'a> TestEnvironment<'a> {
                     }
                     buffer.push(*c);
                     while let Some(c) = &lex_iter.next() {
-                        if *c == '"' {
+                        if *c == '\"' {
                             buffer.push(*c);
                             break;
                         }
@@ -717,6 +721,18 @@ impl<'a> TestEnvironment<'a> {
                     _ => "Invalid operation.".to_string()
                 }
             }
+            calc_eval::Node::Call { name, args } => {
+                match name.as_str() {
+                    "Abs" => { return (self.evaluate(args[0].clone())
+                        .parse::<f32>().expect("unable to perform Abs() on non-numeric")
+                        .abs().to_string())}
+                    "Acos" => { return std::cmp::min(self.evaluate(args[0].clone()), self.evaluate(args[1].clone()))}
+                    "Asin" => { return std::cmp::min(self.evaluate(args[0].clone()), self.evaluate(args[1].clone()))}
+                    "Min" => { return std::cmp::min(self.evaluate(args[0].clone()), self.evaluate(args[1].clone()))}
+                    _ => { format!("Unimplemented function: {}", name) }
+
+                }
+            },
             calc_eval::Node::Binary { left, operation, right } => {
                 let lhs_wrap = &self.evaluate(left);
                 let rhs_wrap = &self.evaluate(right);
@@ -925,6 +941,7 @@ mod tests {
         assert_eq!(te.database.get_current_record_field("PrimaryKey"), "\"Kevin\"");
         assert_eq!(te.database.get_occurrence_by_name("second_table").found_set.len(), 1);
         assert_eq!(te.database.get_related_record_field("second_table", "add").unwrap(), "\"secret\"");
+        assert_eq!(te.test_state, TestState::Pass);
     }
 }
 

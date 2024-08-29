@@ -27,6 +27,19 @@ fn decompile_calculation(bytecode: &[u8]) -> String {
             0x5 => {
                 result.push(')');
             }
+            0x2d => {
+                result.push_str("Abs");
+            }
+            0x9d => {
+                result.push_str("Acos");
+            }
+            0xfb => {
+                match it.next().unwrap() {
+                    0x3 => { result.push_str("Char")}
+                    _ => eprintln!("unrecognized intrinsic.")
+                }
+
+            }
             0x10 => {
                 /* decode number */
                 for i in 0..19 {
@@ -462,20 +475,21 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     match chunk.ref_simple.unwrap_or(0).to_string().as_str() {
                         "5" => {
                             let instrs = &mut fmp_file.scripts.get_mut(&script.parse().unwrap()).unwrap().instructions;
+                            let instruction_idx = instrs
+                                .iter()
+                                .enumerate()
+                                .filter(|x| x.1.index == step.parse::<usize>().unwrap())
+                                .collect::<Vec<_>>()[0].0;
 
                             // println!("Searching for {step}. instructions for script {script} == {}", instrs.len());
-                            if instrs.get(&step.parse().unwrap()).is_none() {
-                                instrs.get_mut(&step.parse().unwrap()).unwrap()
-                                    .switches.insert(step.parse().unwrap(), String::new());
-                            }
 
-                            match instrs.get(&step.parse().unwrap()).unwrap().opcode {
+                            match instrs.get(instruction_idx).unwrap().opcode {
                                 Instruction::SetVariable => {
-                                    instrs.get_mut(&step.parse().unwrap()).unwrap().switches.push(s);
+                                    instrs.get_mut(instruction_idx).unwrap().switches.push(s);
                                 },
                                 Instruction::ExitScript => {
                                     let bytecode = decompile_calculation(chunk.data.unwrap());
-                                    instrs.get_mut(&step.parse().unwrap()).unwrap().switches.push(bytecode);
+                                    instrs.get_mut(instruction_idx).unwrap().switches.push(bytecode);
                                 },
                                 _ => {
 
@@ -503,27 +517,18 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
 
                             let instr = &mut fmp_file.scripts
                                 .get_mut(&script.parse().unwrap()).unwrap()
-                                .instructions.get_mut(&step.parse().unwrap());
+                                .instructions.iter_mut()
+                                .filter(|x| x.index == step.parse::<usize>().unwrap())
+                                .collect::<Vec<_>>()[0];
 
                             // println!("Searching for {step}. instructions for script {script}");
 
-                            if instr.is_none() {
-                                let switch_n = instr.as_ref().unwrap().switches.len();
-                                instr.as_deref_mut().unwrap()
-                                    .switches.insert(
-                                        switch_n, String::new());
-                            } 
-                            match instr.as_ref().unwrap().opcode {
+                            match instr.opcode {
                                 Instruction::SetVariable => {
-                                    instr.as_deref_mut().unwrap().switches.push(s);
+                                    instr.switches.push(s);
                                 },
                                 _ => {}
                             }
-
-                            // for i in &mut *instrs {
-                            //     println!("{:?}", i);
-                            // }
-
                         },
                         _ => {
                         }
@@ -535,8 +540,10 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     match chunk.ref_simple.unwrap_or(0).to_string().as_str() {
                         "5" => {
                             let calc = decompile_calculation(chunk.data.unwrap());
-                            fmp_file.scripts.get_mut(&script.parse().unwrap()).unwrap()
-                                .instructions.get_mut(&step.parse().unwrap()).unwrap().switches.push(calc);
+                            let instr = &mut fmp_file.scripts.get_mut(&script.parse().unwrap()).unwrap()
+                                .instructions.iter_mut().filter(|x| x.index == step.parse::<usize>().unwrap())
+                                .collect::<Vec<_>>()[0];
+                                instr.switches.push(calc);
                         },
                         _ => {
 
@@ -604,9 +611,10 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                             index: n,
                                             switches: switch,
                                         };
+                                        println!("step: {:?}", tmp);
                                         let handle = &mut fmp_file.scripts
                                             .get_mut(&x.parse().unwrap()).unwrap().instructions;
-                                            handle.insert(n, tmp);
+                                            handle.push(tmp);
                                         }
                                     }
                                 }
@@ -633,7 +641,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 if handle.is_none() {
                                     let tmp = component::FMComponentScript {
                                         script_name: fm_string_decrypt(chunk.data.unwrap()),
-                                        instructions: HashMap::new(),
+                                        instructions: vec![],
                                         create_by_user: String::new(),
                                         arguments: Vec::new(),
                                         created_by_account: String::new(),
@@ -684,10 +692,15 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     switches: switch,
                 };
                 let handle = fmp_file.scripts.get_mut(&script).unwrap();
-                // println!("{:?}", tmp);
                 handle.instructions.insert(handle.instructions.len(), tmp);
             }
 
+        }
+    }
+    for script in &fmp_file.scripts {
+        println!("{:?}", script.1.script_name);
+        for step in &script.1.instructions {
+            println!("{:?}", step);
         }
     }
     return fmp_file;

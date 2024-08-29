@@ -292,7 +292,7 @@ mod tests {
             },
         ];
         for (i, step) in steps_actual.iter().enumerate() {
-            assert_eq!(*step, handle.instructions.get(&i).unwrap().clone());
+            assert_eq!(*step, handle.instructions.get(i).unwrap().clone());
         }
     }
 }

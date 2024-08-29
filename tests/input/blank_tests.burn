@@ -2,7 +2,7 @@ test BasicTest:
   script: [
     define blank_test() {
       set_variable(x, 1);
-      perform_script("New Script");
+      perform_script("testing");
       loop {
         new_record_request();
         set_field(blank::PrimaryKey, "Kevin");
