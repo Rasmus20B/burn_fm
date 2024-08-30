@@ -55,7 +55,7 @@ impl Parser {
         loop {
             _args.push(self.parse_expression().expect("Unable to parse argument"));
 
-            if !(self.tokens[self.index - 1].ttype == TokenType::SemiColon) {
+            if !(self.tokens[self.index - 1].ttype == TokenType::Comma) {
                 return _args;
             }
         }
@@ -108,7 +108,13 @@ impl Parser {
                     value: tok.value.clone(), 
                     child: None 
                 }))
-            }
+            },
+            TokenType::Comma => {
+                Ok(Box::new(Node::Unary { 
+                    value: tok.value.clone(), 
+                    child: None 
+                }))
+            },
             _ => {
                 println!("ident: {:?}", n);
                 Err("Invalid expression")
@@ -133,12 +139,39 @@ impl Parser {
                     right: self.parse_expression().expect("Unable to parse.")
                 }))
             },
+            TokenType::OpenParen => {
+
+                let func_call = self.parse_func_call(tok.value).expect("Unable to parse function call");
+
+                let operator = self.next();
+
+                if operator.is_none() || operator.unwrap().ttype == TokenType::CloseParen {
+                    return Ok(func_call)
+                }
+
+                let op = operator.unwrap().ttype;
+                let expr2 = (self.parse_expression().expect("unable to parse expression."));
+
+                return Ok(Box::new(
+                        Node::Binary { 
+                            left: func_call,
+                            operation: op, 
+                            right: expr2 }
+                ));
+                // return Ok(self.parse_func_call(tok.value).expect("Unable to parse function call"));
+            }
             TokenType::CloseParen => {
                 Ok(Box::new(Node::Unary { 
                     value: tok.value.clone(), 
                     child: None 
                 }))
-            }
+            },
+            TokenType::Comma => {
+                Ok(Box::new(Node::Unary { 
+                    value: tok.value.clone(), 
+                    child: None 
+                }))
+            },
             _ => {
                 Err("Invalid expression")
             }
@@ -193,7 +226,7 @@ impl Parser {
 
                 let operator = self.next();
 
-                if operator.is_none() || operator.unwrap().ttype == TokenType::CloseParen {
+                if operator.is_none() || operator.unwrap().ttype == TokenType::CloseParen || operator.unwrap().ttype == TokenType::Comma {
                     return Ok(expr1)
                 }
 
@@ -206,7 +239,7 @@ impl Parser {
                     right: expr2 
                 }))
             }
-            _ => {
+           _ => {
                 Err("Unable to parse calculation: ")
             }
         }

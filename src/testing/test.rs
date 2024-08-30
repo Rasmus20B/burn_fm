@@ -15,6 +15,7 @@ use crate::testing::calc_eval;
 use crate::testing::database;
 use crate::testing::database::Table;
 
+use super::calc_eval::Node;
 use super::calc_tokens;
 use super::calc_tokens::TokenType;
 use super::database::Database;
@@ -521,6 +522,14 @@ impl<'a> TestEnvironment<'a> {
                         tokens.push(b.unwrap());
                     }
                     tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::Plus)).unwrap());
+                }
+                ',' => {
+                    if buffer.len() > 0 {
+                        let b = flush_buffer(buffer.as_str());
+                        buffer.clear();
+                        tokens.push(b.unwrap());
+                    }
+                    tokens.push(Ok::<calc_tokens::Token, String>(calc_tokens::Token::new(calc_tokens::TokenType::Comma)).unwrap());
                 },
                 '-' => {
                     if buffer.len() > 0 {
@@ -658,6 +667,10 @@ impl<'a> TestEnvironment<'a> {
             buffer.clear();
             tokens.push(b.unwrap());
         }
+
+        // for t in &tokens {
+        //     println!("{:?}", t);
+        // }
         /* Once we have our tokens, parse them into a binary expression. */
         let ast = calc_eval::Parser::new(tokens).parse().expect("unable to parse tokens.");
         self.evaluate(ast)
@@ -728,6 +741,9 @@ impl<'a> TestEnvironment<'a> {
                     TokenType::Multiply => {
                         (lhs.value.parse::<f32>().unwrap() * rhs.value.parse::<f32>().unwrap()).to_string()
                     }
+                    TokenType::Plus => {
+                        (lhs.value.parse::<f32>().unwrap() + rhs.value.parse::<f32>().unwrap()).to_string()
+                    }
                     TokenType::Ampersand => {
                         if lhs.otype == OperandType::Text {
                             lhs.value = lhs.value
@@ -741,7 +757,7 @@ impl<'a> TestEnvironment<'a> {
                         }
                         ("\"".to_owned() + lhs.value + rhs.value + "\"").to_string()
                     }
-                    _ => "Invalid operation.".to_string()
+                    _ => format!("Invalid operation {:?}.", operation).to_string()
                 }
             }
             calc_eval::Node::Call { name, args } => {
@@ -759,7 +775,28 @@ impl<'a> TestEnvironment<'a> {
                         res.push('\"');
                         return res;
                     }
-                    "Min" => { return std::cmp::min(self.evaluate(args[0].clone()), self.evaluate(args[1].clone()))}
+                    "Min" => { 
+                        args
+                            .into_iter()
+                            .map(|x| {
+                                self.evaluate(x.clone())
+                            })
+                            .min_by(|x, y| {
+                                let lhs = self.get_operand_val(&x);
+                                let rhs = self.get_operand_val(&y);
+
+                                if lhs.otype == OperandType::Number && rhs.otype == OperandType::Number {
+                                        lhs.value.parse::<f64>().expect("lhs is not a valid number")
+                                            .partial_cmp(
+                                        &rhs.value.parse::<f64>().expect("rhs is not a number.")
+                                        ).unwrap()
+                                } else {
+                                    lhs.value.to_string().cmp(&rhs.value.to_string())
+                                }
+                            }).unwrap()
+
+
+                    },
                     "Get" => {
                         match *args[0] {
                             calc_eval::Node::Unary { ref value, ref child } => {
@@ -781,7 +818,6 @@ impl<'a> TestEnvironment<'a> {
                 let rhs_wrap = &self.evaluate(right);
                 let lhs = self.get_operand_val(lhs_wrap);
                 let rhs = self.get_operand_val(rhs_wrap);
-
 
                 match operation {
                     calc_tokens::TokenType::Plus => { 
@@ -900,8 +936,11 @@ mod tests {
                     show_custom_dialog(x);
                     assert(x == 8);
                     set_variable(y, 2 * (x * (2)));
-                    show_custom_dialog(x);
+                    show_custom_dialog(y);
                     assert(y == 32);
+                    set_variable(x, 2 * Min((2 + 2 + 2), y));
+                    show_custom_dialog(x);
+                    assert(x == 12);
                 }
             ]
         end test;
