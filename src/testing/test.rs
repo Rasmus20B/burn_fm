@@ -899,6 +899,9 @@ mod tests {
                     set_variable(x, 2 * (2 * (2)));
                     show_custom_dialog(x);
                     assert(x == 8);
+                    set_variable(y, 2 * (x * (2)));
+                    show_custom_dialog(x);
+                    assert(y == 32);
                 }
             ]
         end test;
