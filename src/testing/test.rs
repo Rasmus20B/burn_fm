@@ -719,12 +719,27 @@ impl<'a> TestEnvironment<'a> {
                 val.to_string()
             },
             calc_eval::Node::Grouping { left, operation, right } => {
-                let lhs = &self.evaluate(left);
-                let rhs = &self.evaluate(right);
+                let lhs_wrap = &self.evaluate(left);
+                let rhs_wrap = &self.evaluate(right);
+                let mut lhs = self.get_operand_val(lhs_wrap);
+                let mut rhs = self.get_operand_val(rhs_wrap);
 
                 match operation {
                     TokenType::Multiply => {
-                        (lhs.parse::<f32>().unwrap() * rhs.parse::<f32>().unwrap()).to_string()
+                        (lhs.value.parse::<f32>().unwrap() * rhs.value.parse::<f32>().unwrap()).to_string()
+                    }
+                    TokenType::Ampersand => {
+                        if lhs.otype == OperandType::Text {
+                            lhs.value = lhs.value
+                            .strip_prefix('"').unwrap()
+                            .strip_suffix('"').unwrap();
+                        }
+                        if rhs.otype == OperandType::Text {
+                            rhs.value = rhs.value
+                            .strip_prefix('"').unwrap()
+                            .strip_suffix('"').unwrap();
+                        }
+                        ("\"".to_owned() + lhs.value + rhs.value + "\"").to_string()
                     }
                     _ => "Invalid operation.".to_string()
                 }
@@ -878,9 +893,9 @@ mod tests {
                     set_variable(x, (2 + 3) * 4);
                     show_custom_dialog(x);
                     assert(x == 20);
-                    set_variable(x, 2 * (2 + 3));
+                    set_variable(x, (2 * (2 + 3)) & \" things\");
                     show_custom_dialog(x);
-                    assert(x == 10);
+                    assert(x == \"10 things\");
                     set_variable(x, 2 * (2 * (2)));
                     show_custom_dialog(x);
                     assert(x == 8);
