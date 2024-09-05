@@ -73,7 +73,7 @@ impl Parser {
                                             }
                                             _ => {
                                                 if t.ttype != TokenType::SemiColon {
-                                                    panic!("unterminated script step");
+                                                    panic!("unterminated script step: {:?}", t.ttype);
                                                 }
                                                 tmp.instructions.insert(tmp.instructions.len(), step);
                                                 break;

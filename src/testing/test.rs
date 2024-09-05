@@ -918,6 +918,43 @@ mod tests {
     use crate::{compile::{self, compiler::compile_burn}, decompile::decompiler::decompile_fmp12_file, file::FmpFile, testing::test::TestState};
     use super::TestEnvironment;
 
+    #[test]
+    pub fn prec_test() {
+        let mut file = FmpFile::new();
+        let code = "
+        test basicTest:
+            script: [
+                define prec_test() {
+                    set_variable(x, 2 + 3 * 4);
+                    show_custom_dialog(x);
+                    assert(x == 14);
+                    set_variable(x, (2 + 3) * 4);
+                    show_custom_dialog(x);
+                    assert(x == 20);
+                    set_variable(y, 6 / 2 * 3);
+                    show_custom_dialog(y);
+                    assert(y == 9);
+                    set_variable(x, 10 - 2 + 3 * 4);
+                    show_custom_dialog(x);
+                    assert(x == 20);
+                    set_variable(x, 2 * (3 + (4 - 1)));
+                    show_custom_dialog(x);
+                    assert(x == 12);
+                    set_variable(x, 2 + 3 * (4 - 1) / 2);
+                    show_custom_dialog(x);
+                    assert(x == 6.5);
+                }
+            ]
+        end test;
+        ";
+
+        let mut test = compile_burn(code);
+        file.tests.append(&mut test.tests);
+        let mut te : TestEnvironment = TestEnvironment::new(&file);
+        te.generate_test_environment();
+        te.run_tests();
+        assert_eq!(te.test_state, TestState::Pass);
+    }
 
     #[test]
     pub fn calc_test() {
