@@ -1,6 +1,44 @@
 
 use super::calc_tokens::{self, Token, TokenType};
 
+enum Precedence {
+    Lowest,
+    Add,
+    Subtract,
+    Multiply,
+    Divide,
+    Paren,
+    Concatenate,
+}
+
+impl Precedence {
+    pub fn from_int(num: usize) -> Result<Self, String> {
+        match num {
+            0 => Ok(Precedence::Lowest),
+            1 => Ok(Precedence::Add),
+            2 => Ok(Precedence::Subtract),
+            3 => Ok(Precedence::Add),
+            4 => Ok(Precedence::Subtract),
+            5 => Ok(Precedence::Paren),
+            6 => Ok(Precedence::Concatenate),
+            _ => Err("invalid integer".to_string())
+        }
+    }
+    pub fn to_int(num: Self) -> usize {
+        match num {
+            Precedence::Lowest => 0,
+            Precedence::Add => 1,
+            Precedence::Subtract => 2,
+            Precedence::Add => 3,
+            Precedence::Subtract => 4,
+            Precedence::Paren => 5,
+            Precedence::Concatenate => 6,
+            _ => unreachable!()
+        }
+    }
+
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum Node {
     Unary { value: String, child: Option<Box<Node>> },
@@ -53,7 +91,7 @@ impl Parser {
         let mut _args = vec![];
 
         loop {
-            _args.push(self.parse_expression().expect("Unable to parse argument"));
+            _args.push(self.parse_expr().expect("Unable to parse argument"));
 
             if !(self.tokens[self.index - 1].ttype == TokenType::Comma) {
                 return _args;
@@ -93,7 +131,7 @@ impl Parser {
                 }
 
                 let op = operator.unwrap().ttype;
-                let expr2 = (self.parse_expression().expect("unable to parse expression."));
+                let expr2 = (self.parse_expr().expect("unable to parse expression."));
 
                 return Ok(Box::new(
                         Node::Binary { 
@@ -136,7 +174,7 @@ impl Parser {
                 Ok(Box::new(Node::Binary { 
                     left: Box::new(Node::Unary { value: tok.value, child: None }),
                     operation: n.unwrap().ttype, 
-                    right: self.parse_expression().expect("Unable to parse.")
+                    right: self.parse_expr().expect("Unable to parse.")
                 }))
             },
             TokenType::OpenParen => {
@@ -150,7 +188,7 @@ impl Parser {
                 }
 
                 let op = operator.unwrap().ttype;
-                let expr2 = (self.parse_expression().expect("unable to parse expression."));
+                let expr2 = (self.parse_expr().expect("unable to parse expression."));
 
                 return Ok(Box::new(
                         Node::Binary { 
@@ -204,7 +242,7 @@ impl Parser {
         }
     }
 
-    pub fn parse_expression(&mut self) -> Result<Box<Node>, &str> {
+    pub fn parse_primary(&mut self) -> Result<Box<Node>, &str> {
         let n = self.next();
         if n.is_none() {
             return Err("Nothing to parse.");
@@ -222,7 +260,7 @@ impl Parser {
                 Ok(self.parse_string(cur).expect("Unable to parse String literal"))
             },
             TokenType::OpenParen => {
-                let expr1 = (self.parse_expression().expect("unable to parse grouped expression."));
+                let expr1 = (self.parse_expr().expect("unable to parse grouped expression."));
 
                 let operator = self.next();
 
@@ -231,7 +269,7 @@ impl Parser {
                 }
 
                 let op = operator.unwrap().ttype;
-                let expr2 = (self.parse_expression().expect("unable to parse grouped expression."));
+                let expr2 = (self.parse_expr().expect("unable to parse grouped expression."));
 
                 Ok(Box::new( Node::Grouping { 
                     left: expr1, 
@@ -245,8 +283,16 @@ impl Parser {
         }
     }
 
+    // pub fn parse_binary_expr(&mut self, prec: Precedence) -> Result<Box<Node>, &str> {
+    //
+    // }
+
+    pub fn parse_expr(&mut self) -> Result<Box<Node>, &str> {
+        Ok(self.parse_primary().expect("Unable to parse primary expression."))
+    }
+
     pub fn parse(&mut self) -> Result<Box<Node>, &str> {
-        self.parse_expression()
+        self.parse_expr()
     }
 }
 
@@ -272,7 +318,6 @@ mod tests {
                 assert_eq!(*right, Box::new(Node::Unary { value: "1".to_string(), child: None }));
             }
             _ => {}
-
         }
     }
 
