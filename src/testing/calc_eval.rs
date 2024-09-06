@@ -475,7 +475,7 @@ mod tests {
         ];
         let mut parser = Parser::new(tokens);
         let ast = parser.parse().expect("Unable to parse tokens");
-        assert_eq!(Box::new(Node::Grouping { 
+        assert_eq!(Box::new(Node::Binary { 
             left: Box::new(Node::Binary { 
                 left: Box::new(Node::Number(3.0)), 
                 operation: TokenType::Plus, 
