@@ -975,7 +975,7 @@ mod tests {
                 define paren_test() {
                     set_variable(x, 2 + 3 * 4);
                     show_custom_dialog(x);
-                    assert(x == 20);
+                    assert(x == 14);
                     set_variable(x, (2 + 3) * 4);
                     show_custom_dialog(x);
                     assert(x == 20);

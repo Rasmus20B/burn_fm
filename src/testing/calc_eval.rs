@@ -237,7 +237,8 @@ impl Parser {
                         Node::Binary { 
                             left: func_call,
                             operation: op, 
-                            right: expr2 }
+                            right: expr2 
+                }
                 ));
                 // return Ok(self.parse_func_call(tok.value).expect("Unable to parse function call"));
             }
@@ -286,7 +287,32 @@ impl Parser {
     }
 
     pub fn parse_comparison(&mut self) -> Result<Box<Node>, &str> {
-        unimplemented!()
+        let mut lhs = self.parse_expr().expect("Unable to parse expression.");
+
+        println!("lhs of comp: {:?}", lhs);
+
+        while let Some(op) = Some(self.tokens.current().clone()) {
+            let n = self.tokens.next();
+            if n.is_none() {
+                break;
+            }
+            println!("comparison: {:?}", op);
+            match op.ttype {
+                TokenType::Eq | TokenType::Neq |
+                TokenType::Gt | TokenType::Gtq |
+                TokenType::Lt | TokenType::Ltq => {
+                    println!("FGets here at some point.");
+                    let rhs = self.parse_expr().expect("Unable to parse right hand side of comparison.");
+                    lhs = Box::new(Node::Binary { 
+                        left: lhs,
+                        operation: op.ttype,
+                        right: rhs, 
+                    })
+                }
+                _ => {break;}
+            }
+        }
+        Ok(lhs)
     }
 
     pub fn parse_primary(&mut self) -> Result<Box<Node>, &str> {
@@ -337,12 +363,14 @@ impl Parser {
     pub fn parse_factor(&mut self) -> Result<Box<Node>, &str> {
         match self.tokens.current().ttype {
             TokenType::NumericLiteral | TokenType::Identifier | TokenType::String => {
-                Ok(self.parse_primary().expect("Unable to parse rhs in factor."))
+                let expr = Ok(self.parse_primary().expect("Unable to parse rhs in factor."));
+                self.tokens.next();
+                expr
             }
             TokenType::OpenParen => {
                 println!("Does get here in fact.");
                 self.tokens.next();
-                let expr = self.parse_expr().expect("unable to parse expression.");
+                let expr = self.parse_comparison().expect("unable to parse expression.");
                 // println!("ex: {:?}", self.tokens.current());
                 // if self.tokens.next().unwrap_or(&Token::new(TokenType::Neq)).ttype != TokenType::CloseParen {
                 //     return Err("Expected ')'");
@@ -360,13 +388,13 @@ impl Parser {
 
     pub fn parse_term(&mut self) -> Result<Box<Node>, &str> {
         let mut lhs = self.parse_factor().expect("unable to parse factor.");
-        while let Some(op) = self.tokens.next() {
+        while let Some(op) = Some(self.tokens.current()) {
             let op_type = op.ttype;
             println!("op: {:?}", op_type);
             match op_type {
                 TokenType::Multiply | TokenType::Divide | TokenType::Ampersand => {
                     self.tokens.next();
-                    let rhs = self.parse_primary().expect("unable to parse rhs.");
+                    let rhs = self.parse_factor().expect("unable to parse rhs.");
                     lhs = Box::new(Node::Binary { 
                         left: lhs, 
                         operation: op_type, 
@@ -381,12 +409,13 @@ impl Parser {
 
     pub fn parse_expr(&mut self) -> Result<Box<Node>, &str> {
         let mut lhs = self.parse_term().expect("unable to parse lhs term.");
+        println!("lhs of term: {:?}, cur: {:?}", lhs, self.tokens.current());
 
         while let Some(cur) = Some(self.tokens.current()) {
-            self.tokens.next();
             let op = cur.ttype;
             match cur.ttype {
                 TokenType::Plus | TokenType::Minus => {
+                    self.tokens.next();
                     let rhs = self.parse_term().expect("unable to parse rhs term.");
                     lhs = Box::new(Node::Binary { 
                         left: lhs, 
@@ -402,7 +431,9 @@ impl Parser {
     }
 
     pub fn parse(&mut self) -> Result<Box<Node>, &str> {
-        self.parse_expr()
+        let res = self.parse_comparison();
+        println!("RESULT: {:?}", res);
+        res
     }
 }
 
