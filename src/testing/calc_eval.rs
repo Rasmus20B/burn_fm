@@ -1,4 +1,6 @@
 
+use std::cell::Cell;
+
 use super::calc_tokens::{self, Token, TokenType};
 
 enum Precedence {
@@ -45,55 +47,96 @@ pub enum Node {
     Binary { left: Box<Node>, operation: TokenType, right: Box<Node> },
     Grouping { left: Box<Node>, operation: TokenType, right: Box<Node> },
     Call { name: String, args: Vec<Box::<Node>> },
+    Number(f64),
+    Variable(String),
+    Field(String),
+    StringLiteral(String),
+}
+
+pub struct Index {
+    val: Cell<usize>,
+}
+
+impl Index {
+    pub fn new() -> Self {
+        Self {
+            val: Cell::new(0),
+        }
+    }
+
+    pub fn get_val(&self) -> usize {
+        self.val.get()
+    }
+
+    pub fn increment(&self) {
+        let cur = self.val.get();
+        self.val.set(cur + 1);
+    }
+}
+
+pub struct TokenList {
+    tokens: Vec<Token>,
+    index: Index,
+}
+
+impl TokenList {
+    pub fn new(tokens_: Vec<Token>) -> Self {
+        Self {
+            tokens: tokens_,
+            index: Index::new(),
+        }
+    }
+    fn peek(&self) -> Option<&Token> {
+        if self.index.get_val() == self.tokens.len() - 1 {
+            return None;
+        }
+        Some(&self.tokens[self.index.get_val()+1])
+    }
+
+    fn next(&self) -> Option<&Token> {
+        if self.index.get_val() == self.tokens.len() - 1 {
+            return None;
+        }
+        self.index.increment();
+        Some(&self.tokens[self.index.get_val()])
+    }
+
+    fn previous(&self) -> Option<&Token> {
+        if self.index.get_val() == 0 {
+            return None;
+        }
+        Some(&self.tokens[self.index.get_val() - 1])
+    }
+
+    fn current(&self) -> &Token {
+        &self.tokens[self.index.get_val()]
+    }
+
 }
 
 
 pub struct Parser {
-    tokens: Vec<Token>,
-    index: usize,
+    tokens: TokenList,
 }
 
 impl Parser {
     pub fn new(t: Vec<Token>) -> Self {
         Self {
-            tokens: t,
-            index: 0,
+            tokens: TokenList::new(t),
         }
-    }
-
-    fn peek(&self) -> Option<&Token> {
-        if self.index == self.tokens.len() {
-            return None;
-        }
-        Some(&self.tokens[self.index+1])
-    }
-
-    fn next(&mut self) -> Option<&Token> {
-        if self.index == self.tokens.len() {
-            return None;
-        }
-        self.index += 1;
-        Some(&self.tokens[self.index - 1])
-    }
-
-    fn previous(&self) -> Option<&Token> {
-        if self.index == 0 {
-            return None;
-        }
-        Some(&self.tokens[self.index - 1])
-    }
-
-    fn current(&self) -> &Token {
-        &self.tokens[self.index - 1]
     }
 
     fn parse_args(&mut self) -> Vec<Box<Node>> {
         let mut _args = vec![];
 
         loop {
-            _args.push(self.parse_expr().expect("Unable to parse argument"));
+            self.tokens.next();
+            let arg = self.parse_expr().expect("unable to parse argument.");
+            println!("arg: {:?}", arg);
 
-            if !(self.tokens[self.index - 1].ttype == TokenType::Comma) {
+            _args.push(arg);
+
+            if !(self.tokens.current().ttype == TokenType::Comma) {
                 return _args;
             }
         }
@@ -104,10 +147,10 @@ impl Parser {
     }
 
     pub fn parse_identifier(&mut self, tok: Token) -> Result<Box<Node>, &str> {
-        let index = self.index;
-        let n = self.next();
+        let index = &self.tokens.index.get_val();
+        let n = self.tokens.next();
         if n.is_none() {
-            return Ok(Box::new(Node::Unary { value: self.current().value.clone(), child: None }));
+            return Ok(Box::new(Node::Unary { value: self.tokens.current().value.clone(), child: None }));
         }
         match n.unwrap().ttype {
             TokenType::Eq | TokenType::Neq | TokenType::Gt 
@@ -124,7 +167,7 @@ impl Parser {
 
                 let func_call = self.parse_func_call(tok.value).expect("Unable to parse function call");
 
-                let operator = self.next();
+                let operator = self.tokens.next();
 
                 if operator.is_none() || operator.unwrap().ttype == TokenType::CloseParen {
                     return Ok(func_call)
@@ -161,7 +204,7 @@ impl Parser {
     }
 
     pub fn parse_numeric(&mut self, tok: Token) -> Result<Box<Node>, &str> {
-        let n = self.next();
+        let n = self.tokens.next();
         if n.is_none() {
             return Ok(Box::new(Node::Unary { value: tok.value.clone(), child: None }));
         }
@@ -181,7 +224,7 @@ impl Parser {
 
                 let func_call = self.parse_func_call(tok.value).expect("Unable to parse function call");
 
-                let operator = self.next();
+                let operator = self.tokens.next();
 
                 if operator.is_none() || operator.unwrap().ttype == TokenType::CloseParen {
                     return Ok(func_call)
@@ -217,7 +260,7 @@ impl Parser {
     }
 
     fn parse_string(&mut self, tok: Token) -> Result<Box<Node>, &str> {
-        let n = self.next();
+        let n = self.tokens.next();
         if n.is_none() {
             return Ok(Box::new(Node::Unary { value: format!("{}", tok.value), child: None }));
         }
@@ -242,27 +285,35 @@ impl Parser {
         }
     }
 
+    pub fn parse_comparison(&mut self) -> Result<Box<Node>, &str> {
+        unimplemented!()
+    }
+
     pub fn parse_primary(&mut self) -> Result<Box<Node>, &str> {
-        let n = self.next();
-        if n.is_none() {
-            return Err("Nothing to parse.");
-        }
-        let cur = n.unwrap().clone();
+        let cur = self.tokens.current();
         /* TODO: Parentheses Parsing */
+
+        println!("looking @ {:?} (next is : {:?})", cur, self.tokens.peek());
         match cur.ttype {
             TokenType::Identifier => {
-                Ok(self.parse_identifier(cur).expect("Unable to parse identifier"))
+                if cur.value.split("::").collect::<Vec<_>>().len() == 2 {
+                    return Ok(Box::new(Node::Field(cur.value.clone())));
+                } else if self.tokens.peek().unwrap_or(&Token::new(TokenType::NumericLiteral)).ttype == TokenType::OpenParen {
+                    return Ok(Box::new(Node::Call { name: cur.value.clone(), args: self.parse_args() }))
+                } else {
+                    return Ok(Box::new(Node::Variable(cur.value.clone())));
+                }
             },
             TokenType::NumericLiteral => {
-                Ok(self.parse_numeric(cur).expect("Unable to parse numeric literal"))
+                Ok(Box::new(Node::Number(cur.value.parse().expect("unable to parse number into floating point."))))
             },
             TokenType::String => {
-                Ok(self.parse_string(cur).expect("Unable to parse String literal"))
+                Ok(Box::new(Node::StringLiteral(cur.value.clone())))
             },
             TokenType::OpenParen => {
                 let expr1 = (self.parse_expr().expect("unable to parse grouped expression."));
 
-                let operator = self.next();
+                let operator = self.tokens.next();
 
                 if operator.is_none() || operator.unwrap().ttype == TokenType::CloseParen || operator.unwrap().ttype == TokenType::Comma {
                     return Ok(expr1)
@@ -283,12 +334,71 @@ impl Parser {
         }
     }
 
-    // pub fn parse_binary_expr(&mut self, prec: Precedence) -> Result<Box<Node>, &str> {
-    //
-    // }
+    pub fn parse_factor(&mut self) -> Result<Box<Node>, &str> {
+        match self.tokens.current().ttype {
+            TokenType::NumericLiteral | TokenType::Identifier | TokenType::String => {
+                Ok(self.parse_primary().expect("Unable to parse rhs in factor."))
+            }
+            TokenType::OpenParen => {
+                println!("Does get here in fact.");
+                self.tokens.next();
+                let expr = self.parse_expr().expect("unable to parse expression.");
+                // println!("ex: {:?}", self.tokens.current());
+                // if self.tokens.next().unwrap_or(&Token::new(TokenType::Neq)).ttype != TokenType::CloseParen {
+                //     return Err("Expected ')'");
+                // }
+                return Ok(expr);
+            }
+            _ => { 
+                let expr = (self.parse_primary().expect("unable to parse rhs."));
+                println!("parsed expr: {:?}", expr);
+                // self.tokens.next();
+                Ok(expr)
+            }
+        }
+    }
+
+    pub fn parse_term(&mut self) -> Result<Box<Node>, &str> {
+        let mut lhs = self.parse_factor().expect("unable to parse factor.");
+        while let Some(op) = self.tokens.next() {
+            let op_type = op.ttype;
+            println!("op: {:?}", op_type);
+            match op_type {
+                TokenType::Multiply | TokenType::Divide | TokenType::Ampersand => {
+                    self.tokens.next();
+                    let rhs = self.parse_primary().expect("unable to parse rhs.");
+                    lhs = Box::new(Node::Binary { 
+                        left: lhs, 
+                        operation: op_type, 
+                        right: rhs, 
+                    });
+                },
+                _ => { break; }
+            }
+        }
+        Ok(lhs)
+    }
 
     pub fn parse_expr(&mut self) -> Result<Box<Node>, &str> {
-        Ok(self.parse_primary().expect("Unable to parse primary expression."))
+        let mut lhs = self.parse_term().expect("unable to parse lhs term.");
+
+        while let Some(cur) = Some(self.tokens.current()) {
+            self.tokens.next();
+            let op = cur.ttype;
+            match cur.ttype {
+                TokenType::Plus | TokenType::Minus => {
+                    let rhs = self.parse_term().expect("unable to parse rhs term.");
+                    lhs = Box::new(Node::Binary { 
+                        left: lhs, 
+                        operation: op, 
+                        right: rhs })
+                },
+                _ => { break; }
+            }
+        }
+        println!("got the expression: {:?}", lhs);
+
+        Ok(lhs)
     }
 
     pub fn parse(&mut self) -> Result<Box<Node>, &str> {
@@ -313,9 +423,9 @@ mod tests {
         let ast = parser.parse().expect("Unable to parse tokens");
         match *ast {
             Node::Binary { ref left, ref operation, ref right } => {
-                assert_eq!(*left, Box::new(Node::Unary { value: "6".to_string(), child: None }));
+                assert_eq!(*left, Box::new(Node::Number(6.0)));
                 assert_eq!(*operation, TokenType::Plus);
-                assert_eq!(*right, Box::new(Node::Unary { value: "1".to_string(), child: None }));
+                assert_eq!(*right, Box::new(Node::Number(1.0)));
             }
             _ => {}
         }
@@ -336,12 +446,14 @@ mod tests {
         let ast = parser.parse().expect("Unable to parse tokens");
         assert_eq!(Box::new(Node::Grouping { 
             left: Box::new(Node::Binary { 
-                left: Box::new(Node::Unary { value: 3.to_string(), child: None }), 
+                left: Box::new(Node::Number(3.0)), 
                 operation: TokenType::Plus, 
-                right: Box::new(Node::Unary { value: 2.to_string(), child: None }) }), 
+                right: Box::new(Node::Number(2.0)) 
+            }), 
             operation: TokenType::Multiply, 
-            right: Box::new(Node::Unary { value: 4.to_string(), child: None }) 
-        }), ast);
+            right: Box::new(Node::Number(4.0)),
+            }
+        ), ast);
     }
 
     #[test]
@@ -355,9 +467,9 @@ mod tests {
         let ast = parser.parse().expect("Unable to parse tokens");
         match *ast {
             Node::Binary { ref left, ref operation, ref right } => {
-                assert_eq!(*left, Box::new(Node::Unary { value: "FileMaker".to_string(), child: None }));
+                assert_eq!(*left, Box::new(Node::StringLiteral("FileMaker".to_string()))); 
                 assert_eq!(*operation, TokenType::Ampersand);
-                assert_eq!(*right, Box::new(Node::Unary { value: " Testing".to_string(), child: None }));
+                assert_eq!(*right, Box::new(Node::StringLiteral(" Testing".to_string())));
             }
             _ => { unreachable!() }
         }

@@ -731,10 +731,14 @@ impl<'a> TestEnvironment<'a> {
                 }
                 val.to_string()
             },
-            calc_eval::Node::Grouping { left, operation, right } => {
-                let lhs_wrap = &self.evaluate(left);
+            calc_eval::Node::Grouping { ref left, operation, right } => {
+                let lhs_wrap = &self.evaluate(left.clone());
                 let rhs_wrap = &self.evaluate(right);
-                let mut lhs = self.get_operand_val(lhs_wrap);
+
+                let mut lhs = match *left.clone() {
+                    Node::Number(val) => Operand { value: &val.to_string(), otype: OperandType::Number },
+                    _ => self.get_operand_val(lhs_wrap)
+                };
                 let mut rhs = self.get_operand_val(rhs_wrap);
 
                 match operation {
@@ -908,6 +912,12 @@ impl<'a> TestEnvironment<'a> {
                     _ => { unreachable!()}
                 }
             },
+            Node::Number(val) => val.to_string(),
+            Node::Variable(val) => self.get_operand_val(&val).value.to_string(),
+            Node::Field(val) => self.get_operand_val(&val).value.to_string(),
+            Node::StringLiteral(val) => val.to_string(),
+            _ => unimplemented!()
+
         }
     }
 }
@@ -963,6 +973,9 @@ mod tests {
         test basicTest:
             script: [
                 define paren_test() {
+                    set_variable(x, 2 + 3 * 4);
+                    show_custom_dialog(x);
+                    assert(x == 20);
                     set_variable(x, (2 + 3) * 4);
                     show_custom_dialog(x);
                     assert(x == 20);
