@@ -904,20 +904,32 @@ impl<'a> TestEnvironment<'a> {
                          rhs.value.parse::<f64>().unwrap())
                          .to_string()
                     },
-                    calc_tokens::TokenType::Ampersand => { 
-                        let lhs = lhs.value.replace('"', "");
-                        let rhs = rhs.value.replace('"', "");
-                        format!("\"{lhs}{rhs}\"")
-                    },
                     _ => { unreachable!()}
                 }
             },
+            Node::Comparison { ref left, operation, ref right } => {
+                match operation {
+                    TokenType::Eq => { (self.evaluate(left.clone()) == self.evaluate(right.clone())).to_string() },
+                    TokenType::Neq => { (self.evaluate(left.clone()) != self.evaluate(right.clone())).to_string() },
+                    TokenType::Gt => { (self.evaluate(left.clone()) > self.evaluate(right.clone())).to_string() },
+                    TokenType::Gtq => { (self.evaluate(left.clone()) >= self.evaluate(right.clone())).to_string() },
+                    TokenType::Lt => { (self.evaluate(left.clone()) < self.evaluate(right.clone())).to_string() },
+                    TokenType::Ltq => { (self.evaluate(left.clone()) <= self.evaluate(right.clone())).to_string() },
+                    _ => unreachable!()
+                }
+            }
+            Node::Concatenation { left, right } => { 
+                let lhs = self.evaluate(left.clone());
+                let rhs = self.evaluate(right.clone());
+                let lhs = lhs.replace('"', "");
+                let rhs = rhs.replace('"', "");
+                format!("\"{lhs}{rhs}\"")
+            }
             Node::Number(val) => val.to_string(),
             Node::Variable(val) => self.get_operand_val(&val).value.to_string(),
             Node::Field(val) => self.get_operand_val(&val).value.to_string(),
             Node::StringLiteral(val) => val.to_string(),
             _ => unimplemented!()
-
         }
     }
 }
