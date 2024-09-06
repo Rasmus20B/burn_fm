@@ -868,42 +868,6 @@ impl<'a> TestEnvironment<'a> {
                          rhs.value.parse::<f64>().unwrap()
                          ).to_string() 
                     },
-                    calc_tokens::TokenType::Eq => { 
-                        (lhs.value
-                         == 
-                         rhs.value
-                         ).to_string() 
-                    },
-                    calc_tokens::TokenType::Neq => { 
-                        (lhs.value
-                         != 
-                         rhs.value
-                         ).to_string() 
-                    },
-                    calc_tokens::TokenType::Lt => {
-                        (lhs.value.parse::<f64>().unwrap()
-                         <
-                         rhs.value.parse::<f64>().unwrap())
-                         .to_string()
-                    },
-                    calc_tokens::TokenType::Ltq => {
-                        (lhs.value.parse::<f64>().unwrap()
-                         <=
-                         rhs.value.parse::<f64>().unwrap())
-                         .to_string()
-                    },
-                    calc_tokens::TokenType::Gt => {
-                        (lhs.value.parse::<f64>().unwrap()
-                         >
-                         rhs.value.parse::<f64>().unwrap())
-                         .to_string()
-                    },
-                    calc_tokens::TokenType::Gtq => {
-                        (lhs.value.parse::<f64>().unwrap()
-                         >=
-                         rhs.value.parse::<f64>().unwrap())
-                         .to_string()
-                    },
                     _ => { unreachable!()}
                 }
             },

@@ -134,7 +134,6 @@ impl Parser {
         loop {
             self.tokens.next();
             let arg = self.parse_expr().expect("unable to parse argument.");
-            println!("arg: {:?}", arg);
 
             _args.push(arg);
 
@@ -199,7 +198,6 @@ impl Parser {
                 }))
             },
             _ => {
-                println!("ident: {:?}", n);
                 Err("Invalid expression")
             }
         }
@@ -296,20 +294,15 @@ impl Parser {
 
     pub fn parse_comparison(&mut self) -> Result<Box<Node>, &str> {
         let mut lhs = self.parse_concatenation().expect("Unable to parse expression.");
-
-        println!("lhs of comp: {:?}", lhs);
-
         while let Some(op) = Some(self.tokens.current().clone()) {
             let n = self.tokens.next();
             if n.is_none() {
                 break;
             }
-            println!("comparison: {:?}", op);
             match op.ttype {
                 TokenType::Eq | TokenType::Neq |
                 TokenType::Gt | TokenType::Gtq |
                 TokenType::Lt | TokenType::Ltq => {
-                    println!("FGets here at some point.");
                     let rhs = self.parse_concatenation().expect("Unable to parse right hand side of comparison.");
                     lhs = Box::new(Node::Comparison { 
                         left: lhs,
@@ -325,7 +318,6 @@ impl Parser {
 
     pub fn parse_concatenation(&mut self) -> Result<Box<Node>, &str> {
         let mut lhs = self.parse_expr().expect("Unable to parse expression.");
-        println!("Lhs of concat: {:?}", lhs);
         while let Some(op) = Some(self.tokens.current().clone()) {
             match op.ttype {
                 TokenType::Ampersand => {
@@ -345,7 +337,6 @@ impl Parser {
 
     pub fn parse_expr(&mut self) -> Result<Box<Node>, &str> {
         let mut lhs = self.parse_term().expect("unable to parse lhs term.");
-        println!("lhs of term: {:?}, cur: {:?}", lhs, self.tokens.current());
 
         while let Some(cur) = Some(self.tokens.current()) {
             let op = cur.ttype;
@@ -368,7 +359,6 @@ impl Parser {
         let mut lhs = self.parse_factor().expect("unable to parse factor.");
         while let Some(op) = Some(self.tokens.current()) {
             let op_type = op.ttype;
-            println!("op: {:?}", op_type);
             match op_type {
                 TokenType::Multiply | TokenType::Divide => {
                     self.tokens.next();
@@ -393,14 +383,12 @@ impl Parser {
                 expr
             }
             TokenType::OpenParen => {
-                println!("Does get here in fact.");
                 self.tokens.next();
                 let expr = self.parse_comparison().expect("unable to parse expression.");
                 return Ok(expr);
             }
             _ => { 
                 let expr = (self.parse_primary().expect("unable to parse rhs."));
-                println!("parsed expr: {:?}", expr);
                 Ok(expr)
             }
         }
@@ -408,9 +396,6 @@ impl Parser {
 
     pub fn parse_primary(&mut self) -> Result<Box<Node>, &str> {
         let cur = self.tokens.current();
-        /* TODO: Parentheses Parsing */
-
-        println!("looking @ {:?} (next is : {:?})", cur, self.tokens.peek());
         match cur.ttype {
             TokenType::Identifier => {
                 if cur.value.split("::").collect::<Vec<_>>().len() == 2 {

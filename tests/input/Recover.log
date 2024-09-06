@@ -6,3 +6,6 @@
 2024-07-30 14:29:37.021 +0200	blank.fmp12	0	*** Started consistency check of improperly closed file, total of 67 block(s) to check
 2024-07-30 14:29:37.022 +0200	blank.fmp12	0	Reset maximum block sequence number to 41644
 2024-07-30 14:29:37.023 +0200	blank.fmp12	0	*** Completed consistency check, checked 67 block(s)
+2024-09-06 17:22:07.570 +0100	blank.fmp12	0	*** Started consistency check of improperly closed file, total of 77 block(s) to check
+2024-09-06 17:22:07.571 +0100	blank.fmp12	0	Reset maximum block sequence number to 63198
+2024-09-06 17:22:07.571 +0100	blank.fmp12	0	*** Completed consistency check, checked 77 block(s)
