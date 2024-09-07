@@ -262,7 +262,6 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                             &mut offset, 
                                             &mut path, 
                                             start).expect("Unable to decode chunk.");          
-            print_chunk(&chunk, &path);
 
             match &path.iter().map(|s| s.as_str()).collect::<Vec<_>>().as_slice() {
                 /* Examining relatinoships of table occurences */
@@ -679,7 +678,32 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                     // } else {
                     // }
                 },
+                /* Variable length encoded names of data sources. */
+                ["32", "1", "1"] => {
+
+                },
+                /* Identifiers for data sources. */
+                ["32", "1", "3"] => {
+                    
+                }
+                /* Storage for data sources, including path */
+                ["32", "5", ds, ..] => {
+
+                    match chunk.ctype {
+                        ChunkType::RefSimple => {
+                            if chunk.code == 0x6 {
+
+                            } else {
+
+                            }
+                        }
+                        _ => {}
+                    }
+
+                }
+
                 _ => { 
+                    print_chunk(&chunk, &path);
                 }
             }
         }

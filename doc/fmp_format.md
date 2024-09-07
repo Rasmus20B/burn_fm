@@ -10,7 +10,8 @@
 - Scripts: [17]
 - Security: [23]
 - Fonts: [25]
-- value lists: [33].[5].[valuelist]
+- External Data Sources: [32]
+- value lists: [33]
 - Toolbar information: [65]
 - Fields: [tableid].[3].[5]
 - Data: [tableid].[5].[recordid]
@@ -433,6 +434,18 @@ the file value to append to the path above.
 - The "data" for each script step is located in this folder.
 
 ## Security Information
+
+## External Data Sources
+
+- Found @ [32]
+
+- [32].[1].[1] -> Variable length encoded strings of the Data Source names.
+- [32].[1].[3] -> 4 Byte integer IDs for each data source. Used for indexing into data directories.
+- [32].[5].[ID]:
+    - {16} -> name of data source
+    - first {130} -> OS Path to data source, relative. Stored as an 'encrypted' string.
+        - File handles are stored as 0, 0, 0, 1, 4, file, length of path, ':', PATH, '/', length of filename, FILENAME
+
 
 ## ToolBar Information
 

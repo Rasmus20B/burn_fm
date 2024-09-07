@@ -14,6 +14,7 @@ pub enum FMComponentType {
     TableOccurence,
     Relationship,
     Test,
+    DataSource,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -201,6 +202,29 @@ impl FMComponentValueList {
             list_name: String::new(),
             created_by_account: String::new(),
             create_by_user: String::new(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FMComponentDataSource {
+    pub source_name: String,
+    pub source_type: String,
+    pub source_path: String,
+    pub source_filename: String,
+    pub created_by_account: String,
+    pub created_by_user: String,
+}
+
+impl FMComponentDataSource {
+    pub fn new() -> Self {
+        Self {
+            source_name: String::new(),
+            source_type: String::new(),
+            source_path: String::new(),
+            source_filename: String::new(),
+            created_by_account: String::new(),
+            created_by_user: String::new(),
         }
     }
 }
