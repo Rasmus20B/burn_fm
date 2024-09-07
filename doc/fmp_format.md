@@ -432,7 +432,9 @@ the file value to append to the path above.
 ### [17].[5].[script].[5] - The Instruction Directory
 - The "data" for each script step is located in this folder.
 
-## ToolBar information
+## Security Information
+
+## ToolBar Information
 
 - Found @ [65]
 

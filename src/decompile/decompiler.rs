@@ -262,6 +262,7 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                             &mut offset, 
                                             &mut path, 
                                             start).expect("Unable to decode chunk.");          
+            print_chunk(&chunk, &path);
 
             match &path.iter().map(|s| s.as_str()).collect::<Vec<_>>().as_slice() {
                 /* Examining relatinoships of table occurences */
