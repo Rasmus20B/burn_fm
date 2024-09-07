@@ -263,8 +263,9 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
             let chunk = get_chunk_from_code(&buffer, 
                                             &mut offset, 
                                             &mut path, 
-                                            start).expect("Unable to decode chunk.");          
+                                            start).expect("Unable to decode chunk.");
 
+            // print_chunk(&chunk, &path);
             match &path.iter().map(|s| s.as_str()).collect::<Vec<_>>().as_slice() {
                 /* Examining relatinoships of table occurences */
                 ["3", "17", "5", "0", "251"] => {
@@ -291,6 +292,9 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                                 table_actual: chunk.data.unwrap()[6] as u16,
                                 table_actual_name: String::new(),
                             };
+
+                            let source = chunk.data.unwrap()[2];
+                            println!("{:?}", source);
                             fmp_file.table_occurrences.insert(fmp_file.table_occurrences.len() + 1, tmp);
                         }
                         Some(16) => {

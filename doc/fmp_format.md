@@ -1,5 +1,9 @@
 # FMP12 File Format Findings
 
+## Style
+
+- Whenever byte indexes are written about, I'm using 1 based indexing. I.e. the 3rd byte of the array [3, 1, 5, 2, 4, 2, 1] is 5.
+
 ## File Tree Structure
 
 - Printing API Information: [2]
@@ -183,7 +187,8 @@
 ### Keys used in each relationship
 
 - (2) => 35 bytes that specify metadata about the current table occurence. 
-    - Byte 7 specificies table that occurence is based on.
+    - Byte 3: Data Source Index.
+    - Byte 7: Table Actual Index.
 - (16) => Name of the table occurence.
 - (216) => gimme some time
 - [3].[17].[5].[0].[251] => Simple Data. typically 5 Bytes.
