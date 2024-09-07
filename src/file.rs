@@ -13,6 +13,7 @@ pub struct FmpFile {
     pub value_lists: HashMap<usize, component::FMComponentValueList>,
     pub scripts: HashMap<usize, component::FMComponentScript>,
     pub table_occurrences: HashMap<usize, component::FMComponentTableOccurence>,
+    pub data_sources: HashMap<usize, component::FMComponentDataSource>,
     pub tests: Vec<component::FMComponentTest>,
 }
 
@@ -26,6 +27,7 @@ impl FmpFile {
             value_lists: HashMap::new(),
             scripts: HashMap::new(),
             table_occurrences: HashMap::new(),
+            data_sources: HashMap::new(),
             tests: vec![],
         }
     }

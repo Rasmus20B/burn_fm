@@ -2,9 +2,9 @@ use std::char::decode_utf16;
 use std::fs::{File, write};
 use std::io::Read;
 use std::path::Path;
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, HashMap, VecDeque};
 
-use crate::component::RelationComparison;
+use crate::component::{FMComponentDataSource, RelationComparison, SourceFileLocation};
 use crate::fm_script_engine::fm_script_engine_instructions::{ScriptStep, INSTRUCTIONMAP, Instruction};
 use crate::{chunk, component, dbcharconv, decompile, metadata_constants};
 use crate::file::FmpFile;
@@ -246,6 +246,8 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
     let mut idx = 2;
     let mut script_segments: HashMap<usize, BTreeMap<usize, Vec<u8>>> = HashMap::new();
 
+    let mut data_source_names = VecDeque::<String>::new();
+
 
     while idx != 0 {
         let start = idx * SECTOR_SIZE;
@@ -331,12 +333,13 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                             };
                             let field1 = get_path_int(&chunk.data.unwrap()[2..=3]) - 128;
                             let field2 = get_path_int(&chunk.data.unwrap()[5..=6]) - 128;
-                            fmp_file.relationships.get_mut(&x.parse().unwrap()).unwrap().comparison
-                                = comp;
-                            fmp_file.relationships.get_mut(&x.parse().unwrap()).unwrap().field1 =
-                                field1 as u16;
-                            fmp_file.relationships.get_mut(&x.parse().unwrap()).unwrap().field2 =
-                                field2 as u16;
+                            let handle = fmp_file.relationships.get_mut(&x.parse().unwrap());
+                            if handle.is_some() {
+                                let handle_uw = handle.unwrap();
+                                handle_uw.comparison = comp;
+                                handle_uw.field1 = field1 as u16;
+                                handle_uw.field2 = field2 as u16;
+                            }
                         }
                         _ => {}
                     }
@@ -680,30 +683,60 @@ pub fn decompile_fmp12_file(path: &Path) -> FmpFile {
                 },
                 /* Variable length encoded names of data sources. */
                 ["32", "1", "1"] => {
-
+                    match chunk.ctype {
+                        ChunkType::DataSimple => {
+                            let s = dbcharconv::decode_bytes(chunk.data.unwrap());
+                            data_source_names.push_back(s);
+                        }
+                        _ => {}
+                    }
                 },
                 /* Identifiers for data sources. */
                 ["32", "1", "3"] => {
-                    
+                    match chunk.ctype {
+                        ChunkType::DataSimple => {
+                        },
+                        _ => {}
+                    }
                 }
                 /* Storage for data sources, including path */
                 ["32", "5", ds, ..] => {
-
                     match chunk.ctype {
+                        ChunkType::PathPush => {
+                            let idx = get_int(chunk.data.unwrap());
+                            let mut tmp = FMComponentDataSource::new();
+                            let front = data_source_names.pop_front();
+                            if front.is_some() {
+                                tmp.source_name = front.unwrap();
+                                fmp_file.data_sources.insert(idx, tmp);
+                            }
+                        }
                         ChunkType::RefSimple => {
-                            if chunk.code == 0x6 {
+                            match chunk.ref_simple.unwrap() {
+                                130 => {
+                                    if chunk.code == 0x6 {
+                                        /* Path is stored here */
+                                        let tmp = SourceFileLocation::from_bytes(chunk.data.unwrap());
+                                        let handle = fmp_file.data_sources.get_mut(&ds.parse::<usize>().unwrap());
+                                        if handle.is_some() {
+                                            handle.unwrap().source_location = tmp;
+                                        }
 
-                            } else {
-
+                                    } else {
+                                        let s = fm_string_decrypt(chunk.data.unwrap());
+                                        let handle = fmp_file.data_sources.get_mut(&ds.parse::<usize>().unwrap());
+                                        if handle.is_some() {
+                                            handle.unwrap().created_by_user = s;
+                                        }
+                                    }
+                                },
+                                _ => {}
                             }
                         }
                         _ => {}
                     }
-
                 }
-
                 _ => { 
-                    print_chunk(&chunk, &path);
                 }
             }
         }

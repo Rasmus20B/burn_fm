@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, HashMap};
 
 use serde::{Deserialize, Serialize};
 
-use crate::fm_script_engine::fm_script_engine_instructions::ScriptStep;
+use crate::{encoding_util::fm_string_decrypt, fm_script_engine::fm_script_engine_instructions::ScriptStep};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum FMComponentType {
@@ -207,11 +207,61 @@ impl FMComponentValueList {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FMComponentDataSource {
-    pub source_name: String,
+pub struct SourceFileLocation {
     pub source_type: String,
     pub source_path: String,
     pub source_filename: String,
+}
+
+impl SourceFileLocation {
+    pub fn new() -> Self {
+        Self {
+            source_type: String::new(),
+            source_path: String::new(),
+            source_filename: String::new(),
+        }
+    }
+
+    pub fn from_bytes(bytes: &[u8]) -> Self {
+
+        let head = &bytes[0..4];
+        let body = &bytes[4..];
+
+        let path_start = body.windows(2)
+            .position(|w| return w[0] == 65 && w[1] == 50).unwrap_or(0) - 1;
+
+        let path_len = body[path_start] as usize;
+        let path_bytes = &body[path_start+3..path_start+3+path_len];
+
+        let path : Vec<_> = path_bytes.into_iter()
+            .map(|b| vec![b])
+            .map(|b| match b[..] {
+                [50] => { vec![] }
+                [65] => { vec![96 as u8]},
+                [218] => { vec![(117 as u8)] },
+                [219] => { vec![(116 as u8), (116 as u8)] },
+                _ => b.into_iter().map(|n| *n).collect()
+            })
+            .flatten()
+            .collect();
+
+        let path_string = fm_string_decrypt(&path);
+        let file_start = path_start+3+path_len+1;
+        let file_len = body[file_start - 1] as usize;
+        let filename = fm_string_decrypt(&body[file_start..file_start+file_len]);
+        let mut res = Self::new();
+        res.source_filename = filename;
+        res.source_path = path_string;
+        res.source_type = fm_string_decrypt(&body[1..path_start]);
+        res
+
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FMComponentDataSource {
+    pub source_name: String,
+    pub source_location: SourceFileLocation,
     pub created_by_account: String,
     pub created_by_user: String,
 }
@@ -220,9 +270,7 @@ impl FMComponentDataSource {
     pub fn new() -> Self {
         Self {
             source_name: String::new(),
-            source_type: String::new(),
-            source_path: String::new(),
-            source_filename: String::new(),
+            source_location: SourceFileLocation::new(),
             created_by_account: String::new(),
             created_by_user: String::new(),
         }

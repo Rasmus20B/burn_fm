@@ -1,31 +1,5 @@
 /* Double Byte Encoding/Decoding for scheme found in FileMaker File.
  * For now the encoding is a hardcoded lookup. */ 
-// 12, f,
-// 12, 25,
-// 12, 3d,
-// 12, 50,
-// 12, 6b,
-// 12, a3,
-// 12, b0,
-// 12, d3,
-// 12, ec,
-// 13, 5,
-// 13, 1e,
-// 13, 30,
-// 13, 5f,
-// 13, 6d,
-// 13, 8e,
-// 13, b3,
-// 13, c8,
-// 13, da,
-// 14, 10,
-// 14, 33,
-// 14, 53,
-// 14, 7b,
-// 14, 8d,
-// 14, 97,
-// 14, 9c,
-// 14, ad
 
 pub const ENCODING_MAPPING: [(u8, u8, char); 29] = [
     (0x0, 0x0, '\0'), (0x2, 0xa, ' '), (0x2, 0x1d, '_'),
@@ -45,6 +19,12 @@ pub fn decode_char(high: u8, low: u8) -> char {
         .find(|&&(h, l, _)| h == high && l == low)
         .map(|&(_, _, ch) | ch)
         .unwrap_or('?')
+}
+
+pub fn decode_bytes(bytes: &[u8]) -> String {
+    bytes.chunks_exact(2)
+        .map(|b| decode_char(b[0], b[1]))
+        .collect::<String>().strip_suffix("\0").unwrap().to_string()
 }
 
 pub fn encode_char(ch: char) -> (u8, u8) {
